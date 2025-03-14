@@ -1,0 +1,139 @@
+#===============LICENSE_START=======================================================
+#Acumos Apache-2.0
+#===================================================================================
+#Copyright (C) 2017 AT&T Intellectual Property & Tech Mahindra. All rights reserved.
+#===================================================================================
+#This Acumos software file is distributed by AT&T and Tech Mahindra
+#under the Apache License, Version 2.0 (the "License");
+#you may not use this file except in compliance with the License.
+#You may obtain a copy of the License at
+ 
+#     http://www.apache.org/licenses/LICENSE-2.0
+ 
+#This file is distributed on an "AS IS" BASIS,
+#WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#See the License for the specific language governing permissions and
+#limitations under the License.
+#===============LICENSE_END=========================================================
+
+##########################################################################
+########Property Files controlled by External docker-compose file#########
+
+# REST endpoint configuration; i.e., where this server listens
+server.port=8083
+server.contextPath=/
+
+#security.user.name=<portal_username>
+#security.user.password=<portal_password>
+management.security.roles=SUPERUSER
+
+
+#JWT Token secret key
+jwt.auth.secret.key=secret
+jwt.auth.timeout=1800000
+
+
+# CDmS REST endpoints are protected by HTTP Basic Authentication
+#Common Data Source Configuration
+cdms.client.url=http://cdmsHost.com:8002/ccds
+cdms.client.username=ccds_client
+cdms.client.password=ccds_client
+
+#Email Configuration
+#spring.mail.host=
+#spring.mail.port=
+#spring.mail.username=
+#spring.mail.password=
+spring.mail.smtp.starttls.enable=true
+spring.mail.smtp.auth=true
+spring.mail.debug=true
+spring.mail.transport.protocol=smtp
+spring.mail.template.folder.path=/fmtemplates/
+
+#MailJet Credentials
+#portal.mailjet.api.key=
+#portal.mailjet.secret.key=
+#portal.mailjet.address.from=cusomerservice@acumos.org
+
+# Max file size.
+spring.servlet.multipart.max-file-size=-1
+# Max request size.
+spring.servlet.multipart.max-request-size=-1
+
+#Nexus Configuration
+nexus.url=http://mvnrepo.com:8081/repository/repo_acumos_model_maven/
+nexus.username=foo
+nexus.password=bar
+nexus.groupId=com.artifact
+#nexus.proxy=http://one.proxy.mycompany.com:8080
+nexus.docker=http://acumos-devuser:d3vu3er@acumos-nexus01.eastus.cloudapp.azure.com:8081/repository/acumos-dev-docker
+
+#Validation API Configuration
+portal.submitValidation.api=http://localhost:9602/status/v1.0/tasks
+portal.getValidation.api=http://localhost:9000/status
+
+#FeatureController
+#portal.feature.email=false
+portal.feature.email_from=valid_support_email_address@mycompany.com
+portal.feature.email_service=
+portal.feature.enablePublication=false
+portal.feature.cas_enabled=false
+portal.feature.signup_enabled=true
+portal.feature.verifyAccount=false
+portal.feature.publishSelfRequestEnabled=false
+portal.feature.sv.enabled=false
+portal.feature.sv.api=http://verification-service:9000/scan
+portal.feature.sv.infoRegex=license scan (not yet started)|(in-progress)
+#Expiration time of verification token in Hours
+portal.feature.verifyToken.exp_time=24
+portal.ui.server.address=http://localhost:8085
+#integer value for allocating buffer size. Actuall value will be calculated as buffer = (download_bufferSize * 1024)
+portal.feature.download_bufferSize=8
+portal.feature.catalog.pagesize=1000
+
+portal.feature.cloud_enabled =    [{"cloudEnabled" : "true", "cloudName" : "azure", "cloudDisplayText" : "Microsoft Azure", "imageUrl": "/images/deploy-cloud/microsoft_azure.png" },{ "cloudEnabled" : "true", "cloudName" : "rackspace", "cloudDisplayText" : "Rackspace", "imageUrl": "/images/deploy-cloud/rackspace.png" },{ "cloudEnabled" : "false",  "cloudName" : "gcp", "cloudDisplayText" : "Google Cloud Platform", "imageUrl": "/images/deploy-cloud/google_cloud_platform.png" }]
+portal.feature.menu =  [{"name": "ML Learning Path","url":"","imagePath":"/images/sidebar-icons/ML_learning_path_selected.png"}]
+portal.feature.ds.menu = {"workbenchActive":false,"acucomposeActive":true,"blocks":[{"active":true,"title":"Extra Block","description":"Description here","url":"http://localhost:8085/index.html#/home","imagePath":"/images/sidebar-icons/icon_competition_active.png"}]}
+
+#QAndA Url 
+qanda.url=https://stackoverflow.com/search?q=acumos
+
+#Dashboard Url
+portal.dashboard.url=http://www.mycompany.com/
+#kubernetes.doc.url=http://docs.acumos.org/
+
+#model upload storage folder path
+model.storage.folder.path=./temp
+
+#Documentation URL
+doc.url=http://docs.acumos.org/
+
+onboarding.push.model.dcae_url=http://localhost:8090/onboarding-app/v2/dcae_models
+dcae.model.name.prefix=ONAP
+onboarding.tokenmode=jwtToken
+#Blacklist for model bundle directories, formatted "(one)|(two)|..."
+onboarding.directory.blacklist=(MAC)
+onboarding.errorlog.filename=OnboardingLog.txt
+microservice.errorlog.filename=MicroserviceGenerationLog.txt
+
+version.class=default
+
+#ImageSize
+image.size=800KB
+document.size=10000000
+###################################################################
+###########################################################################
+#Dev
+docker.host=my_docker_host
+docker.port=9000
+docker.config=/docker_host/.docker
+docker.registry.url=http://my_docker_registry:8001/
+docker.registry.username=foo
+docker.registry.password=bar
+docker.registry.email=valid_admin@mycompany.com
+docker.tls.verify=false
+docker.api.version=1.23
+docker.imagetag.prefix=my_docker_imagetags:8001
+docker.max_total_connections=1
+docker.max_per_route_connections=1
+###########################################################################

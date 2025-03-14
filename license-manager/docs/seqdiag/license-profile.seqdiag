@@ -1,0 +1,37 @@
+Title: License Profile workflow
+
+PortalOperator-> CDS: add default\nlicense profile
+ModelOwner-> PortalFE: Onboard Model
+PortalBE-> LMCL: getDefaultLicenses()
+LMCL-> CDS: fetch default licenses sorted by priority
+LMCL-> PortalBE: list of default\nlicenses
+ModelOwner-> PortalFE: select default\nlicense to edit
+PortalBE->LMCL: getDefaultLicenseProfile()
+LMCL-> CDS: get default license content
+PortalFE-> LicenseProfileEditor: display component\nin iframe\niframe messaging
+ModelOwner-> LicenseProfileEditor: edit/save profile
+LicenseProfileEditor-> PortalFE: send results\niframe message
+PortalFE-> PortalFE: prepare license string data for upload
+PortalFE-> PortalBE: Upload License
+PortalBE-> LMCL: if json\nthen validateLicenseJson
+PortalBE-> Nexus: Save License
+PortalBE-> SV: scanSolution
+SV-> CDS: getSiteConfig\n allowed license keys
+SV-> ScanCode: Scan license
+ScanCode->SV: Scancode data
+SV-> SV: Evaulate scan results based\nbased on scancode data
+SV->Nexus: Add scancode data artifact
+SV->Nexus: Add scan results artifact (summary)
+SV->LMCL: Notify Scan Completed (new)
+LMCL->LUM: Send License Profile\nScan results
+PortalBE->MSGEN: createMicroservice
+MSGEN->Nexus: getArtifact(type=LI)
+MSGEN->MSGEN: add license artifact to docker image
+MSGEN->Nexus: save docker image\nwith license artifact
+ModelRequestor->Microservice: /artifact/license 
+ModelRequestor->Microservice: license file contents
+
+
+Note over  SV: Determine how Jenkins\nas service will change this?
+Note over  PortalFE: Allow *.json,\n*.txt or LICENSE file\n use LI for artifact type to avoid binding name
+Note over  LUM: meta data of \nlicense will\nbe sent to LUM isCommercial,\n rootLicense, licenses found

@@ -1,0 +1,191 @@
+<!--  
+===============LICENSE_START=======================================================
+Acumos Apache-2.0
+===================================================================================
+Copyright (C) 2017 AT&T Intellectual Property & Tech Mahindra. All rights reserved.
+===================================================================================
+This Acumos software file is distributed by AT&T and Tech Mahindra
+under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+This file is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+===============LICENSE_END=========================================================
+-->
+
+<alert-message msg="msg" icon="icon" styleclass="styleclass"
+            ng-show="showAlertMessage"></alert-message>
+<md-dialog aria-label="Mango (Fruit)" class="cg-dialog-sign_up">
+								  
+									<md-toolbar>
+									  <div class="md-toolbar-tools">
+										<h2>Sign up to continue</h2>
+										<span flex></span>
+										<md-button class="md-icon-button" ng-click="handleDismiss()">
+										  <i class="material-icons btn-close-dialog" alt="Close" title="Close">close</i>
+										</md-button>
+									  </div>
+									</md-toolbar>
+									<md-dialog-content>
+									
+									  <div class="md-dialog-content">
+										<div class="mdl-grid mdl-grid--no-spacing">
+										  <div class="mdl-cell mdl-cell--6-col mdl-cell--4-col-tablet">
+										  <form name="signupForm" ng-cloak novalidate>
+										  <div class="md-block signup-container2">
+										  		 <md-input-container class="mdl-cell--6-col mdl-cell--4-col-tablet mdl-cell--2-col-phone">
+												      <!-- Use floating label instead of placeholder -->
+												      <label>First Name</label>									      
+												      <input type="text" name="firstName" ng-model="firstName" valid-name required ng-blur="firstNameVisited=true" ng-focus="firstNameVisited=false" maxlength="50">
+												      <div class="help-inline validation-msgs"
+														ng-class="{validationmsg:!signupForm.firstName.$valid}">
+														<span ng-show="( !!signupForm.firstName.$error.required && signupForm.firstName.$touched && firstNameVisited)">First
+															Name Required.</span> <span
+															ng-show="!!signupForm.firstName.$error.invalidChars && firstNameVisited">First
+															name must contain letters only.</span>
+													</div>
+												 </md-input-container>
+												 <md-input-container class="mdl-cell--6-col mdl-cell--4-col-tablet mdl-cell--2-col-phone signup-control1">
+												      <!-- Use floating label instead of placeholder -->
+												      <label>Last Name</label>												      
+												      <input type="text" name="lastName" ng-model="lastName" valid-name required ng-blur="lastNameVisited=true" ng-focus="lastNameVisited=false" maxlength="50">
+												     
+												      <div class="help-inline validation-msgs"
+														ng-class="{validationmsg:!signupForm.lastName.$valid}">
+														<span ng-show="!!signupForm.lastName.$error.required && signupForm.lastName.$touched && lastNameVisited">Last
+															Name Required.</span> <span
+															ng-show="!!signupForm.lastName.$error.invalidChars && lastNameVisited">Last
+															name must contain letters only.</span>
+													</div>
+												 </md-input-container>
+												 <span class="signupmsg">We're big on real names around here, so people know who's who</span>
+										</div>
+												 
+												 <md-input-container class="md-block">
+												      <!-- Use floating label instead of placeholder -->
+												      <label>User Name</label>												      
+												      <input name="username" ng-model="username" type="text" valid-name maxlength="30" required ng-blur="usernameVisited=true" ng-focus="usernameVisited=false">
+												      <span class="normalmsg"><span class="normalmsg"><!-- Your Acumos URL: https://acumos.com/ USERNAME --></span></span>
+												 	  <div class="help-inline validation-msgs"
+														ng-class="{validationmsg:!signupForm.username.$valid}">
+														<span ng-show="!!signupForm.username.$error.required && signupForm.username.$touched && usernameVisited">Username
+															Required.</span>
+															<span ng-show="userExists && usernameVisited">Username
+															already exists.</span>
+															<span
+															ng-show="!!signupForm.username.$error.invalidChars && usernameVisited">User
+															name must contain letters only.</span>
+										</div>	
+												 </md-input-container>
+												  <md-input-container class="md-block">
+												      <!-- Use floating label instead of placeholder -->
+												      <label>Email ID</label>												      
+												      <input name="uemail" ng-model="uemail" type="text" 
+												      ng-blur="emailVisited=true" ng-focus="emailVisited=false"
+												      ng-pattern="/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/" required>
+												      <div class="help-inline validation-msgs"
+														ng-class="{validationmsg:!signupForm.uemail.$valid}">
+														<span
+															ng-show="!!(signupForm.uemail.$touched && signupForm.uemail.$error.required && emailVisited)">Email
+															ID Required.</span> <span
+															ng-show="!!(signupForm.uemail.$dirty && signupForm.uemail.$error.pattern) && emailVisited">
+															Please enter valid email id</span>
+													</div>
+
+												 </md-input-container>
+												 	<div>
+														<!-- <p class="admin-text1">
+															Your password must contain atleast eight characters along with one upper case and lower case letter, number  and symbols like, ! # @ $ * &
+														</p> -->
+													</div>
+												 <md-input-container class="md-block">
+												      <!-- Use floating label instead of placeholder -->
+												      <label>Password</label>										     
+												      	<div class="password-container1">
+												      		<input name="pwd" class="ok-password pull-left" ng-model="pwd" type="{{inputtype}}" valid-password required  maxlength="20" ng-blur="passwordVisited=true" ng-focus="passwordVisited=false">
+												      		<md-button ng-class="inputtype=='password'?'':'is-focused'" class="mdl-button mdl-js-button btn-secondary eyebutton" ng-click="showPasswd()"><i class="material-icons btn-view-icon" alt="Show Password" title="Show Password">remove_red_eye</i></md-button>
+												      	</div>											      	
+												     
+												      <div class="help-inline validation-msgs" ng-class="{validationmsg:!signupForm.pwd.$valid}">
+														<span ng-show="!!signupForm.pwd.$error.required && signupForm.pwd.$touched && passwordVisited">Password Required.</span>
+														<span ng-show="!! (signupForm.pwd.$touched && signupForm.pwd.$error.invalidLen) && passwordVisited">
+															Password must be at least 8 characters long.<br/> 
+														</span>
+														<span ng-show="( passwordVisited && signupForm.pwd.$dirty && ( signupForm.pwd.$error.isSpecialChar || signupForm.pwd.$error.isDigit || signupForm.pwd.$error.isLowerCaseLetter || signupForm.pwd.$error.isUpperCaseLetter))">													
+															Password must contain at least one 
+															<span ng-if="signupForm.pwd.$error.isDigit">number</span>
+															<span ng-if="signupForm.pwd.$error.isLowerCaseLetter"><span ng-if="( signupForm.pwd.$error.isDigit )">, </span> lower case letter</span>
+															<span ng-if="signupForm.pwd.$error.isUpperCaseLetter"><span ng-if="( signupForm.pwd.$error.isDigit || signupForm.pwd.$error.isLowerCaseLetter )">, </span> upper case letter</span> 
+															<span ng-if="signupForm.pwd.$error.isSpecialChar"><span ng-if="( signupForm.pwd.$error.isDigit || signupForm.pwd.$error.isUpperCaseLetter || signupForm.pwd.$error.isLowerCaseLetter)">, </span> special symbol like * & # </span>
+															.
+														</span>
+													</div>
+													<div>
+														<p class="password-note">
+															Your password must contain at least eight characters, which should have at least one upper case and one lower case letter, numbers and symbols like, ! # @ $ * &.
+														</p>
+													</div>
+												 </md-input-container>
+
+												<div class="strength-meter" ng-if="!signupForm.pwd.$valid && signupForm.pwd.$dirty && pwd">
+													<div class="strength-meter-fill" ng-init="passwordStrength=0" data-strength="{{passwordStrength}}"></div>
+						                        </div>
+						                        <div class="strength-meter" ng-if="!signupForm.pwd.$dirty || !pwd">
+													<div class="strength-meter-fill" ng-init="passwordStrength=null" data-strength="{{passwordStrength}}"></div>
+						                        </div>
+						                        <div class="strength-meter" ng-if="signupForm.pwd.$valid">
+													<div class="strength-meter-fill" data-strength="{{passwordStrength}}"></div>
+						                        </div>	
+						                        <div class="text-xsmall">
+													<span ng-if="signupForm.pwd.$invalid && signupForm.pwd.$dirty">Weak Password</span>
+							                        <span ng-if="signupForm.pwd.$valid && passwordStrength == 2">Strong Password</span>
+							                        <span ng-if="signupForm.pwd.$valid && (passwordStrength == 3 || passwordStrength == 4)">Very Strong Password</span>
+												</div>						 
+												 <md-input-container class="md-block confirm-control">
+												      <!-- Use floating label instead of placeholder -->
+												      <label>Confirm Password</label>
+												      <div class="password-container1">											     
+												      	<input name="cpwd" ng-model="cpwd" type="{{inputtypeconfirm}}"  valid-password-c required maxlength="20" ng-blur="cpasswordVisited=true" ng-focus="cpasswordVisited=false">
+												        <md-button ng-class="inputtypeconfirm=='password'?'':'is-focused'" class="mdl-button mdl-js-button btn-secondary eyebutton" ng-click="showConfirmPasswd()"><i class="material-icons btn-view-icon" alt="Show Password"  title="Show Password">remove_red_eye</i></md-button>
+												      </div>
+												      <div class="help-inline validation-msgs"
+														ng-class="{validationmsg:!signupForm.cpwd.$valid}">
+														<span ng-show="!!signupForm.cpwd.$error.required && signupForm.cpwd.$touched && cpasswordVisited">Confirm Password
+															Required.</span> <span
+															ng-show="cpasswordVisited && !!(pwd!=cpwd)">Passwords
+															don't match.</span>
+													</div>
+												 </md-input-container>
+												 												
+												<div >
+													<button class="mdl-button mdl-js-button mdl-button--raised btn-signin btn-fullwidth btn-primary" 
+													ng-disabled="signupForm.$invalid ||(pwd!=cpwd)" ng-click="signUp()" alt="Sign up" title="Sign up">Sign up</button>
+												</div>
+												<div class="signup-txt-mob">
+													<label>Already have an {{$root.siteInstanceName}} ID?</label> <a ng-click=" openlogin()">Sign In</a>
+												</div>
+										  </div>
+										  </form>
+										  <div class="mdl-cell mdl-cell--1-col mdl-cell--1-col-tablet posrel">
+										  		<div class="signinseperator"><span class="or_span">or</span></div>
+										  </div>
+										  <div class="mdl-cell mdl-cell--5-col mdl-cell--3-col-tablet">
+										  	<div class="socbtncontainer">
+										  		<button class="mdl-button mdl-js-button mdl-js-ripple-effect socbtn" ng-click = "signupAuthenticate('github')" disabled alt="Sign In with Github" title="Sign In with Github" ><span class="socbtnicon" ><span class="github-icon"></span></span><span class="soctext">Sign In with Github</span></button>
+										  		<button class="mdl-button mdl-js-button mdl-js-ripple-effect socbtn" ng-click = "signupAuthenticate('facebook')" disabled alt="Sign In with Facebook" title="Sign In with Facebook"><span class="socbtnicon" ><span class="facebook-icon"></span></span><span class="soctext">Sign In with Facebook</span></button>
+										  		<button class="mdl-button mdl-js-button mdl-js-ripple-effect socbtn" ng-click = "signupAuthenticate('google')" disabled alt="Sign In with Google" title="Sign In with Google"><span class="socbtnicon"><span class="google-icon"></span></span><span class="soctext">Sign In with Google</span></button>
+										  		<button class="mdl-button mdl-js-button mdl-js-ripple-effect socbtn" ng-click = "signupAuthenticate('linkedin')" disabled alt="Sign In with LinkedIn" title="Sign In with LinkedIn"><span class="socbtnicon"><span class="linkedin-icon"></span></span><span class="soctext">Sign In with LinkedIn</span></button>
+										  	</div>
+										  	<p class="signintext">
+												By signing up, you agree to our <a ui-sref="termsCondition" ng-click="handleDismiss()">Terms and Conditions and Privacy Policy.</a>
+											</p>
+										  </div>
+										</div>																	
+									  </div>
+									</md-dialog-content>
+								</md-dialog>

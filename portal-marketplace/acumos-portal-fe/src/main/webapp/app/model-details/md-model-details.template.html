@@ -1,0 +1,1448 @@
+<!--    
+===============LICENSE_START=======================================================
+Acumos Apache-2.0
+===================================================================================
+Copyright (C) 2017 AT&T Intellectual Property & Tech Mahindra. All rights reserved.
+Modifications Copyright (C) 2019 Nordix Foundation.
+===================================================================================
+This Acumos software file is distributed by AT&T and Tech Mahindra
+under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+This file is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+limitations under the License.
+===============LICENSE_END=========================================================
+-->
+
+<div class="posrel">
+	<alert-message msg="msg" icon="icon" styleclass="styleclass"
+		ng-show="showAlertMessage"></alert-message>
+</div>
+<div class="page-content">
+	<section class="pageheadsection gray-bg" id="md-model-detail-template">
+		<div class="md-head-container1">
+			<div class="md-head-containerinner1">
+			   <div class="custom-tooltip">
+				<span  class="md-headline4 mob-disblock">
+					<img class="solutions-img" ng-src="/api/solutions/{{solution.solutionId}}/picture"
+						onerror="this.onerror=null;this.src='images/default-model.png'"/>{{solution.name.toString().split("_").join(" ")}}	</span>
+						      <span class="custom-tooltip-text">{{solution.name.toString().split("_").join(" ")}}</span>
+   				</div>
+										
+				<div class="md-head-container3">
+					<div class="md-head-containerinner-seperator"></div>
+					<div class="version-container cataloglist-container" ng-show="solutionCatalogsList && solutionCatalogsList.length > 0">
+						<button id="demo-menu-lower-right" class="mdl-button mdl-js-button"
+								ng-click="showCatalog();$event.stopPropagation();">
+								<span class="text-ellipsis">Catalog - {{catalogName}}</span> <i class="material-icons">keyboard_arrow_down</i>
+						</button>
+						<ul class="md-version-ddl1 catalog-list">
+							<li class="custom-tooltip" ng-repeat="catalog in solutionCatalogsList"
+									ng-click="changeSelectedCatalogId(catalog.catalogId, catalog.name)"
+									ng-class="{selected: catalog.catalogId == selectedCatalogId}">
+									<span ng-class="{'md-cat-txtellipsis': catalog.name.length>15}">{{catalog.name}}</span>
+            						<span class="custom-tooltip-text">{{catalog.name}}</span>	
+
+							</li>
+						</ul>
+					</div>
+					<div class="version-container">
+						<button id="demo-menu-lower-right" class="mdl-button mdl-js-button"
+								ng-click="showVersion();$event.stopPropagation();">
+								<span>Version - {{versionId}} <i class="material-icons">keyboard_arrow_down</i></span>
+						</button>
+						<ul class="md-version-ddl1 version-list">
+							<li ng-repeat="v in versionList"
+									ng-click="loadVersionDetails(solution.solutionId, v.revisionId, v.version)"
+									ng-class="{selected: v.revisionId == revisionId}">Version - {{v.version}}</li>
+						</ul>
+					</div>					
+				</div>
+			</div>
+			<div class="md-head-container2">	
+				<button type="button" ng-cloak ng-if="$root.enableDCAE && solution.active && solution.active == true && $root.isONAPCompatible && !audit"
+						class="mdl-button mdl-js-button btn-primary"
+						ui-sref="modularResource({ONAP: 'true', solutionId: solutionId, revisionId: revisionId})" ng-click="$root.parentActive = ''"
+						>Build for ONAP</button>
+							
+				<button type="button"
+						ng-cloak
+						class="mdl-button mdl-js-button btn-primary max-100"
+						ng-click="showModalPublishReq('approve',solution.name, publishRequestId)"
+						ng-if="loginUserID && audit"
+						ng-disabled="requestedByMe || requestStatusCode=='AP'|| requestStatusCode=='DC'"
+						alt="Approve Publication" title="{{ requestedByMe ? 'Approve Self Publication is Disabled' : 'Approve Publication'}}">Approve Publication</button>
+						
+				<button type="button"
+						ng-cloak
+						class="mdl-button mdl-js-button btn-primary max-100"
+						ng-click="showModalPublishReq('decline',solution.name, publishRequestId)"
+						ng-if="loginUserID && audit"
+						ng-disabled="requestedByMe || requestStatusCode=='AP'|| requestStatusCode=='DC'"
+						alt="Decline Publication" title="{{ requestedByMe ? 'Decline Self Publication is Disabled' : 'Decline Publication'}}">Decline Publication</button>
+						
+				<button type="button" ng-cloak
+						class="mdl-button mdl-js-button btn-primary" 
+						ng-click="$root.showAdvancedLogin()" ng-if="!loginUserID" alt="Sign In To Download" title="Sign In To Download">Sign
+						In To Download</button>
+				
+				<div class="select-control dcl-list" ng-show="solution.active == true && loginUserID" ng-cloak>
+                    <!-- Through Properties File -->
+                    <md-select ng-model="exportTo" placeholder="Deploy for Execution" class="dc-cloud-list">
+                          <md-option ng-repeat = "menuEntry in getDeployMenu()"
+                           		class="deploy-to-cloud" ng-value="menuEntry.title" alt="{{menuEntry.title}}"
+                           		ng-click="triggerDeployment(menuEntry)" title="{{menuEntry.title}}">
+                           		<image src="{{menuEntry.icon_url}}" height="40px" style="max-width: 50; padding-right: 5px; margin-right: 5px; border-right: 1px solid gray"/> {{menuEntry.title}}
+                          </md-option>
+                     </md-select>
+                </div>
+
+                <button type="button" ng-cloak
+						class="mdl-button mdl-js-button mdl-js-ripple-effect btn-secondary"
+						ng-click="$root.showAdvancedLogin()" ng-if="!loginUserID  && !audit" alt="Sign In To Deploy to Cloud" title="Sign In To Deploy to Cloud">Sign
+						In To Deploy to Cloud
+				</button>
+			</div>
+		</div>
+		<div class="md-head-container2">
+			<ul class="c-breadcrumb solution_id_top">
+				<li><a ui-sref="home" ng-click="$root.parentActive = ''">Home</a></li>
+				<li><a ui-sref="marketPlace"
+						ng-if="$root.parentActive == 'marketplace'">Marketplace</a> <a
+						ui-sref="manageModule" ng-if="$root.parentActive == 'mymodel'">My
+							Model</a></li>
+				<li class="custom-tooltip"><span class="md-breadcrumb-item">{{solution.name.toString().split("_").join(" ")}}</span>
+				    <span class="custom-tooltip-text">{{solution.name.toString().split("_").join(" ")}}</span></li>
+                     <li><span class="solution_id_bg">Solution ID:{{solution.solutionId}}</span></li>
+			</ul>
+				<span class="md-lbl1" >Version {{versionId}} |
+					{{solution.downloadCount === null ? 0 : solution.downloadCount}}
+					Downloaded</span>		
+		</div>
+	</section>
+	<div class="md-container-head1 md-header3">
+		<div class="head-stat-left">
+			<div class="mdchild1">
+				<!-- <img src="images/chatuser.jpg" alt="" title="user"> -->
+				<!-- default image -->
+				<img class="userimg" ng-show="showAltImage"
+					ng-src="images/userprofile/user-profile-black.png"
+					title="{{userfirstname}}" />
+				<!-- user uploaded image -->
+				<img class="userimg" ng-show="!showAltImage"
+					ng-src="data:image/PNG;base64,{{userImage}}"
+					title="{{userfirstname}}" />
+			</div>
+			<div>
+				<div>
+					<span class="text-medium font600"><span
+						class="md-created-label" style="text-overflow: unset; max-width: none;">Created by {{authorList[0].name||solution.ownerName}}</span></span>
+					| <span class="text-xsmall">Created on {{solution.created |
+						date:'MM/dd/yyyy'}} </span><span ng-if="!audit">|
+					<button
+						class="mdl-button mdl-js-button mdl-js-ripple-effect btn-md-edit"
+						ui-sref="modelEdit({solutionId:solutionId, revisionId:revisionId, deployStatus:(dockerUrlOfModel.length)})"
+						ng-disabled="editModel" alt="Manage My Model" title="Manage My Model">
+						 Manage My Model
+					</button>
+					</span>
+				</div>
+				<span class="text-xsmall publish-text" ng-if="solutionCatalogsList && solutionCatalogsList.length > 0">Published on
+					{{solution.modified | date:'MM/dd/yyyy' }}</span>
+			</div>
+		</div>
+
+		<div class="header-stats" ng-if="solutionCatalogsList.length == '0' && solution.active == true">
+			<span
+				style="color: rgb(255, 87, 34); text-transform: uppercase; padding-right: 20px; font-weight: bold; font-size: 12px; padding-top: 5px;">Status: Unpublished</span>
+		</div>
+		<div class="header-stats" ng-if="solution.active == false">
+			<span
+				style="color: rgb(255, 87, 34); text-transform: uppercase; padding-right: 20px; font-weight: bold; font-size: 12px; padding-top: 5px;">Status: Deleted</span>
+		</div>
+
+		<div class="header-stats" ng-if="version.accessTypeCode != 'PR'  && !audit">
+			<div>
+				<span class="rating header-stat-lg"> <span><i
+						class="material-icons fa fa-star"
+						ng-class="{'fa-star1': mlSolutionGetRating.content[0].rating == null || mlSolutionGetRating.content[0].rating < 1}"></i></span>
+					<span><i class="material-icons fa fa-star"
+						ng-class="{'fa-star1': mlSolutionGetRating.content[0].rating == null || mlSolutionGetRating.content[0].rating < 2}"></i></span>
+					<span><i class="material-icons fa fa-star"
+						ng-class="{'fa-star1': mlSolutionGetRating.content[0].rating == null || mlSolutionGetRating.content[0].rating < 3}"></i></span>
+					<span><i class="material-icons fa fa-star"
+						ng-class="{'fa-star1': mlSolutionGetRating.content[0].rating == null || mlSolutionGetRating.content[0].rating < 4}"></i></span>
+					<span><i class="material-icons fa fa-star"
+						ng-class="{'fa-star1': mlSolutionGetRating.content[0].rating == null || mlSolutionGetRating.content[0].rating < 5}"></i></span>
+				</span>
+			</div>
+			<!-- <div class="header-stat-star"><a href="#"><i class="material-icons">star_rate</i> {{solution.solutionRating}}</a></div> -->
+			<div>
+				<a class="link-blue text-medium" ng-click="scrollToComment('view')"><span
+					class="statistics-icons icon-chat-blue md-icons1" alt="Comment" title="Comment"></span>
+					{{totalCommentCount}} <span class="header-stat-lg">Comments</span></a>
+			</div>
+			<div ng-show="solution.active == true">|</div>
+			<div ng-show="solution.active == true">
+				<a class="link-write-comments link-blue text-medium" ng-click="scrollToComment('edit')">Write
+					Comments</a>
+			</div>
+			<div>|</div>
+			<div class="text-medium">
+				<span class="statistics-icons icon-view md-icons1" alt="View" title="View"></span>
+				{{solution.viewCount === null ? 0 : solution.viewCount}} <span
+					class="header-stat-lg">Viewed</span>
+			</div>
+			<div>|</div>
+			<div class="text-medium">
+				<span class="statistics-icons icon-download md-icons1" alt="Download" title="Download"></span>
+				{{solution.downloadCount === null ? 0 : solution.downloadCount}} <span
+					class="header-stat-lg">Downloaded</span>
+			</div>
+		</div>
+	</div>
+	<div class="page-wrapper3">
+		<div
+			class="mdl-tabs vertical-mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
+			<div class="mdl-grid mdl-grid--no-spacing">
+				<div class="mdl-cell md-left-container">
+					<div class="mdl-tabs__tab-bar">
+						<a href="#tab1-panel" class="mdl-tabs__tab is-active" alt="Description" title="Description"> <span
+							class="tab-box"> <span class="tab-icons tab-description"></span>
+								<span>Description</span>
+						</span>
+						</a> 
+						<a ng-show="loginUserID" href="#tab7-panel" class="mdl-tabs__tab" alt="License" title="License">
+							<span class="tab-box"> 
+								<span class="tab-icons tab-license"></span>
+								<span>License Profile</span>
+							</span>
+						</a> <a href="#tab2-panel" class="mdl-tabs__tab" alt="Signatures" title="Signatures"> <span
+							class="tab-box"> <span class="tab-icons tab-signatures"></span>
+								<span>Signature</span>
+						</span>
+						</a> <a href="#tab3-panel" class="mdl-tabs__tab" alt="Documents" title="Documents"> <span
+							class="tab-box"> <span class="tab-icons tab-documents"></span>
+								<span>Documents</span>
+						</span>
+
+						</a> <a href="#tab4-panel" class="mdl-tabs__tab" alt="Model Artifacts" title="Model Artifacts"> <span
+							class="tab-box"> <span
+								class="tab-icons tab-versionhistory"></span> <span>Model Artifacts
+									</span>
+						</span>
+						</a>
+						
+						<a href="#tab6-panel" class="mdl-tabs__tab" alt="Author/Publisher Details" title="Author/Publisher Details"> <span
+							class="tab-box author-details"> <span
+								class="tab-icons tab-author_details"></span> <span>Author/Publisher Details
+									</span>
+						</span>
+						</a>
+
+						<a href="#tab5-panel" class="mdl-tabs__tab tab5-panel"> </a>
+					</div>
+					<div>
+						<!-- <hr class="hor-seperator" /> -->
+						<h6 class="sectiontitle4">
+							Tags<span class="title-icons icon-tags" alt="Tags" title="Tags"></span>
+						</h6>
+						<div class="box-inner2 rowcontainer">
+							<md-chips ng-model="tags" readonly="true"> 
+								<md-chip-template>
+									{{$chip.tag}}
+								 </md-chip-template> 
+							</md-chips>
+							<br/>
+						</div>
+					</div>
+					<hr class="hor-seperator" />
+					<div class="" ng-if="!audit">
+						<h6 class="sectiontitle4">
+							Other {{solution.modelTypeName}} Models <a
+								class="text-small pull-right" data-target ng-click="showAll()">Show
+								all</a>
+						</h6>
+						<div class="md-list-container1">
+							<div class="list-item list-container"
+								ng-repeat="val in relatedSolutions | limitTo: 5">
+								<ul class="model-list"
+									ng-click='goToRelatedSolutions(val.solutionId, val.latestRevisionId)'>
+									<li><img src="images/solution2.jpg" alt=""
+										ng-click="onClickModel(val.solutionId, val.ownerId)"
+										title="solution"></li>
+									<li><label class="rel-title" ng-click="onClickModel(val.solutionId, val.ownerId)">{{val.name.toString().split("_").join(" ")}}</label> <span
+										class="rating"> <span><i
+												class="material-icons fa fa-star"
+												ng-class="{'fa-star1': val.solutionRatingAvg == null || val.solutionRatingAvg < 1}"></i></span>
+											<span><i class="material-icons fa fa-star"
+												ng-class="{'fa-star1': val.solutionRatingAvg < 2}"></i></span> <span><i
+												class="material-icons fa fa-star"
+												ng-class="{'fa-star1': val.solutionRatingAvg < 3}"></i></span> <span><i
+												class="material-icons fa fa-star"
+												ng-class="{'fa-star1': val.solutionRatingAvg < 4}"></i></span> <span><i
+												class="material-icons fa fa-star"
+												ng-class="{'fa-star1': val.solutionRatingAvg < 5}"></i></span>
+									</span> <label class="iconcontainer"> <span class="iconspan1"><span
+												class="statistics-icons icon-chat" alt="Comment" title="Comment"></span> 0</span> <span
+											class="iconspan1"><span
+												class="statistics-icons icon-view" alt="View" title="View"></span> {{val.viewCount}}</span>
+											<span class="iconspan1"><span
+												class="statistics-icons icon-download" alt="Download" title="Download"></span>
+												{{val.downloadCount}}</span>
+									</label></li>
+								</ul>
+							</div>
+
+						</div>
+					</div>
+
+
+				</div>
+				<div class="mdl-cell md-right-container model-details-tabwrapper">
+					<div class="mdl-tabs__panel is-active" id="tab1-panel">
+						<div class="md-intro-container spacebetween" ng-if="solution.modelTypeName && version.accessTypeCode != 'PR'">
+							<div ng-if="solution.modelTypeName && version.accessTypeCode != 'PR'"><h6 class="sectiontitle9">INTRODUCTION | CATEGORY:{{solution.modelTypeName}}</h6></div>
+						
+							    <description-rating ratedescriptioncheck="ratedescriptioncheck"></description-rating>
+							
+						</div>		
+										
+						<div class="md-intro-container" ng-if="!solution.modelTypeName || version.accessTypeCode =='PR'">
+						<div ng-if="!solution.modelTypeName || version.accessTypeCode =='PR'"><h6 class="sectiontitle9">INTRODUCTION</h6></div>
+						</div>
+
+						<div class="description-img-container">
+							<!-- images changed for demo  -->
+								<img ng-src="/api/solutions/{{solution.solutionId}}/picture" class="modelimg1" style="max-width: 400px; margin: 0 auto; display: block;"
+									onerror="this.onerror=null;this.src='images/default-model.png'"/>
+						</div>
+						
+						<div ng-bind-html="solutionDescription"></div>
+
+						<h6 ng-if="dockerUrlOfModel" class="md-subhead lbl1"> My Image Model: {{dockerUrlOfModel}}</h6>
+					</div>
+					<div class="mdl-tabs__panel" id="tab2-panel">
+						<h6 class="sectiontitle6">SIGNATURE</h6>
+						<div ng-show="modelSignature && isOnnxOrPFAModelFound == false"><pre>{{modelSignature}}</pre></div>
+                            			<div class="alert c-info" ng-if="isOnnxOrPFAModelFound || dockerUrlOfModel" >
+                               				 <strong>Currently signature is not supported for ONNX, PFA, DOCKERIZED MODEL URI Models </strong>
+                            			</div>
+                           			 <div class="alert c-info" ng-if="signatureNotFound" >
+                              				 <strong> Signature not found</strong>
+                          			 </div>
+                           
+					</div>
+					<div class="mdl-tabs__panel" id="tab3-panel">
+						<h6 class="sectiontitle6">SUPPORTING DOCUMENTS</h6>
+						<table class="mdl-data-table mdl-js-data-table md-tbl1">
+							<colgroup>
+								<col />
+								<col />
+								<col />
+								<col width="10%" />
+							</colgroup>
+							<thead>
+								<tr>
+									<th>Folder/Documents</th>
+									<th>Version</th>
+									<th>Modified on</th>
+									<th>action</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr class="supporting-doc" ng-repeat="supportingDoc in documents">
+									<td><span class="file-type">
+											<i class="far fa-file-word" ng-if="(supportingDoc.ext | lowercase) == 'docx'" aria-hidden="true"></i>
+											<i class="far fa-file-image" ng-if="(supportingDoc.ext | lowercase) == 'png'" aria-hidden="true"></i>
+											<i class="far fa-file-image" ng-if="(supportingDoc.ext | lowercase) == 'jpg'" aria-hidden="true"></i>
+											<i class="far fa-file-pdf" ng-if="(supportingDoc.ext | lowercase) == 'pdf'" aria-hidden="true"></i>
+											<i class="far fa-file-powerpoint" ng-if="(supportingDoc.ext | lowercase) == 'pptx'" aria-hidden="true"></i>
+											<i class="far fa-file-excel" ng-if="(supportingDoc.ext | lowercase) == 'xlsx'" aria-hidden="true"></i>
+											<i class="far fa-file-excel" ng-if="(supportingDoc.ext | lowercase) == 'csv'" aria-hidden="true"></i>
+											<i class="far fa-file-alt" ng-if="(supportingDoc.ext | lowercase) == 'txt'" aria-hidden="true"></i>
+											<i class="far fa-file-archive" ng-if="(supportingDoc.ext | lowercase) == 'zip'" aria-hidden="true"></i>
+									</span><span>{{supportingDoc.name}}</span></td>
+									<td>{{versionId}}</td>
+									<td>{{solution.modified | date:'MM/dd/yyyy' }}</td>
+									<td><a ng-click="!loginUserID ? $root.showAdvancedLogin() : documentDownload(supportingDoc.documentId)" alt="Download" title="Download">
+											<i class="fa fa-download" aria-hidden="true"></i>
+									</a></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<div class="mdl-tabs__panel" id="tab4-panel">
+						<h6 class="sectiontitle6">MODEL ARTIFACTS</h6>
+						<table class="mdl-data-table mdl-js-data-table md-tbl1">
+							<colgroup>
+								<col />
+								<col />
+								<col />
+								<col width="15%" />
+							</colgroup>
+							<thead>
+								<tr>
+									<th>Artifact Name</th>
+									<th>Version</th>
+									<th>Modified on</th>
+									<th>Size</th>
+									<th>Action</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr ng-repeat="value in artifactDownload">
+									<td>
+										<!-- <a class="link-blue" href="#"> --><!-- Version name 
+										{{value.name}}<!-- </a>  <span class="font600"></span> -->
+										
+										<label class="a-tooltip">
+											<span class="a-tooltipval" ng-if="value.artifactType != 'DI'">{{value.name}}</span>
+											<span class="a-tooltipval" style="overflow: visible;" ng-if="value.artifactType == 'DI'">{{value.artifactUri}}</span>
+											<span class="a-tooltiptext">{{value.name}}</span>
+										</label>					
+									</td>
+									<td>{{value.version}}</td>
+									<td>{{value.created | date:'MM/dd/yyyy'}}</td>
+									<td>{{value.size | formatBytes:1}}</td>
+									<td>
+										<md-button ng-cloak ng-if="!loginUserID" class="mdl-button mdl-js-button btn-grid-action" ng-click="$root.showAdvancedLogin()">
+											<i class="fa fa-download" aria-hidden="true"></i>
+										</md-button>
+									
+										<md-button ng-cloak ng-if="loginUserID"  ng-disabled="value.mask" class="mdl-button mdl-js-button btn-grid-action" ng-click="downloadArtifact(value.artifactId,value.artifactType)">
+											<i class="fa fa-download" aria-hidden="true"></i>
+										</md-button>
+
+									</td>
+								</tr>
+
+
+							</tbody>
+						</table>
+					</div>
+					
+					<div class="mdl-tabs__panel" id="tab6-panel">
+						<h6 class="sectiontitle6">AUTHOR/PUBLISHER DETAILS</h6>
+						<table class="mdl-data-table mdl-js-data-table md-tbl1">
+							<colgroup>
+								<col />
+								<col />								
+							</colgroup>
+							<thead>
+								<tr>
+									<th>Name</th>
+									<th>Contact Information</th>									
+								</tr>
+							</thead>
+							<tbody>								
+								<tr ng-repeat="author in authorList">
+									<td><span>{{author.name}}</span></td>
+									<td><span>{{author.contact}}</span></td>									
+								</tr>
+								<tr ng-repeat="publisher in publisherList">
+									<td><span>{{publisher}}</span></td>
+									<td><span></span></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+
+					<div class="mdl-tabs__panel" id="tab7-panel">
+						<div class="license-change-option" >
+							<button ng-disabled="editModel || isLoadingLicense || isLicenseFound==false"  class="mdl-button pull-right mdl-js-button mdl-js-ripple-effect btn-secondary-small" ng-click="modifyLicenseProfileTemplate($event, true)">
+	                              Update
+							</button>
+							<button ng-disabled="editModel || isLoadingLicense || isLicenseFound==false || changeLicense"  class="mdl-button pull-right mdl-js-button mdl-js-ripple-effect btn-secondary-small" ng-click="changeLicense=true;modelUploadErrorMsg='';file = '';filename = ''">
+	                              Change
+							</button>							
+						</div>	
+						<h6 class="sectiontitle6">LICENSE PROFILE</h6>
+						<div class="clear_both"></div>
+						<div>
+							<button class="mdl-button pull-right mdl-js-button mdl-js-ripple-effect btn-secondary-small licence-closebtn" ng-show="changeLicense==true" ng-click="changeLicense=false">
+	                              Close
+							</button>
+						</div>
+
+						<pre ng-if="modelLicense && changeLicense==false" class="licensedisplay" ng-bind-html="yaml"></pre>
+						
+						<div ng-show="isLicenseFound===false && isLoadingLicense===true">Loading License...</div>
+						<div class="noresult" ng-show="isLicenseFound===false && isLoadingLicense===false">No license profile attached, please attach a license profile. </div>
+						<div ng-show="(isLicenseFound===false && isLoadingLicense===false || changeLicense == true) && !editModel">
+							<div>
+								<md-radio-group ng-model="licenseOption" id="licenseOption">
+							      <md-radio-button value="Upload">Upload</md-radio-button>
+							      <md-radio-button value="selectLicProfile"> Select License Profile </md-radio-button>
+							    </md-radio-group>
+							    <b>OR</b>
+							    <button id="create-new-button" ng-click="createNewLicenseProfileTemplate($event)"					
+									class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect btn-primary " alt="Create New License" title="Create New License">
+									Create New</button>
+									
+								<div ng-if="licenseOption=='selectLicProfile' && allTemplates" class="license-detail-form mdl-grid">
+								    <div class="select-control mdl-cell mdl-cell--6-col mdl-cell--6-col-tablet mdl-cell--6-col-phone" style="margin: 8px 0; padding: 0 6px 0 0">
+									    <md-select ng-model="$parent.selectedLicense" placeholder="Select">
+									    	<md-option value="{{$index}}" ng-repeat='template in allTemplates'>{{template.templateName}}</md-option>
+										</md-select>
+									</div>
+									<div class="mdl-cell mdl-cell--6-col mdl-cell--6-col-tablet mdl-cell--6-col-phone">
+										 <button ng-click="modifyLicenseProfileTemplate($event, false)"	ng-disabled="$parent.selectedLicense==-1"
+										 	class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect btn-primary " alt="Modify License" title="Modify License">
+										Modify</button>
+							    	</div>
+							    </div>	
+							</div>
+							
+							<div class="license-detail-modal" ng-show="licenseOption=='Upload'">									
+								<div class="upload-image-input" data-upgraded=",MaterialTextfield">
+									<div class="drag-drop"  id="private-dropbox">
+								       <div class="drag-drop-files hide">
+								              <p>doc.pdf</p>
+								       </div>
+	
+										<div file-droppable filename="filename" file=file>
+								              <img src="images/upload-doc-vector.png" alt="" title=""/>
+								              <div class="destext">Drag & Drop your file here!</div>
+								       </div>
+								     </div>
+									<div class="upload-file-container">
+										<div class="input-div">
+											<div file-upload file="file"
+												uploadid="bundleuploadid" id="uploadFile"
+												filename="filename" fileinput="file" 
+												ng-model="file" accept = ""
+												upload-image-model="file" alt="Browse" title="Browse" ng-click="resetProgress()" readonly>
+											</div>																						
+											<div class="upload-image-input files-uploaded" >
+							    				<input class="mdl-textfield__input disabledClick"
+												placeholder="Upload File" type="text"
+												ng-model="filename" readonly />
+											</div>
+										</div>
+										 <div class="input-upload-button">
+                                             <button class="btn-primary mdl-button mdl-js-button btn-secondary md-ink-ripple" ng-cloak ng-disabled="!file || file.size/1024/1024 > 1" ng-click="uploadLicenseFile()" title="Upload" alt="Upload" data-upgraded=",MaterialButton">
+                                             <span> Upload </span>
+                                             </button>
+                                         </div>
+									</div>
+							
+									<div class="progress-bar-div" ng-show="file.name">
+										<div>
+											<span class="namelength">{{file.name}}</span>
+										</div>
+										<div ng-if="file.size/1024/1024 < 1">
+											{{Math.ceil(file.size/1024)}}KB
+										</div>
+										<div class="help-inline validation-msgs" ng-if="file.size/1024/1024 > 1">
+											<span>License file should be max size of 1MB.</span>
+																					
+										</div>
+										<div ng-show = "$root.progressBar > 0" style="width:80%"> 
+									            <div class="progress-bar" ng-style="{'width': $root.progressBar+'%'}">
+									            </div>
+									            <div class="" style="text-align:center;">
+									            	<span>
+									            		{{$root.progressBar| number : 0}}%
+								            		</span>
+							            			
+									            </div>
+									     </div>
+									     <div class="pro-status" ng-show = "$root.progressBar > 0">
+										     <span ng-show="$root.progressBar != 100 && $root.progressBar != 0" >Uploading</span>
+									         <span ng-show="$root.progressBar == 100" >Done</span>   		
+									     </div>
+									     <div class="fileclose" ng-click="closeLicensePopup()">
+									     	<i class="material-icons">close</i>
+									     </div>
+									</div>
+
+									<div class="clear_both"></div>
+								</div>
+								<small>Maximum file size: 1mb | Supported files type: .json</small>																	
+								<div class="upload-error">
+									<small ng-show="modelUploadErrorMsg"><strong>Please update the license profile to correct the following validation errors:</strong></small>
+									<ul>
+										<li ng-repeat="error in modelUploadErrorMsg"><span>{{error}}</span></li>
+									</ul>
+								</div>	
+							</div>
+						</div>
+					</div>
+					
+					<div class="mdl-tabs__panel" id="tab5-panel">Content 5</div>
+					<div class="md-lower-container1" ng-hide="version.accessTypeCode == 'PR' || audit">
+						<div class="md-rate-grid">
+							<div
+								class="rate-grid-cell1">
+								<h6 class="sectiontitle9 rate-title" title="{{solution.name.toString().split('_').join(' ')}}">RATE:
+									{{solution.name.toString().split("_").join(" ")}}</h6>
+							</div>
+							<div  ng-show="version.accessTypeCode == 'PB'"
+								class="rate-grid-cell2">
+								<div flex class="text-right" >
+									<ul class="horizontal-list2 md-social-icons">
+                                        <li><h6 class="sharetitle">Share with</h6></li>
+                                        <li><span alt="Facebook" title="Facebook"><i class="fab fa-facebook-f"
+                                                aria-hidden="true"></i></span></li>
+                                        <li><span alt="Linkedin" title="Linkedin"><i class="fab fa-linkedin-in"
+                                                aria-hidden="true"></i></span></li>
+                                        <li><span alt="Google Plus" title="Google Plus"><i class="fab fa-google-plus-g"
+                                                aria-hidden="true"></i></span></li>
+                                        <li><span alt="Github" title="Github"><i class="fab fa-github"
+                                                aria-hidden="true"></i></span></li>
+                                        <li><span alt="Twitter" title="Twitter"><i class="fab fa-twitter"
+                                                aria-hidden="true"></i></span></li>
+                                    </ul>
+								</div>
+							</div>
+						</div>
+						<div class="rating-container"> 
+							<div class="mdl-grid rating-container-inner">
+								<div class="mdl-cell mdl-cell--6-col rating-container-left">
+
+									<div class="">
+                                        <div class="new-rating-container">
+<!--                                         <div class="rating-container1"> -->
+<!--                                         <div class="n-rating1"> -->
+                                            <span class="star-rating-title" ng-show="cantRate || !cantRate">{{averageRatings.ratingAverageTenths}}</span>
+                                            <label class="ratingtxt1">Out of 5 stars</label>
+											<div class="stars-outer">
+												<div class="stars-inner"></div>
+											</div>
+											<!--   <jk-rating-stars rating="averageRatings.ratingAverageTenths" class="staticRating read-only-rating1"></jk-rating-stars> -->                                            
+                                        	<label class="font600 ratingtxt2">{{totalRatingsCount}} ratings and reviews</label>
+                                        	<button 
+                                                ng-disabled="cantRate"
+                                                ng-click="$root.showPrerenderedDialog($event, '#rateModelPopup')"
+                                                class="mdl-button mdl-js-button mdl-js-ripple-effect btn-secondary">Rate
+                                                This Model</button>
+                                        </div>                                       
+                                    </div>
+								</div>
+								<div class="mdl-cell mdl-cell--4-col rating-container-right">
+									<div class="progress-wrapper">
+										<span>5 star</span>
+										<div class="progress">
+											<div class="determinate" style="background-color: green" ng-style='{"width": perratingCount5 + "%"}'></div>
+										</div>
+										<span style="font-weight: bold"> {{ratingCount5}} </span> 
+									</div>
+									<div class="progress-wrapper">
+										<span>4 star</span>
+										<div class="progress">
+											<div class="determinate" style="background-color: green" ng-style='{"width": perratingCount4 + "%"}'></div>
+										</div>
+										<span style="font-weight: bold"> {{ratingCount4}} </span> 
+									</div>
+									<div class="progress-wrapper">
+										<span>3 star</span>
+										<div class="progress">
+											<div class="determinate" style="background-color: green" ng-style='{"width": perratingCount3 + "%"}'></div>
+										</div>
+										<span style="font-weight: bold"> {{ratingCount3}} </span> 
+									</div>
+									<div class="progress-wrapper">
+										<span>2 star</span>
+										<div class="progress">
+											<div class="determinate" style="background-color: orange" ng-style='{"width": perratingCount2 + "%"}'></div>
+										</div>
+										<span style="font-weight: bold"> {{ratingCount2}} </span> 
+									</div>
+									<div class="progress-wrapper">
+										<span>1 star</span>
+										<div class="progress">
+											<div class="determinate" style="background-color: red" ng-style='{"width": perratingCount1 + "%"}'></div>
+										</div>
+										<span style="font-weight: bold"> {{ratingCount1}}</span> 
+									</div>
+								</div>
+								<div class="mdl-cell mdl-cell--5-col"></div>
+							</div>
+							<hr class="md-hr-rule1" />
+							<!-- tabs starts -->
+						<div ng-hide="solution.active == false">
+						<md-tabs md-dynamic-height md-border-bottom class="discussion-reviews-tab">
+						
+						<!-- discussion/review starts -->	      
+					      <md-tab label="Discussion ({{totalCommentCount}})" id="discussionTab">
+					        <md-content class="">
+							<div class="discussion-outer-container" >
+								<div class="md-discussion-container">
+									<div class="md-discussion-links-container">
+										<a ng-click="commentNewest=true">Newest</a> <span>|</span> <a ng-click="commentNewest=false">Older</a>
+									</div>
+								</div>
+							</div>
+							<div class="discussion-outer-container">
+								<div class="discussion-container discussion-container2"
+									ng-repeat="(key, comment) in commentList | orderBy:'+created':commentNewest">
+									<div>
+										<img src="images/userprofile/user-profile-black.png" alt="" ng-show = "!comment.image"
+											title="user">
+										<!-- user uploaded image -->
+										<img class="userimg" ng-show="comment.image"
+										ng-src="data:image/PNG;base64,{{comment.image}}"
+										title="{{comment.name}}" />
+									</div>
+									<div class="discussion-details" ng-if = "comment.parentId == null">
+										<div>
+											<span class="dis-name">
+												{{comment.firstName}} {{comment.lastName}}</span> | <span
+												class="text-small">{{comment.stringDate}}</span>
+											<button
+												class="mdl-button mdl-js-button btn-comments-edit"
+												ng-click="showEditComment = !showEditComment" ng-hide="loginUserID != comment.userId"
+												>Edit</button>
+											<button
+												class="mdl-button mdl-js-button btn-comments-delete"
+												ng-click="deleteComment(comment)" ng-hide="loginUserID != comment.userId || comment.replies.length>0"
+												>Delete</button>
+										</div>
+										<p ng-hide="showEditComment">{{comment.text}}</p>
+										<textarea class="mdl-textfield__input md-txtarea" type="text" ng-model = "comment.text"
+											ng-show="showEditComment" rows="3" id="comment">{{comment.text}}</textarea>
+										<button
+											class="mdl-button mdl-js-button btn-primary"
+											ng-show="showEditComment" ng-click="edit = false; editComment(comment)">Post</button>
+										<div>
+											<button
+												class="mdl-button mdl-js-button btn-secondary"
+												ng-click="replytoComment = !replytoComment">Reply</button>
+											<div class="flex1 discussionformbox" ng-show="replytoComment">
+												<div class="mdl-textfield mdl-js-textfield">
+													<input class="mdl-textfield__input" type="text"
+														ng-model="newcomment[key].text">
+												</div>
+												<button
+													class="mdl-button mdl-js-button btn-primary"
+													ng-click="postReply(key, comment)">Post</button>
+											</div>
+										</div>
+										<div class="discussion"
+											ng-repeat="(key, reply) in comment.replies | orderBy:'+created'">
+											<!-- <div class="flex1 discussionformbox">
+														<div class="mdl-textfield mdl-js-textfield">
+															<input  class="mdl-textfield__input" type="text" ng-model="newcomment[key].text"
+																id="sample3"> <label
+																class="mdl-textfield__label">Add
+																Reply here...</label>
+														</div> 
+														<button
+															class="mdl-button mdl-js-button btn-primary" ng-click="postReply(key, reply.id)">Post</button>
+													</div> -->
+											<div>
+											<img src="images/userprofile/user-profile-black.png" alt="" ng-show = "!reply.image"
+											title="user">
+													<img class="userimg" ng-show="reply.image"
+														ng-src="data:image/PNG;base64,{{reply.image}}"
+														title="{{reply.name}}" />
+											</div>
+											<div class="discussion-details">
+
+												<div>
+												<span class="dis-name">
+												{{reply.firstName}} {{reply.lastName}}</span> | <span
+												class="text-small">{{reply.stringDate}}</span>
+													<button
+														class="mdl-button mdl-js-button btn-comments-edit"
+														ng-click="showEditReply = !showEditReply" ng-hide="loginUserID != reply.userId"
+														>Edit</button>
+													<button
+														class="mdl-button mdl-js-button btn-comments-delete"
+														ng-click="deleteComment(reply)" ng-hide="loginUserID != reply.userId"
+														>Delete</button>
+												</div>
+												<p ng-hide="showEditReply">{{reply.text}}</p>
+												<textarea class="mdl-textfield__input md-txtarea"
+													type="text" ng-show="showEditReply" rows="1" id="comment" ng-model="reply.text">{{reply.text}}</textarea>
+												<button
+													class="mdl-button mdl-js-button btn-primary"
+													ng-show="showEditReply" ng-click="edit = false; editComment(reply)">Post</button>
+												<!-- <button ng-if="reply.replies.length > 0"
+												class="mdl-button mdl-js-button btn-secondary" ng-click="replytoComment[key] = !replytoComment[key]">Reply</button> -->
+
+												<div class="flex1 discussionformbox"
+													ng-show="replytoComment[key]">
+													<div class="mdl-textfield mdl-js-textfield">
+														<input class="mdl-textfield__input" type="text"
+															ng-model="newcomment[key].text" id="newcomment-{{key}}">
+													</div>
+													<button
+														class="mdl-button mdl-js-button btn-primary"
+														ng-click="postReply(key, reply.id)">Post</button>
+												</div>
+
+
+												<!-- <div ng-if="reply.replies" class="discussion" ng-repeat="(key, reply) in reply.replies" ng-include="'commentTree'">
+											</div> -->
+
+												<!-- <div class="flex1 discussionformbox" ng-if="reply.replies.length == 0">
+														<div class="mdl-textfield mdl-js-textfield">
+															<input class="mdl-textfield__input" type="text" ng-model="newcomment[key].text"
+																id="sample3"> <label
+																class="mdl-textfield__label">Add
+																Reply here...</label>
+														</div> 
+														<button
+															class="mdl-button mdl-js-button btn-primary" ng-click="postReply(key, reply.id)">Post</button>
+													</div> -->
+											</div>
+
+										</div>
+									</div>
+
+
+								</div>
+
+								<br />
+								<div class="discussion-add-comment" ng-hide="solution.active == false">
+									<label class="md-lbl2">Add Comments</label>
+									<div class="flex1">
+										<div 
+											class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label md-txtarea-container">
+											<textarea class="mdl-textfield__input md-txtarea" type="text"
+												rows="3" id="editComment" ng-model="comment"></textarea>
+											<!-- <label class="mdl-textfield__label" for="sample3">Add comment here...</label> -->
+										</div>
+									</div>
+									<button id="postCommentsBtn"
+										class="mdl-button mdl-js-button btn-primary"
+										ng-disabled="!comment"
+										ng-click="postComment()" alt="Post Comments" title="Post Comments">Post Comments</button>
+								</div>
+							</div>
+							 </md-content>
+					      </md-tab>
+					      <!--  rating/reivew  ends -->
+					      
+							<!--  review starts -->
+						 	<md-tab label="Ratings and reviews ({{totalRatingsCount}})">
+						 	<!-- $scope.allUserRatings ... $scope.mlSolutionGetRating ...  -->
+						        <md-content>
+						        	<div class="discussion-row" ng-repeat="usersRating in allUserRatings">
+						        		<div class=""> <!-- reviews-ratings-container removed class -->
+						        			<div class="rating clear_both">
+												<span>
+												 <i class="fa fa-star" ng-class="{'fa-star1': usersRating.rating == null || usersRating.rating < 1}" aria-hidden="true"></i></span> <span><i
+													class="fa fa-star" ng-class="{'fa-star1': usersRating.rating == null || usersRating.rating < 2}" aria-hidden="true"></i></span> <span><i
+													class="fa fa-star" ng-class="{'fa-star1': usersRating.rating == null || usersRating.rating < 3}" aria-hidden="true"></i></span> <span><i
+													class="fa fa-star" ng-class="{'fa-star1': usersRating.rating == null || usersRating.rating < 4}" aria-hidden="true"></i></span> <span><i
+													class="fa fa-star" ng-class="{'fa-star1': usersRating.rating == null || usersRating.rating < 5}" aria-hidden="true"></i>
+												 </span>
+											</div>
+					        			</div>
+						        		<div>
+						        			<label class="discussion-lbl1">By {{usersRating.userName}} on {{usersRating.created | date:'MM/dd/yyyy'}}</label>
+					        			</div>
+						        		<p>{{usersRating.textReview}}</p>
+						        	</div>
+						        </md-content>
+						      </md-tab>							     
+							<!--  review starts ends-->
+							
+						  </md-tabs>	
+						</div>
+						<!-- end tabs -->
+							
+							
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<script type="text/ng-template" id="commentTree">
+												<div>
+													<img src="images/userprofile/user-profile-black.png" alt="" title="user">
+												</div>
+												<div class="discussion-details" >
+													 
+													 <div >
+														<label class="dis-name">{{reply.name}}</label> | <span
+															class="text-small">{{reply.creationDate}}</span>
+														<button    class="mdl-button mdl-js-button btn-secondary btn-reply1 btn-small" ng-click="edit = true"><i class="material-icons">mode_edit</i> Edit</button>
+                                                        <button    class="mdl-button mdl-js-button btn-secondary btn-reply1 btn-small" ng-click="deleteComment(comment.id)"><span class="btn-trash-icon"></span>Delete</button>
+													</div>
+													<p ng-hide="edit">{{reply.text}}</p>
+													<textarea class="mdl-textfield__input md-txtarea" type="text" ng-show="edit"
+														rows="1" id="comment">{{reply.text}}</textarea>
+													<div class="reply-btn-container1">
+                                                            <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect btn-primary" ng-show="edit" ng-click="edit = false; editComment(reply)">Post</button>
+                                                            <button ng-if="reply.replies.length > 0" class="mdl-button mdl-js-button btn-secondary" ng-click="replytoComment[key] = !replytoComment[key]">Reply</button>
+                                                        </div>												
+														<div class="flex1 discussionformbox" ng-show="replytoComment[key]">
+														<div class="mdl-textfield mdl-js-textfield">
+															<input class="mdl-textfield__input" type="text" ng-model="newcomment[key].text" id="sample3">
+														</div> 
+														<button
+															class="mdl-button mdl-js-button btn-primary" ng-click="postReply(key, reply.id)">Post</button>
+													</div>
+												
+
+											<div ng-if="reply.replies" class="discussion" ng-repeat="(key, reply) in reply.replies" ng-include="'commentTree'">
+											</div>
+												
+														<div class="flex1 discussionformbox" ng-if="reply.replies.length == 0">
+														<div class="mdl-textfield mdl-js-textfield">
+															<input class="mdl-textfield__input" type="text" ng-model="newcomment[key].text"
+																id="sample3"> <label
+																class="mdl-textfield__label">Add
+																Reply here...</label>
+														</div> 
+														<button
+															class="mdl-button mdl-js-button btn-primary" ng-click="postReply(key, reply.id)">Post</button>
+													</div>
+	</script>
+	</script>
+
+	<!--Deploy To Cloud Modal -->
+	<div class="md-dialog-container" id="myDialog" style="height: 0;">
+		<md-dialog aria-label="Deploy To Cloud"
+			class="cg-dialog-Deploy-to-cloud">
+		
+			<md-toolbar>
+			<div class="md-toolbar-tools">
+			<!-- cloudName should match to the model value -->
+				<h2 ng-show="exportTo=='azure'">Deploy to Microsoft Azure</h2>
+				<h2 ng-show="exportTo=='rackspace'">Deploy to RackSpace</h2>
+				<h2 ng-show="exportTo=='K8S'">Deploy to K8S</h2>
+				<h2 ng-show="exportTo=='deploylocal'">Deploy to local</h2>
+				<h2 ng-show="exportTo=='whitebox'">Deploy to White Box</h2>
+				<span flex></span>
+				<md-button class="md-icon-button" ng-click="handleDismiss()">
+				<i class="material-icons">close</i> </md-button>
+			</div>
+			</md-toolbar>
+			<md-dialog-content>
+				<div class="md-dialog-content">
+				<!-- Deploy To Azure starts -->
+				<div ng-show="exportTo=='azure'">
+				<form name="deploy">
+				<div class="mdl-grid mdl-grid--no-spacing deploy-grid" >
+					<div class="mdl-cell mdl-cell--4-col">
+						<md-input-container class="md-icon-float md-block">
+							<label>Application Id </label> <input ng-model="applicationId" name="applicationId" type="text" required ng-blur="applicationIdVisited=true" ng-focus="applicationIdVisited=false">
+							<div class="help-inline validation-msgs" ng-class="{validationmsg:!deploy.applicationId.$valid}">
+								<span ng-show="( !!deploy.applicationId.$error.required && deploy.applicationId.$touched && applicationIdVisited)">Application Id Required.</span>
+							</div>
+						</md-input-container>
+						<md-input-container class="md-icon-float md-block">
+							<label>Subscription Key </label> <input ng-model="subscriptionKey" name="subscriptionKey" required type="text" ng-blur="subscriptionKeyVisited=true" ng-focus="subscriptionKeyVisited=false"> 
+							<div class="help-inline validation-msgs" ng-class="{validationmsg:!deploy.subscriptionKey.$valid}">
+								<span ng-show="( !!deploy.subscriptionKey.$error.required && deploy.subscriptionKey.$touched && subscriptionKeyVisited)">Subscription Key Required.</span>
+							</div>
+						</md-input-container>
+						<md-input-container class="md-icon-float md-block">
+							 <label>Storage Account </label> <input ng-model="storageAccount" type="text" name="storageAccount" required ng-blur="storageAccountVisited=true" ng-focus="storageAccountVisited=false">
+							<div class="help-inline validation-msgs" ng-class="{validationmsg:!deploy.storageAccount.$valid}">
+								<span ng-show="( !!deploy.storageAccount.$error.required && deploy.storageAccount.$touched && storageAccountVisited)">Storage Account Required.</span>
+							</div>
+						</md-input-container>
+					</div>
+					<div class="mdl-cell mdl-cell--4-col">
+						<md-input-container class="md-icon-float md-block">
+							<label>Tenant Id </label> <input ng-model="tenantId" name="tenantId" type="text" required ng-blur="tenantIdVisited=true" ng-focus="tenantIdVisited=false">
+							<div class="help-inline validation-msgs" ng-class="{validationmsg:!deploy.tenantId.$valid}">
+								<span ng-show="( !!deploy.tenantId.$error.required && deploy.tenantId.$touched && tenantIdVisited)">Tenant Id Required.</span>
+							</div>
+						</md-input-container>
+						<md-input-container class="md-icon-float md-block">
+							<label>Resource Group </label> <input ng-model="resourceGroup" type="text" required name="resourceGroup" ng-blur="resourceGroupVisited=true" ng-focus="resourceGroupVisited=false">
+							<div class="help-inline validation-msgs" ng-class="{validationmsg:!deploy.resourceGroup.$valid}">
+								<span ng-show="( !!deploy.resourceGroup.$error.required && deploy.resourceGroup.$touched && resourceGroupVisited)">Resource Group Required.</span>
+							</div>
+						</md-input-container>
+					</div>
+					<div class="mdl-cell mdl-cell--4-col">
+						<md-input-container class="md-icon-float md-block">
+							<label>Secret key </label> <input ng-model="secretKey" type="password" autocomplete="new-password" required name="secretKey" ng-blur="secretKeyVisited=true" ng-focus="secretKeyVisited=false">
+							<div class="help-inline validation-msgs" ng-class="{validationmsg:!deploy.secretKey.$valid}">
+								<span ng-show="( !!deploy.secretKey.$error.required && deploy.secretKey.$touched && secretKeyVisited)">Secret key Required.</span>
+							</div>
+						</md-input-container>
+						<md-input-container class="md-icon-float md-block">
+							<label>Acr Name </label> <input ng-model="acrName" type="text" required  name="acrName" ng-blur="acrNameVisited=true" ng-focus="acrNameVisited=false">
+							<div class="help-inline validation-msgs" ng-class="{validationmsg:!deploy.acrName.$valid}">
+								<span ng-show="( !!deploy.acrName.$error.required && deploy.acrName.$touched && acrNameVisited)">Acr Name Required.</span>
+							</div>
+						</md-input-container>
+					</div>
+				</div>
+				<div layout="row" class="pull-right">
+						<md-button class="mdl-button mdl-js-button btn-primary"
+								ng-disabled="deploy.$invalid" ng-click="authenticateAnddeployToAzure();closePoup();">Deploy
+						</md-button>
+				</div>
+				</form>
+				<br><br>
+				<h4 class="gridlistheading broker-heading">
+							Broker</h4>
+				
+				<md-input-container>
+					<label>Databroker Type</label>
+			      <md-select ng-model="dbType" placeholder="Databroker type" ng-init="dbType='csv'">
+			           <md-option value="csv">CSV</md-option>
+			           <md-option value="zip">Zip</md-option>
+			      </md-select>
+				</md-input-container>
+				<form name="deployCloud">
+				
+				<div ng-show="dbType=='zip'">
+					<md-input-container class="md-icon-float md-block">
+						<label>URL</label> <input type="text" ng-model="brokerURL" required name="brokerlink" ng-blur="brokerlinkVisited=true" ng-focus="brokerlinkVisited=false">
+						<div class="help-inline validation-msgs" ng-class="{validationmsg:!deployCloud.brokerlink.$valid}">
+							<span ng-show="( !!deployCloud.brokerlink.$error.required && deployCloud.brokerlink.$touched && brokerlinkVisited)">URL Required.</span>
+						</div>
+					</md-input-container>
+				</div>
+				<div ng-show="dbType=='zip'" class="borker-row">
+					<div>
+						<label class="disblock">Position Mappings</label>
+						<div>
+							<input class="md-input" type="text" ng-model="positionM1" required>
+							<input class="md-input" type="text" ng-model="positionM2" required>						
+						</div>
+						<div>
+							<input class="md-input" type="text" ng-model="positionM3" required>
+							<input class="md-input" type="text" ng-model="positionM4" required>						
+						</div>
+					</div>
+					<div>
+						<label class="disblock">Field Mappings</label>
+						<div>
+							<input class="md-input" type="text" ng-model="fieldM1" required>
+							<input class="md-input" type="text" ng-model="fieldM2" required>						
+						</div>
+						<div>
+							<input class="md-input" type="text" ng-model="fieldM3" required>
+							<input class="md-input" type="text" ng-model="fieldM4" required>						
+						</div>
+					</div>
+				</div>
+				
+				<div ng-show="dbType=='csv'" class="db-csv">
+					<div>
+						<label class="disblock">Username</label>
+						<div>
+							<input class="md-input" type="text" ng-model="csvUsername" required>
+						</div>
+						<label class="disblock">Host</label>
+						<div>
+							<input class="md-input" type="text" ng-model="csvHost" required>
+						</div>
+					</div>
+					<div>
+						<label class="disblock">Password</label>
+						<div>
+							<input class="md-input" type="password" ng-model="csvPassword" required>
+						</div>
+						<label class="disblock">Port</label>
+						<div>
+							<input class="md-input" type="text" ng-model="csvPort" required>
+						</div>
+					</div>
+				</div>
+				
+				</form>
+				</div>			
+				
+				<div class="dialog-btn-container-deploy-to-cloud" ng-show="exportTo=='azure'">
+					<md-button
+						class="mdl-button mdl-js-button btn-secondary"
+						ng-click="handleDismiss()"> Cancel </md-button>
+					<md-button
+						class="mdl-button mdl-js-button btn-primary"
+						ng-click="deployCloudVal()" ng-disabled="!(dbType=='csv' && csvUsername && csvPassword && csvHost && csvPort) && !(dbType=='zip' && brokerURL)"> Data Broker </md-button>
+						<!-- ng-disabled="deployCloud.$invalid || deploy.$invalid" -->
+				</div>
+				<!-- Deploy To Azure ends -->
+				
+				<!-- Deploy To Rackspace starts -->
+				<div class="mdl-grid mdl-grid--no-spacing deploy-grid" ng-show="exportTo=='rackspace'">
+					<form name="rackspace">
+						<md-input-container class="md-icon-float md-block">
+						<!-- Use floating label instead of placeholder --> <label>VM
+							Name </label> <input ng-model="vmName" type="text" name="vmName" required ng-blur="vmNameVisited=true" ng-focus="vmNameVisited=false">
+						<div class="help-inline validation-msgs" ng-class="{validationmsg:!rackspace.vmName.$valid}">
+							<span ng-show="( !!rackspace.vmName.$error.required && rackspace.vmName.$touched && vmNameVisited)">VM Name Required.</span>
+						</div> </md-input-container>
+						</form>
+				</div>
+				<div class="dialog-btn-container-deploy-to-cloud" ng-show="exportTo=='rackspace'">
+					<md-button
+						class="mdl-button mdl-js-button btn-secondary"
+						ng-click="handleDismiss()"> Cancel </md-button>
+					<md-button
+						class="mdl-button mdl-js-button btn-primary"
+						ng-click="authenticateAnddeployToAzure()" ng-disabled="!vmName"> Deploy </md-button>
+				</div>
+				<!-- Deploy To Rackspace ends -->
+				
+				<!-- Deploy To Local starts -->
+				<div class="mdl-grid mdl-grid--no-spacing deploy-grid" ng-show="exportTo=='deploylocal'">
+					<form name="deployToLocal">
+						<md-input-container class="md-icon-float md-block">
+							<label>Click here to download Deployable Solution Package for Private Kubernetes Cloud</label> 
+							<md-button class="mdl-button mdl-js-button btn-secondary" ng-click="deployLocalPackage()"> Download Solution Package</md-button>
+						</md-input-container>
+						<br />
+						<p>More Info at <a href="{{kubernetesDocUrl}}" target="_blank">help</a></p>
+					</form>
+				</div>
+				<div class="dialog-btn-container-deploy-to-cloud" ng-show="exportTo=='deploylocal'">
+					<md-button
+						class="mdl-button mdl-js-button btn-secondary"
+						ng-click="handleDismiss()"> Cancel </md-button>
+				</div>
+				<!-- Deploy To Local ends -->
+				
+				<!-- Deploy To Whitebox starts -->
+				<div class="mdl-grid mdl-grid--no-spacing deploy-grid" ng-show="exportTo=='whitebox'">
+					<form name="deployToWhitebox">
+						<md-input-container class="md-icon-float md-block">
+							 <strong> Deploy To White Box.</strong>
+						</md-input-container>
+						</form>
+				</div>
+				<div class="dialog-btn-container-deploy-to-cloud" ng-show="exportTo=='whitebox'">
+					<md-button
+						class="mdl-button mdl-js-button btn-secondary"
+						ng-click="handleDismiss()"> Cancel </md-button>
+					<md-button
+						class="mdl-button mdl-js-button btn-primary"
+						ng-click="" > Deploy </md-button>
+				</div>
+				<!-- Deploy To Whitebox ends -->
+				
+				<!-- Deploy To Kubernetes starts -->
+				<div class="mdl-grid mdl-grid--no-spacing deploy-grid" ng-show="exportTo=='K8S'">
+					<form name="deployToK8">
+						
+				<div class="select-control">
+				<label class="fedlbl4" style="font-weight: bold">Select Kubernetes cluster</label>
+						<md-select ng-model="ClusterData" placeholder="select">
+			           <md-option value="{{cluster.name}}" ng-repeat="cluster in Clusters">{{cluster.name}}</md-option>
+			          </md-select>
+			      		</div>
+			     </form>
+				</div>
+				<div class="dialog-btn-container-deploy-to-cloud" ng-show="exportTo=='K8S'">
+					<md-button
+						class="mdl-button mdl-js-button btn-secondary"
+						ng-click="handleDismiss()"> Cancel </md-button>
+					<md-button
+						class="mdl-button mdl-js-button btn-primary" ng-disabled ="!ClusterData"
+						ng-click="deployToK8s()" > Deploy </md-button>
+				</div>
+				<!-- Deploy To Kubernetes ends -->
+				
+				
+			</div>
+			</md-dialog-content>
+
+		
+		</md-dialog>
+	</div>
+
+
+	<!--Download Cofirmation Modal -->
+	<div class="md-dialog-container" id="downloadConfirm"
+		style="height: 0;">
+		<md-dialog aria-label="Mango (Fruit)" class="cg-dialog-medium">
+		<form ng-cloak>
+			<md-toolbar>
+			<div class="md-toolbar-tools">
+				<h2>Downloading - {{solution.name.toString().split("_").join(" ")}}</h2>
+				<span flex></span>
+				<md-button class="md-icon-button" ng-click="handleDismiss()">
+				<i class="material-icons">close</i> </md-button>
+			</div>
+			</md-toolbar>
+			<md-dialog-content>
+			<div class="md-dialog-content text-center">
+				<div>
+					<span class="checkmark1" aria-hidden="true"></span>
+				</div>
+				<p class="md-text1">
+					Thank you for downloading <br /> <span class="wrap_text">{{solution.name.toString().split("_").join(" ")}}</span>
+					version {{versionId}}
+				</p>
+				<p class="md-text2">
+					Your download will start automatically. 
+					<!-- <br /> if it does not
+					start, <a data-target>click here</a> for troubleshooting
+					information -->
+				</p>
+				<br />
+				<p class="md-text3">
+					Use below key along with a modified Solution if you want to <br />upload
+					it to {{$root.siteInstanceName}} platform.
+				</p>
+				<p>
+					<span class="md-key"><!-- {{secretKey || subscriptionKey}} --></span>
+				</p>
+				<br />
+
+				<button
+					class="mdl-button mdl-js-button btn-secondary"
+					ng-click="handleDismiss()">Close</button>
+
+
+			</div>
+			</md-dialog-content>
+		</form>
+		</md-dialog>
+	</div>
+
+	<!-- Download Artifact -->
+	<div class="md-dialog-container" id="downloadDialog" style="height: 0;">
+		<md-dialog aria-label="Download Dialog" class="cg-dialog-medium">
+		<form ng-cloak>
+			<md-toolbar>
+			<div class="md-toolbar-tools">
+				<h2>Downloading - {{solution.name.toString().split("_").join(" ")}}</h2>
+				<span flex></span>
+				<md-button class="md-icon-button" ng-click="handleDismiss()">
+				<i class="material-icons">close</i> </md-button>
+			</div>
+			</md-toolbar>
+			<md-dialog-content>
+			<div class="md-dialog-content">
+				<p class="wrap_text">Please choose any file of
+					{{solution.name.toString().split("_").join(" ")}} from below.</p>
+		
+
+				<div class="modal-row1 modal-row-new1" ng-repeat="value in artifactDownload">
+					<div>
+						<label><span class="font600">Version {{value.version}}</span> - <span
+							class="txt-orange text-small">Latest</span> </label> 
+							<div class="md-tooltip-container">
+								<label class="md-downloadlbl1 font600" class="tooltip">File Name:</label>
+								<label class="a-tooltip"><span class="a-tooltipval">{{value.name}} {{value.version}}</span>
+								<span class="a-tooltiptext">{{value.name}} {{value.version}}</span>
+							</label>
+							</div>
+							<label class="downloadlbl2"><span class="font600">Uploaded
+							on</span> - {{value.created | date:'MM/dd/yyyy'}}</label>
+					</div>
+					<md-button class="mdl-button mdl-js-button btn-primary" ng-disabled="value.mask" ng-click="downloadArtifact(value.artifactId,value.artifactType)">
+						Download
+					</md-button>
+				</div>
+				<!-- <div class="modal-row1">
+											<div>
+												<label><b>Version 1.9</b> </label>
+												<label><b>File Name:</b> - Name-of-solution-V1.9 </label>
+												<label><b>Uploaded on</b> - 05/01/2017</label>
+											</div>
+											<button class="mdl-button mdl-js-button btn-secondary">Download</button>										
+										</div>
+										<div class="modal-row1">
+											<div>
+												<label><b>Version1.7</b></label>
+												<label><b>File Name:</b> - Name-of-solution-V1.7 </label>
+												<label><b>Uploaded on</b> - 01/01/2017</label>
+											</div>
+											<button class="mdl-button mdl-js-button btn-secondary" ng-click = "">Download</button>										
+										</div> -->
+			</div>
+
+
+			</md-dialog-content>
+			<md-dialog-actions>
+			<div class="dialog-footer-container1">
+				<span></span>
+				<button ng-click="handleDismiss()"
+					class="mdl-button mdl-js-button mdl-js-ripple-effect btn-secondary text-tranformnone">Close</button>
+			</div>
+			</md-dialog-actions>
+		</form>
+		</md-dialog>
+	</div>
+	<!-- Modal box end -->
+	
+	
+	<!-- Rating Model Starts  -->
+	<div class="md-dialog-container" id="rateModelPopup" style="height: 0;">
+		<md-dialog aria-label="Rate Model" class="cg-dialog-medium">
+		<form ng-cloak>
+			<md-toolbar>
+			<div class="md-toolbar-tools">
+				<h2>Rate this Model - {{solution.name.toString().split("_").join(" ")}}</h2>
+				<span flex></span>
+				<md-button class="md-icon-button" ng-click="handleDismiss()">
+				<i class="material-icons">close</i> </md-button>
+			</div>
+			</md-toolbar>
+			<md-dialog-content>
+			<div class="md-dialog-content">
+			<div class="text-center"><label class="font600">Rate This Model</label></div>
+				<div class="text-center ratethis-container"><jk-rating-stars rating="mlSolutionGetRating.rating"></jk-rating-stars></div>				
+				<div ng-switch="mlSolutionGetRating.rating">
+				<div class="text-center" ng-switch-when="1"><label class="text-small">
+				 Hated It</label></div>
+				<div class="text-center" ng-switch-when="2"><label class="text-small">
+				 DisLiked It</label></div>
+				 <div class="text-center" ng-switch-when="3"><label class="text-small">
+				 It's OK</label></div>
+				 <div class="text-center" ng-switch-when="4"><label class="text-small">
+				 Liked It</label></div>
+				 <div class="text-center" ng-switch-when="5"><label class="text-small">
+				 Loved It</label></div>
+			     </div>							
+			<br/>
+			<label class="disblock">Review this model</label>
+			<textarea class="mdl-textfield__input md-txtarea" type="text" ng-model = "ratingReview"
+			rows="3" id="comment"></textarea>
+										
+			</div>
+			<md-dialog-actions>			
+				<!-- <button ng-click="handleDismiss()"
+					class="mdl-button mdl-js-button mdl-js-ripple-effect btn-secondary text-tranformnone">Close</button> -->
+				<div class="dialog-footer-container1">
+					<button class="mdl-button mdl-js-button btn-secondary md-button md-ink-ripple" type="button" ng-click="handleDismiss()" data-upgraded=",MaterialButton,MaterialRipple">
+						<span> Cancel</span>
+					</button>
+					<button class="mdl-button mdl-js-button btn-primary md-button md-ink-ripple" type="button" ng-click="onItemRating(mlSolutionGetRating.rating)" data-upgraded=",MaterialButton,MaterialRipple">
+						<span> Submit </span>
+						<div class="md-ripple-container"></div>
+					</button>
+				</div>
+				
+		
+			</md-dialog-actions>
+			</md-dialog-content>
+			
+		</form>
+		</md-dialog>
+	</div>
+	<!-- Rating Model Ends -->
+	
+	<!-- Modal box for approve and reject publish request -->
+			<div class="md-dialog-container" id="publishRequestModal"
+				style="height: 0;">
+				<md-dialog aria-label="Publish Request" class="">
+				<form name='publishRequestForm' ng-cloak novalidate>
+					<md-toolbar>
+					<div class="md-toolbar-tools">
+						<h2 ng-show="requestApprovalModal == 'approve' ">Approve
+							Request</h2>
+						<h2 ng-show="requestApprovalModal == 'decline' ">Decline
+							Request</h2>
+						<span flex></span>
+						<md-button class="md-icon-button" ng-click='closePoup()'>
+						<i class="material-icons">close</i> </md-button>
+					</div>
+					</md-toolbar>
+					<md-dialog-content>
+					<div class="md-dialog-content">
+						<div layout="row">
+							<div flex="100">
+								<md-input-container class="md-block"> <span
+									class="font600">You are <span
+									ng-show="requestApprovalModal == 'approve' ">approving</span> <span
+									ng-show="requestApprovalModal == 'decline' ">declining</span>
+									the publish request for {{requestedModelName}}
+								</span>
+
+								<p class="peerpara1">Please add note (Mandatory).</p>
+								<br />
+								<textarea ng-model="descriptionPop" name="textArea" rows="4" required></textarea> </md-input-container>
+							</div>
+						</div>
+					</div>
+					</md-dialog-content>
+					<md-dialog-actions>
+					<div class="dialog-footer-container1">
+						<div>
+							<button ng-click='closePoup()'
+								class="mdl-button mdl-js-button btn-secondary">Cancel</button>
+						</div>
+						<div>
+							<button ng-click="publishReqeuest(requestApprovalModal)"
+								class="mdl-button mdl-js-button btn-primary" ng-disabled="!!publishRequestForm.textArea.$error.required">
+								<span ng-show="requestApprovalModal == 'approve' ">Approve</span>
+								<span ng-show="requestApprovalModal == 'decline' ">Decline</span>
+							</button>
+
+						</div>
+					</div>
+					</md-dialog-actions>
+				</form>
+				</md-dialog>
+			</div>
+			<!-- Modal box end -->
+		
+		
+		<!--  deploy to Microsoft Azure dialog starts -->
+		<div class="md-dialog-container" id="deploy" style="height: 0;">
+		<md-dialog aria-label="deploy" class="cg-dialog-admin1">
+			<md-toolbar>
+		      <div class="md-toolbar-tools">
+				<h2 ng-show="exportTo=='azure'">Deploy to Microsoft Azure</h2>
+				<h2 ng-show="exportTo=='rackspace'">Deploy to RackSpace</h2>
+				<h2 ng-show="exportTo=='K8S'">Deploy to K8S</h2>
+				<h2 ng-show="exportTo=='deploylocal'">Deploy to Local</h2>
+				<h2 ng-show="exportTo=='whitebox'">Deploy to White Box</h2>
+				<span flex></span>
+				<md-button class="md-icon-button" ng-click='closePoup()'>
+				<i class="material-icons">close</i> </md-button>
+				</div>
+			</md-toolbar>
+		 	<md-dialog-content>		
+			 	<div class="md-dialog-content">
+					<p class="wrap_text">Deploying this model outside the Acumos system may expose its information to third parties. Please click OK to confirm this deployment is being done in compliance with all local policies.
+					</p>
+			 	</div>		 
+		  	</md-dialog-content>		
+		
+			<md-dialog-actions>		  
+		   		<div class="dialog-footer-container1">	   
+					<button ng-click='closePoup()' class="mdl-button mdl-js-button btn-secondary">Cancel</button>
+					<button ng-click="$root.showPrerenderedDialog($event, '#myDialog');clearForm()" class="mdl-button mdl-js-button btn-primary">OK</button>	        
+			</md-dialog-actions>
+		  </md-dialog>
+		  </div>
+		    <!--deploy to Microsoft Azure dialog end -->
+	
+		<!--  Create Microservice dialog starts -->
+		<div class="md-dialog-container" id="createMicroservice" style="height: 0;">
+		<md-dialog aria-label="Create Microservice" class="ud-change-password">
+			<md-toolbar>
+		      <div class="md-toolbar-tools">
+				<h2>Create a Microservice</h2>
+				<span flex></span>
+				<md-button class="md-icon-button" ng-click='closePoup()'>
+				<i class="material-icons">close</i> </md-button>
+				</div>
+			</md-toolbar>
+		 	<md-dialog-content class="createMicroserviceModel">		
+			 	<div class="md-dialog-content mdl-cell--8-col mdl-cell--5-col-tablet mdl-cell--4-col-phone">			 	
+					<div class="select-control">
+						<label class="fedlbl4">Select Deployment Environment</label>
+						<md-select ng-model="devEnv">
+								<md-option value="1">X86</md-option>
+<!-- 								<md-option value="ARM">ARM</md-option>
+								<md-option value="ONAP">ONAP</md-option> -->
+						</md-select>
+					</div>
+			 	</div>		 
+		  	</md-dialog-content>		
+		
+			<md-dialog-actions>		  
+		   		<div class="dialog-footer-container1">	   
+					<button ng-click='closePoup()' class="mdl-button mdl-js-button btn-secondary">Cancel</button>
+					<button ng-click="createMicroservice();closePoup();" class="mdl-button mdl-js-button btn-primary">Create</button>	        
+			</md-dialog-actions>
+		  </md-dialog>
+		  </div>
+		    <!-- Create Microservice dialog end -->

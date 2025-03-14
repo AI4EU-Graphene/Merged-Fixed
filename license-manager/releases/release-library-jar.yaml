@@ -1,0 +1,5 @@
+---
+distribution_type: maven
+version: 1.5.1
+project: license-manager
+log_dir: license-manager-client-maven-stage-master/234/

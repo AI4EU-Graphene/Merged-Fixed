@@ -1,0 +1,7 @@
+Supplier  -> RTU Agreement Chain Code: create RTU\n(shared with Subscriber)
+Subscriber  -> RTU Agreement Chain Code: assign Users (private)
+RTU Agreement Chain Code -> Subscriber LUM: post RTU 
+RTU Agreement Chain Code -> Subscriber LUM: get RTU
+RTU Agreement Chain Code -> RTU Agreement Chain Code: compareRTU
+RTU Agreement Chain Code -> Subscriber LUM: getActionStatus(download)
+RTU Agreement Chain Code -> RTU Agreement Chain Code: reconcile()

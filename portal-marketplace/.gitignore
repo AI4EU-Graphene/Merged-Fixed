@@ -1,0 +1,8 @@
+.classpath
+.project
+.idea
+/.settings/
+/bin/
+/logs/
+/target/
+/portal-marketplace-parent.iml

@@ -1,0 +1,5 @@
+---
+distribution_type: maven
+version: 1.0.0
+project: license-manager
+log_dir: license-manager-maven-dl-stage-master/82/

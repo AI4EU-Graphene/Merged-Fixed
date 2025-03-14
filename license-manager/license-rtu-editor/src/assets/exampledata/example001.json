@@ -1,0 +1,84 @@
+{
+  "@context": {
+    "@vocab": "https://www.w3.org/ns/odrl.jsonld#",
+    "vcard": "http://www.w3.org/2006/vcard/ns#"
+  },
+  "$schema": "https://raw.githubusercontent.com/acumos/license-manager/master/license-rtu-editor/src/assets/schema/1.0.1/rtu-agreement.json",
+  "@type": "Agreement",
+  "assignee": {
+    "@type": [
+      "Party",
+      "vcard:Organization"
+    ],
+    "vcard:hasUrl": "companyb.com",
+    "vcard:fn": "Company B",
+    "vcard:hasEmail": "team@companyb.com",
+    "refinement": [
+      {
+        "@type": "Constraint",
+        "leftOperand": "lum:countUniqueUsers",
+        "operator": "lteq",
+        "rightOperand": {
+          "@value": "10",
+          "@type": "xsd:integer"
+        }
+      }
+    ]
+  },
+  "assigner": {
+    "@type": [
+      "Party",
+      "vcard:Organization"
+    ],
+    "vcard:hasUrl": "companya.com",
+    "vcard:fn": "Company A",
+    "vcard:hasEmail": "sales@companya.com"
+  },
+  "target": {
+    "refinement": [
+      {
+        "@type": "Constraint",
+        "leftOperand": "lum:swProductName",
+        "operator": "lum:in",
+        "rightOperand": [
+          "face-detect"
+        ]
+      }
+    ],
+    "@type": "Target"
+  },
+  "permission": [
+    {
+      "@type": "Rule",
+      "action": [
+        "acumos:deploy",
+        "acumos:download",
+        "modelrunner:predict",
+        "modelrunner:train"
+      ],
+      "constraint": [
+        {
+          "@type": "Constraint",
+          "leftOperand": "count",
+          "operator": "lt",
+          "rightOperand": {
+            "@value": "100",
+            "@type": "xsd:integer"
+          }
+        }
+      ],
+      "uid": "acumos://software-licensor/Company%20A/permission/98378924-84ff-41f5-87ac-02fd2012c727"
+    }
+  ],
+  "prohibition": [
+    {
+      "@type": "Rule",
+      "action": [
+        "transfer",
+        "aggregate"
+      ],
+      "uid": "acumos://software-licensor/Company%20A/prohibition/cb32d403-3d34-4468-9b41-1c1beaf4aba7"
+    }
+  ],
+  "uid": "acumos://software-licensor/Company%20A/agreement/3eb8c43a-bf19-46ab-8392-99c7efdf4106"
+}

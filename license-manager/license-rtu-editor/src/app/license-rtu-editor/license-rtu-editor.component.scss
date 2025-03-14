@@ -1,0 +1,76 @@
+/*-
+ * ===============LICENSE_START================================================
+ * Acumos Apache-2.0
+ * ============================================================================
+ * Copyright (C) 2019 Nordix Foundation.
+ * Modifications copyright (C)2020 Tech Mahindra.
+ * ============================================================================
+ * This Acumos software file is distributed by Nordix Foundation
+ * under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * This file is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ===============LICENSE_END==================================================
+ */
+
+/*
+ * importing theme here to apply the theme css rules to shadow dom
+ */
+@import "~bootstrap/dist/css/bootstrap.css";
+
+ .version {
+  font-size: 12px;
+  color: #bbbbbb;
+  padding-left: 5px;
+}
+
+.rtu-ui-item {
+  margin-bottom: 15px;
+}
+
+.examples-btn-bar > * {
+  margin-right: 10px;
+}
+
+.view-select-item {
+  display: inline-block;
+  width: 50%;
+}
+
+.error {
+  background-color: #efefeF;
+  color: #ff0000;
+  font-size: 14px;
+  padding: 0px 5px;
+}
+
+.save-container {
+  margin-left: 3px;
+}
+.lum-url-field {
+  min-width: 300px;
+  width: 80%;
+}
+
+.mat-toolbar.mat-primary {
+    height: 39px;
+}
+.mat-toolbar.mat-primary h2 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 0px;
+}
+.mat-menu-item {
+  overflow: hidden !important;
+}
+
+.close {
+  cursor: pointer;
+  fill: #fff !important;
+}

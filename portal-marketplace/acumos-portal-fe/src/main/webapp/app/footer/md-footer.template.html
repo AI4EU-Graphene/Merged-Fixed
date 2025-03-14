@@ -1,0 +1,94 @@
+<!--  
+===============LICENSE_START=======================================================
+Acumos Apache-2.0
+===================================================================================
+Copyright (C) 2017 AT&T Intellectual Property & Tech Mahindra. All rights reserved.
+===================================================================================
+This Acumos software file is distributed by AT&T and Tech Mahindra
+under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+This file is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+===============LICENSE_END=========================================================
+-->
+
+<footer>
+		 <div class="home-footer">
+			<section>
+				<div>
+					<div class="heading">
+					    <span class="footer-logo"><img src="../images/ai4eu-logo.svg" / alt="" title="AI4EU"></span>
+						<!-- <span class="footer-logo"><img ng-src="data:image/PNG;base64,{{$root.footerImage}}" /></span> -->
+					</div>
+					<ul>
+						<li ng-init="showmore=false">{{$root.siteInstanceName}} is an open source platform for the development, training, sharing and deployment of AI models. It empowers data scientists to move to an AI-centric process for producing software. The heart of {{$root.siteInstanceName}} is the AI collaboration ecosystem, where models are trained <a class="gray text-bold" ng-show="showmore==false" href="" ng-click='showmore=true' >More..</a><span ng-show="showmore">and graded on their ability to successfully analyze datasets that they are fed and select the best model for the job.</span></li>
+						<li ng-show="showmore">{{$root.siteInstanceName}} is modeling language, toolkit and run-time infrastructure or cloud service agnostic. It is a complete system to package, share, license and deploy AI models in the form of portable, containerized microservices. {{$root.siteInstanceName}} Design Studio can be used to chain together multiple models, along with data translation tools, filters and output adapters into a full end-to-end solution which can then be saved as a composite solution. The {{$root.siteInstanceName}} Marketplace catalog contains information on the licensing and execution requirements of both reusable AI models and fully integrated solutions and this can be easily searched to make model selection a simple process.</li>
+						<li ng-show="showmore">The source code of the {{$root.siteInstanceName}} platform, itself, is available under an OSI-approved open source license so that any aspect can be readily adapted to new development toolkits, private data source and datastreams and custom run-time environments.
+						<a class="gray text-bold" href="" ng-click='showmore=false;'>Show less</a></li>
+					</ul>
+				</div>
+				<div>
+					<div class="heading">
+						<span>Quick links</span>
+					</div>
+					<ul class="quicklinks">
+						<li><i class="fas fa-angle-right"></i><a ui-sref="home" ng-click="$root.parentActive = ''">Home</a></li>
+						<li><i class="fas fa-angle-right"></i><a ui-sref="marketPlace">Marketplace</a></li>
+						<!-- <li><a ui-sref="manageModule">Manage my models </a></li> -->
+						<li ng-if="$root.enableOnBoarding"><i class="fas fa-angle-right"></i><a ui-sref="modularResource">On-Boarding Model</a></li>
+						<!-- <li><a ui-sref="designStudio">Design Studio</a></li> -->
+						<li><i class="fas fa-angle-right"></i><a ui-sref="termsCondition">Terms And Conditions</a></li>
+						<li><i class="fas fa-angle-right"></i><a href="{{docUrl}}" target="_blank">Documentation</a></li>
+					</ul>
+				</div>
+				<div>
+					<div class="heading">
+						<span>Follow us</span>
+					</div>
+					<ul>
+						Coming soon					
+					</ul>
+					<ul class="social-icons">
+						<li>
+							<i class="fab fa-facebook-f" aria-hidden="true" title="facebook"></i>
+						</li>
+						<li>
+							<i class="fab fa-linkedin-in" aria-hidden="true" title="linkedin"></i>
+						</li>
+						<li>
+							<i class="fab fa-google-plus-g" aria-hidden="true" title="Google-plus"></i>
+						</li>
+						<li>
+							<i class="fab fa-github" aria-hidden="true" title="Github"></i>
+						</li>
+						<li>
+							<i class="fab fa-twitter" aria-hidden="true" title="Twitter"></i>
+						</li>
+					</ul>
+				</div>
+				<div>
+					<div class="heading">
+						<span>Contact Information</span>
+					</div>
+					<ul class="contact-info">
+              <li  ng-bind-html="contactInfo1"></li><br>
+               <!--  <li><i class="material-icons">email</i>info@cognita.com</li>
+                <li><i class="material-icons">phone</i>+354 123 5689</li>
+                <li><i class="fa fa-fax" aria-hidden="true"></i>+354 123 5690</li> -->
+</ul>
+
+				</div>
+			</section>
+			<div class="clearfix"></div>
+			<div class="build-info">
+				<small>Version: {{versionNumber}}</small>				
+			</div>
+		</div>
+		
+		</footer>

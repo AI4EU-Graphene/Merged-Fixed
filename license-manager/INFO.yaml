@@ -1,0 +1,66 @@
+---
+project: 'license-manager'
+project_creation_date: '2019-03-08'
+project_category: ''
+lifecycle_state: 'Incubation'
+project_lead: &acumos_license-management_ptl
+    name: 'Michelle Martens'
+    email: 'mm8916@att.com'
+    company: 'ATT'
+    timezone: 'America/New_York'
+primary_contact: *acumos_license-management_ptl
+issue_tracking:
+    type: 'jira'
+    url: 'https://jira.acumos.org/projects/ACUMOS'
+    key: 'ACUMOS'
+mailing_list:
+    type: 'groups.io'
+    url: 'lists.acumos.org'
+    tag: '<[sub-project_name]>'
+realtime_discussion:
+    type: 'irc'
+    server: 'freenode.net'
+    channel: '#acumos'
+meetings:
+    - type: 'zoom'
+      agenda: ''
+      url: ''
+      server: 'n/a'
+      channel: 'n/a'
+      repeats: 'n/a'
+      time: 'n/a'
+repositories:
+    - 'license-manager'
+committers:
+    - <<: *acumos_license-management_ptl
+    - name: 'Justin Early'
+      company: 'Ericsson Software Technology'
+      email: 'justin.early@est.tech'
+      id: 'justin14'
+      timezone: 'America/Los_Angeles'
+    - name: 'Parag Raval'
+      email: 'parag.raval@est.tech'
+      company: 'Ericsson Software Technology'
+      id: 'parag'
+      timezone: 'America/New_York'
+    - name: 'Shiv Shakti'
+      email: 'shiv.shakti@est.tech'
+      company: 'Ericsson Software Technology'
+      id: 'shiv070'
+      timezone: 'India/IST'
+    - name: 'Priyadarshini Londhe'
+      email: 'londhepv@TechMahindra.com'
+      company: 'Tech Mahindra'
+      id: 'Priyadarshini'
+      timezone: 'India/IST'
+    - name: 'Shilendra Srivastava'
+      email: 'ss00638522@techmahindra.com'
+      company: 'Tech Mahindra'
+      id: 'ss00638522'
+      timezone: 'India/IST'
+tsc:
+    approval: ''
+    changes:
+        - type: ''
+          name: ''
+          link: ''

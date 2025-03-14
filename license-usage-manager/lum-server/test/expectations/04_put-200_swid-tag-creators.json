@@ -1,0 +1,444 @@
+{
+    "db": [
+        {
+            "sqlCmd": "BEGIN TRANSACTION ISOLATION LEVEL REPEATABLE READ",
+            "result": {
+                "command": "BEGIN",
+                "rowCount": 1,
+                "rows": []
+            }
+        },
+        {
+            "sqlCmd": "SELECT TXID_CURRENT() AS txid, PG_BACKEND_PID() AS pid, NOW() AS tx_now",
+            "result": {
+                "command": "SELECT",
+                "rowCount": 1,
+                "rows": [
+                    {
+                        "txid": 123,
+                        "pid": 456,
+                        "tx_now": "__to_date__|2019-12-19T11:43:20.952Z"
+                    }
+                ]
+            }
+        },
+        {
+            "sqlCmd": "WITH swt AS (SELECT \"licenseProfileId\" FROM \"swidTag\" WHERE \"swTagId\" = ($1) FOR SHARE) UPDATE \"licenseProfile\" AS lp SET \"licenseProfileRevision\" = lp.\"licenseProfileRevision\" + 1 , \"licenseProfileActive\" = ($2),\"modifier\" = ($3),\"closer\" = ($4),\"closed\" = ($5),\"closureReason\" = ($6), \"modified\" = NOW() FROM swt WHERE lp.\"licenseProfileId\" = swt.\"licenseProfileId\" AND lp.\"licenseProfileActive\" = FALSE RETURNING *",
+            "sqlVals": [
+                "unit-test-swTagId",
+                true,
+                "unit-test-userId-sw-creator",
+                null,
+                null,
+                null
+            ],
+            "result": {
+                "command": "UPDATE",
+                "rowCount": 0,
+                "rows": []
+            }
+        },
+        {
+            "sqlCmd": "UPDATE \"swidTag\" AS swt SET \"swidTagRevision\" = swt.\"swidTagRevision\" + 1 , \"swCreators\" = ($2) , \"swidTagActive\" = ($3),\"modifier\" = ($4),\"closer\" = ($5),\"closed\" = ($6),\"closureReason\" = ($7), \"modified\" = NOW() WHERE swt.\"swTagId\" = ($1) AND (swt.\"swidTagActive\" = FALSE OR swt.\"swCreators\" IS DISTINCT FROM ($2)) RETURNING *",
+            "sqlVals": [
+                "unit-test-swTagId",
+                [
+                    "unit-test-userId-sw-creator-2"
+                ],
+                true,
+                "unit-test-userId-sw-creator",
+                null,
+                null,
+                null
+            ],
+            "result": {
+                "command": "UPDATE",
+                "rowCount": 1,
+                "rows": [
+                    {
+                        "swTagId": "unit-test-swTagId",
+                        "swPersistentId": "a218c795-ae2c-4ff9-894d-462baa768dfc",
+                        "swVersion": "4",
+                        "swVersionComparable": "4",
+                        "licenseProfileId": "cec51e7d-d977-41d2-abc6-ef5f069491b8",
+                        "softwareLicensorId": "unit-test-softwareLicensorId",
+                        "swCategory": "image-processing",
+                        "swCatalogs": [
+                            {
+                                "swCatalogId": "XYZ models",
+                                "swCatalogType": "restricted"
+                            },
+                            {
+                                "swCatalogId": "ABC models",
+                                "swCatalogType": "restricted"
+                            }
+                        ],
+                        "swCreators": [
+                            "unit-test-userId-sw-creator-2"
+                        ],
+                        "swProductName": "unit-test-product253",
+                        "swidTagDetails": null,
+                        "swidTagRevision": 5,
+                        "swidTagActive": true,
+                        "creator": "unit-test-userId",
+                        "created": "2020-05-29T21:37:56.912Z",
+                        "modifier": "unit-test-userId-sw-creator",
+                        "modified": "2020-05-29T21:37:57.316Z",
+                        "closer": null,
+                        "closed": null,
+                        "closureReason": null
+                    }
+                ]
+            }
+        },
+        {
+            "sqlCmd": "INSERT INTO \"snapshot\" (\"softwareLicensorId\",\"snapshotType\",\"snapshotKey\",\"snapshotRevision\" , \"snapshotBody\",\"creator\",\"requestId\",\"txStep\") VALUES (($1),($2),($3),($4) , ($5),($6),($7),($8)) ON CONFLICT (\"softwareLicensorId\",\"snapshotType\",\"snapshotKey\",\"snapshotRevision\") DO NOTHING",
+            "sqlVals": [
+                "unit-test-softwareLicensorId",
+                "swidTag",
+                "unit-test-swTagId",
+                5,
+                {
+                    "swTagId": "unit-test-swTagId",
+                    "swPersistentId": "a218c795-ae2c-4ff9-894d-462baa768dfc",
+                    "swVersion": "4",
+                    "swVersionComparable": "4",
+                    "licenseProfileId": "cec51e7d-d977-41d2-abc6-ef5f069491b8",
+                    "softwareLicensorId": "unit-test-softwareLicensorId",
+                    "swCategory": "image-processing",
+                    "swCatalogs": [
+                        {
+                            "swCatalogId": "XYZ models",
+                            "swCatalogType": "restricted"
+                        },
+                        {
+                            "swCatalogId": "ABC models",
+                            "swCatalogType": "restricted"
+                        }
+                    ],
+                    "swCreators": [
+                        "unit-test-userId-sw-creator-2"
+                    ],
+                    "swProductName": "unit-test-product253",
+                    "swidTagDetails": null,
+                    "swidTagRevision": 5,
+                    "swidTagActive": true,
+                    "creator": "unit-test-userId",
+                    "created": "2020-05-29T21:37:56.912Z",
+                    "modifier": "unit-test-userId-sw-creator",
+                    "modified": "2020-05-29T21:37:57.316Z",
+                    "closer": null,
+                    "closed": null,
+                    "closureReason": null
+                },
+                "unit-test-userId-sw-creator",
+                "9ee256e1-05c7-4aee-9ebf-f4fbb3ab144c",
+                "[02] putSwidTagCreators"
+            ],
+            "result": {
+                "command": "INSERT",
+                "rowCount": 1,
+                "rows": []
+            }
+        },
+        {
+            "sqlCmd": "COMMIT",
+            "result": {
+                "command": "COMMIT",
+                "rowCount": 1,
+                "rows": []
+            }
+        },
+        {
+            "sqlCmd": "BEGIN TRANSACTION ISOLATION LEVEL REPEATABLE READ",
+            "result": {
+                "command": "BEGIN",
+                "rowCount": 1,
+                "rows": []
+            }
+        },
+        {
+            "sqlCmd": "SELECT TXID_CURRENT() AS txid, PG_BACKEND_PID() AS pid, NOW() AS tx_now",
+            "result": {
+                "command": "SELECT",
+                "rowCount": 1,
+                "rows": [
+                    {
+                        "txid": 123,
+                        "pid": 456,
+                        "tx_now": "__to_date__|2019-12-19T11:43:20.952Z"
+                    }
+                ]
+            }
+        },
+        {
+            "sqlCmd": "SELECT \"swTagId\", \"swPersistentId\",\"swVersion\",\"swVersionComparable\",\"licenseProfileId\",\"softwareLicensorId\",\"swCategory\",\"swCreators\",\"swProductName\",\"swidTagDetails\",\"swCatalogs\",\"swidTagRevision\",\"swidTagActive\",\"creator\",\"created\",\"modifier\",\"modified\",\"closer\",\"closed\",\"closureReason\" FROM \"swidTag\" WHERE \"swTagId\" IN (($1)) FOR SHARE",
+            "sqlVals": [
+                "unit-test-swTagId"
+            ],
+            "result": {
+                "command": "SELECT",
+                "rowCount": 1,
+                "rows": [
+                    {
+                        "swTagId": "unit-test-swTagId",
+                        "swPersistentId": "a218c795-ae2c-4ff9-894d-462baa768dfc",
+                        "swVersion": "4",
+                        "swVersionComparable": "4",
+                        "licenseProfileId": "cec51e7d-d977-41d2-abc6-ef5f069491b8",
+                        "softwareLicensorId": "unit-test-softwareLicensorId",
+                        "swCategory": "image-processing",
+                        "swCreators": [
+                            "unit-test-userId-sw-creator-2"
+                        ],
+                        "swProductName": "unit-test-product253",
+                        "swidTagDetails": null,
+                        "swCatalogs": [
+                            {
+                                "swCatalogId": "XYZ models",
+                                "swCatalogType": "restricted"
+                            },
+                            {
+                                "swCatalogId": "ABC models",
+                                "swCatalogType": "restricted"
+                            }
+                        ],
+                        "swidTagRevision": 5,
+                        "swidTagActive": true,
+                        "creator": "unit-test-userId",
+                        "created": "2020-05-29T21:37:56.912Z",
+                        "modifier": "unit-test-userId-sw-creator",
+                        "modified": "2020-05-29T21:37:57.316Z",
+                        "closer": null,
+                        "closed": null,
+                        "closureReason": null
+                    }
+                ]
+            }
+        },
+        {
+            "sqlCmd": "SELECT \"licenseProfileId\", \"licenseProfile\",\"isRtuRequired\",\"licenseTxt\",\"licenseName\",\"licenseDescription\",\"licenseNotes\",\"licenseProfileRevision\",\"licenseProfileActive\",\"creator\",\"created\",\"modifier\",\"modified\",\"closer\",\"closed\",\"closureReason\" FROM \"licenseProfile\" WHERE \"licenseProfileId\" IN (($1)) FOR SHARE",
+            "sqlVals": [
+                "cec51e7d-d977-41d2-abc6-ef5f069491b8"
+            ],
+            "result": {
+                "command": "SELECT",
+                "rowCount": 1,
+                "rows": [
+                    {
+                        "licenseProfileId": "cec51e7d-d977-41d2-abc6-ef5f069491b8",
+                        "licenseProfile": null,
+                        "isRtuRequired": true,
+                        "licenseTxt": null,
+                        "licenseName": null,
+                        "licenseDescription": null,
+                        "licenseNotes": null,
+                        "licenseProfileRevision": 1,
+                        "licenseProfileActive": true,
+                        "creator": "unit-test-userId",
+                        "created": "2020-05-29T21:37:56.912Z",
+                        "modifier": "unit-test-userId",
+                        "modified": "2020-05-29T21:37:56.912Z",
+                        "closer": null,
+                        "closed": null,
+                        "closureReason": null
+                    }
+                ]
+            }
+        },
+        {
+            "sqlCmd": "COMMIT",
+            "result": {
+                "command": "COMMIT",
+                "rowCount": 1,
+                "rows": []
+            }
+        }
+    ],
+    "req": {
+        "method": "PUT",
+        "path": "/api/v1/swid-tag-creators?swTagId=unit-test-swTagId",
+        "content-type": "application/json; charset=utf-8",
+        "X-ACUMOS-RequestID": "9ee256e1-05c7-4aee-9ebf-f4fbb3ab144c",
+        "send": {
+            "requestId": "9ee256e1-05c7-4aee-9ebf-f4fbb3ab144c",
+            "requested": "2020-05-29T21:37:57.314Z",
+            "userId": "unit-test-userId-sw-creator",
+            "swTagId": "unit-test-swTagId",
+            "swCreators": [
+                "unit-test-userId-sw-creator-2"
+            ]
+        }
+    },
+    "res": {
+        "statusCode": 200,
+        "body": {
+            "userId": "unit-test-userId-sw-creator",
+            "requestId": "9ee256e1-05c7-4aee-9ebf-f4fbb3ab144c",
+            "requested": "__type__dateTime__",
+            "swTagId": "unit-test-swTagId",
+            "swidTag": {
+                "swTagId": "unit-test-swTagId",
+                "swPersistentId": "a218c795-ae2c-4ff9-894d-462baa768dfc",
+                "swVersion": "4",
+                "swVersionComparable": "4",
+                "licenseProfileId": "cec51e7d-d977-41d2-abc6-ef5f069491b8",
+                "softwareLicensorId": "unit-test-softwareLicensorId",
+                "swCategory": "image-processing",
+                "swCreators": [
+                    "unit-test-userId-sw-creator-2"
+                ],
+                "swProductName": "unit-test-product253",
+                "swidTagDetails": null,
+                "swCatalogs": [
+                    {
+                        "swCatalogId": "XYZ models",
+                        "swCatalogType": "restricted"
+                    },
+                    {
+                        "swCatalogId": "ABC models",
+                        "swCatalogType": "restricted"
+                    }
+                ],
+                "swidTagRevision": 5,
+                "swidTagActive": true,
+                "creator": "unit-test-userId",
+                "created": "__type__dateTime__",
+                "modifier": "unit-test-userId-sw-creator",
+                "modified": "__type__dateTime__",
+                "closer": null,
+                "closed": null,
+                "closureReason": null
+            },
+            "licenseProfile": {
+                "licenseProfileId": "cec51e7d-d977-41d2-abc6-ef5f069491b8",
+                "licenseProfile": null,
+                "isRtuRequired": true,
+                "licenseTxt": null,
+                "licenseName": null,
+                "licenseDescription": null,
+                "licenseNotes": null,
+                "licenseProfileRevision": 1,
+                "licenseProfileActive": true,
+                "creator": "unit-test-userId",
+                "created": "__type__dateTime__",
+                "modifier": "unit-test-userId",
+                "modified": "__type__dateTime__",
+                "closer": null,
+                "closed": null,
+                "closureReason": null
+            }
+        }
+    },
+    "acuLogs": [
+        {
+            "LogTimestamp": "__type__dateTime__",
+            "RequestID": "9ee256e1-05c7-4aee-9ebf-f4fbb3ab144c",
+            "InvocationID": "PUT /api/v1/swid-tag-creators",
+            "InstanceID": "__type__uuid__",
+            "Thread": "main",
+            "ServiceName": "lum-server/api/v1/swid-tag-creators",
+            "Partnername": "__type__ignore__",
+            "StatusCode": "INPROGRESS",
+            "ResponseCode": null,
+            "ResponseDescription": null,
+            "Level": "DEBUG",
+            "Severity": "INFO",
+            "ServerFQDN": "__type__ignore__",
+            "ClientIPAddress": "__type__ignore__",
+            "TargetEntity": null,
+            "TargetServiceName": null,
+            "User": "unit-test-userId-sw-creator",
+            "Logger": "__type__ignore__",
+            "Mdc": null,
+            "Message": {
+                "userId": "unit-test-userId-sw-creator",
+                "swTagId": "unit-test-swTagId",
+                "swCreators": [
+                    "unit-test-userId-sw-creator-2"
+                ],
+                "requested": "__type__dateTime__"
+            },
+            "Marker": "ENTRY"
+        },
+        {
+            "LogTimestamp": "__type__dateTime__",
+            "RequestID": "9ee256e1-05c7-4aee-9ebf-f4fbb3ab144c",
+            "InvocationID": "response",
+            "InstanceID": "__type__uuid__",
+            "Thread": "main",
+            "ServiceName": "lum-server/api/v1/swid-tag-creators",
+            "Partnername": "__type__ignore__",
+            "StatusCode": "COMPLETE",
+            "ResponseCode": 200,
+            "ResponseDescription": "OK",
+            "Level": "DEBUG",
+            "Severity": "INFO",
+            "ServerFQDN": "__type__ignore__",
+            "ClientIPAddress": "__type__ignore__",
+            "TargetEntity": null,
+            "TargetServiceName": null,
+            "User": "unit-test-userId-sw-creator",
+            "Logger": "__type__ignore__",
+            "Mdc": null,
+            "Message": {
+                "requestId": "9ee256e1-05c7-4aee-9ebf-f4fbb3ab144c",
+                "requested": "2020-05-29T21:37:57.314Z",
+                "userId": "unit-test-userId-sw-creator",
+                "swTagId": "unit-test-swTagId",
+                "swidTag": {
+                    "swTagId": "unit-test-swTagId",
+                    "swPersistentId": "a218c795-ae2c-4ff9-894d-462baa768dfc",
+                    "swVersion": "4",
+                    "swVersionComparable": "4",
+                    "licenseProfileId": "cec51e7d-d977-41d2-abc6-ef5f069491b8",
+                    "softwareLicensorId": "unit-test-softwareLicensorId",
+                    "swCategory": "image-processing",
+                    "swCreators": [
+                        "unit-test-userId-sw-creator-2"
+                    ],
+                    "swProductName": "unit-test-product253",
+                    "swidTagDetails": null,
+                    "swCatalogs": [
+                        {
+                            "swCatalogId": "XYZ models",
+                            "swCatalogType": "restricted"
+                        },
+                        {
+                            "swCatalogId": "ABC models",
+                            "swCatalogType": "restricted"
+                        }
+                    ],
+                    "swidTagRevision": 5,
+                    "swidTagActive": true,
+                    "creator": "unit-test-userId",
+                    "created": "2020-05-29T21:37:56.912Z",
+                    "modifier": "unit-test-userId-sw-creator",
+                    "modified": "2020-05-29T21:37:57.316Z",
+                    "closer": null,
+                    "closed": null,
+                    "closureReason": null
+                },
+                "licenseProfile": {
+                    "licenseProfileId": "cec51e7d-d977-41d2-abc6-ef5f069491b8",
+                    "licenseProfile": null,
+                    "isRtuRequired": true,
+                    "licenseTxt": null,
+                    "licenseName": null,
+                    "licenseDescription": null,
+                    "licenseNotes": null,
+                    "licenseProfileRevision": 1,
+                    "licenseProfileActive": true,
+                    "creator": "unit-test-userId",
+                    "created": "2020-05-29T21:37:56.912Z",
+                    "modifier": "unit-test-userId",
+                    "modified": "2020-05-29T21:37:56.912Z",
+                    "closer": null,
+                    "closed": null,
+                    "closureReason": null
+                }
+            },
+            "Marker": "EXIT"
+        }
+    ]
+}

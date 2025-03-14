@@ -1,0 +1,612 @@
+/*-
+ * ===============LICENSE_START=======================================================
+ * Acumos
+ * ===================================================================================
+ * Copyright (C) 2017 AT&T Intellectual Property & Tech Mahindra. All rights reserved.
+ * ===================================================================================
+ * This Acumos software file is distributed by AT&T and Tech Mahindra
+ * under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *  
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *  
+ * This file is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ===============LICENSE_END=========================================================
+ */
+
+/**
+ * 
+ */
+package org.acumos.portal.be.controller;
+
+import java.io.IOException;
+import java.lang.invoke.MethodHandles;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.HttpHeaders;
+
+import org.acumos.cds.domain.MLPRole;
+import org.acumos.cds.domain.MLPUser;
+import org.acumos.portal.be.APINames;
+import org.acumos.portal.be.common.JSONTags;
+import org.acumos.portal.be.common.JsonRequest;
+import org.acumos.portal.be.common.JsonResponse;
+import org.acumos.portal.be.common.exception.AcumosServiceException;
+import org.acumos.portal.be.common.exception.MalformedException;
+import org.acumos.portal.be.security.jwt.JwtTokenUtil;
+import org.acumos.portal.be.service.UserService;
+import org.acumos.portal.be.transport.AbstractResponseObject;
+import org.acumos.portal.be.transport.ResponseVO;
+import org.acumos.portal.be.transport.User;
+import org.acumos.portal.be.util.PortalConstants;
+import org.acumos.portal.be.util.PortalUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.client.HttpStatusCodeException;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.swagger.annotations.ApiOperation;
+
+@Controller
+@RequestMapping("/" + APINames.AUTH)
+public class AuthServiceController extends AbstractController {
+
+	private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());	
+
+	@Autowired
+	private UserService userService;
+
+	@Autowired
+	private JwtTokenUtil jwtTokenUtil;
+
+	@Autowired
+	Environment env;
+
+	final String GOOGLE_USER_INFO_URL = "https://www.googleapis.com/oauth2/v3/userinfo";
+
+	public AuthServiceController() {
+		// TODO Auto-generated constructor stub
+	}
+
+	/**
+	 * @param request
+	 *            HttpServletRequest
+	 * @param user
+	 *            User's request to login on the Platform
+	 * @param response
+	 *            HttpServletResponse
+	 * @return Returns JWT if User is Authenticated else resturns Failure with
+	 *         status code and error message
+	 */
+	@ApiOperation(value = "Allows User to login to the Platform using emailId or username.  Returns Success & JWT Token if Account created successfully; else an error message is returned.", response = User.class)
+	@RequestMapping(value = { APINames.LOGIN }, method = RequestMethod.POST, produces = APPLICATION_JSON)
+	@ResponseBody
+	public AbstractResponseObject login(HttpServletRequest request, @RequestBody JsonRequest<User> user,
+			HttpServletResponse response) {
+		log.debug( "login={}", user);
+		AbstractResponseObject responseObject = null;
+		User validUser = null;
+		boolean isValid = false;
+		boolean active = false;
+		// Check if the UserName or emailId is null or not.
+		if (PortalUtils.isEmptyOrNullString(user.getBody().getEmailId())
+				&& PortalUtils.isEmptyOrNullString(user.getBody().getUsername())) {
+			log.debug( "Invalid Parameters");
+			responseObject = new ResponseVO(HttpServletResponse.SC_BAD_REQUEST, "Login Failed");
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+		} else {
+			try {
+
+				MLPUser mlpUser = null;
+				if (!PortalUtils.isEmptyOrNullString(user.getBody().getUsername())) {
+					mlpUser = userService.login(user.getBody().getUsername(), user.getBody().getPassword());
+					if (mlpUser.isActive()) {
+						active = true;
+						isValid = true;
+					} else if (!mlpUser.isActive()) {
+						active = false;
+						isValid = false;
+					}
+				} else if (!PortalUtils.isEmptyOrNullString(user.getBody().getEmailId())) {
+					mlpUser = userService.findUserByEmail(user.getBody().getEmailId());
+				}
+
+				if (isValid) {
+					// TODO Check Account Status and respond with appropriate error if Account is
+					// inactive
+					validUser = PortalUtils.convertToMLPuser(mlpUser);
+					responseObject = new User(validUser);
+					// check password expire date
+					responseObject.setLoginPassExpire(false);
+					if (mlpUser.getLoginPassExpire() != null) {
+						if (mlpUser.getLoginPassExpire().compareTo(Instant.now()) < 0) {
+							responseObject.setLoginPassExpire(true);
+						}
+					}
+					response.setStatus(HttpServletResponse.SC_OK);
+				} else if (!active) {
+					responseObject = new ResponseVO(HttpServletResponse.SC_UNAUTHORIZED, "Login Inactive");
+					response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+				} else if (!isValid) {
+					responseObject = new ResponseVO(HttpServletResponse.SC_UNAUTHORIZED, "Login Failed");
+					response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+				}
+			} catch (Exception e) {
+				responseObject = new ResponseVO(HttpServletResponse.SC_UNAUTHORIZED, "Login Failed");
+				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+				log.error( "Exception Occurred while login()", e.getMessage());
+			}
+		}
+
+		return responseObject;
+	}
+
+	/**
+	 * @param request
+	 *            HttpServletRequest
+	 * @param user
+	 *            User who is logging out
+	 * @param response
+	 *            HttpServletResponse
+	 * @return Returns Status Code and Message serialized as JSON
+	 */
+	@ApiOperation(value = "Allows Users to logout to the Platform .  Returns Success & JWT Token if Account created successfully; else an error message is returned.", response = ResponseVO.class)
+	@RequestMapping(value = { APINames.LOGOUT }, method = RequestMethod.POST, produces = APPLICATION_JSON)
+	@ResponseBody
+	public JsonResponse<Object> logout(HttpServletRequest request, @RequestBody JsonRequest<User> user,
+			HttpServletResponse response) {
+		log.debug( "logout={}", user.getBody());
+		log.info( "logout={}", user.getBody());
+		JsonResponse<Object> responseObject = null;
+		// TODO Need to add code to invalidate JWT Token
+
+		return responseObject;
+	}
+
+	@ApiOperation(value = "Allows User to login to the Platform using emailId or username.  Returns Success & JWT Token if Account created successfully; else an error message is returned.", response = User.class)
+	@RequestMapping(value = { APINames.JWTTOKEN }, method = RequestMethod.POST, produces = APPLICATION_JSON)
+	@ResponseBody
+	public AbstractResponseObject jwtLogin(HttpServletRequest request, @RequestBody JsonRequest<User> user,
+			HttpServletResponse response , @RequestHeader(value="provider", required=false) String provider) {
+		System.out.println("AuthServiceController::jwtLogin - login user: "+user.getBody().toString());
+		System.out.println("AuthServiceController::jwtLogin - provider: "+provider);
+		AbstractResponseObject responseObject = new AbstractResponseObject();
+		User userObj = null;
+		String jwtToken = null;
+		boolean isValid = false;
+		boolean firstLogin = false;
+		MLPUser mlpUser = null;
+		List<MLPRole> userAssignedRolesList = new ArrayList<>();
+		
+		// Check if the UserName or emailId is null or not.
+		if (PortalUtils.isEmptyOrNullString(user.getBody().getUsername()) && PortalUtils.isEmptyOrNullString(user.getBody().getEmailId())) {
+			System.out.println("AuthServiceController::jwtLogin - Invalid Parameters");
+			responseObject = new ResponseVO(HttpServletResponse.SC_BAD_REQUEST, "Login Failed");
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+		} else {
+			try {
+				
+				if (!PortalUtils.isEmptyOrNullString(user.getBody().getUsername()) && PortalUtils.isEmptyOrNullString(provider)) {
+					try {
+						mlpUser = userService.login(user.getBody().getUsername(), user.getBody().getPassword());
+						userAssignedRolesList = userService.getUserRole(mlpUser.getUserId());
+						isValid = true;
+					} catch(HttpStatusCodeException exc) {
+						log.error( exc.getResponseBodyAsString(), exc.getMessage());
+
+						ObjectMapper mapper = new ObjectMapper();
+						Map<String, Object> errResp = mapper.readValue(exc.getResponseBodyAsString(), Map.class);
+						String errorMsg = (String) errResp.get("error");
+						log.error( errorMsg, exc.getMessage());
+
+						responseObject = new ResponseVO(HttpServletResponse.SC_BAD_GATEWAY, errorMsg);
+						response.setStatus(HttpServletResponse.SC_BAD_GATEWAY);
+						throw new AcumosServiceException(AcumosServiceException.ErrorCode.ACCESS_DENIED, errorMsg);
+					} catch (Exception e) {
+						responseObject = new ResponseVO(HttpServletResponse.SC_BAD_GATEWAY,
+								"Login  Failed. Invalid Password.");
+						response.setStatus(HttpServletResponse.SC_BAD_GATEWAY);
+						log.error( "Exception Occurred while jwtLogin()", e.getMessage());
+					}
+				} else 
+					if (!PortalUtils.isEmptyOrNullString(user.getBody().getEmailId()) && !PortalUtils.isEmptyOrNullString(provider) && "LFCAS".equals(provider)) {
+						 mlpUser = userService.findUserByEmail(user.getBody().getEmailId()); 
+						 userAssignedRolesList = userService.getUserRole(mlpUser.getUserId());
+						 isValid = true;
+					}
+
+					if (!mlpUser.isActive()) {
+						isValid = false;
+						responseObject = new ResponseVO(HttpServletResponse.SC_PRECONDITION_FAILED, "Inactive user");
+						response.setStatus(HttpServletResponse.SC_PRECONDITION_FAILED);
+						return responseObject;
+					}
+
+					if (mlpUser.getVerifyExpiration() != null) {
+						isValid = false;
+						responseObject = new ResponseVO(HttpServletResponse.SC_PRECONDITION_FAILED, "Verification Pending");
+						response.setStatus(HttpServletResponse.SC_PRECONDITION_FAILED);
+						return responseObject;
+					}
+					if (mlpUser.getLoginPassExpire() != null) {
+						if (mlpUser.getLoginPassExpire().compareTo(Instant.now()) < 0) {
+							responseObject = new ResponseVO(HttpServletResponse.SC_PRECONDITION_FAILED, "Password Expired" , mlpUser.getUserId());
+							responseObject.setLoginPassExpire(true);
+							response.setStatus(HttpServletResponse.SC_PRECONDITION_FAILED);
+							return responseObject;
+						}
+					}
+
+					String apiToken = mlpUser.getApiToken();
+					if (isValid) {
+					// convert to user
+						userObj = PortalUtils.convertToMLPuser(mlpUser);
+						// responseObject = new User(userObj);
+						// check password expire date
+						responseObject.setLoginPassExpire(false);
+						if (mlpUser.getLoginPassExpire() != null) {
+							if (mlpUser.getLoginPassExpire().compareTo(Instant.now()) <= 0) {
+								responseObject.setLoginPassExpire(true);
+
+						}
+					}
+					response.setStatus(HttpServletResponse.SC_OK);
+
+					// JWT token authentication
+					// JwtTokenUtil jwtTokenUtil = new JwtTokenUtil();
+
+					if (userObj.getJwttoken() == null) {
+						// Generate token
+						jwtToken = jwtTokenUtil.generateToken(mlpUser, null);
+						responseObject.setJwtToken(jwtToken);
+						mlpUser.setAuthToken(jwtToken);
+						try {
+							if (mlpUser != null) {
+								userObj.setJwttoken(jwtToken);
+								userObj.setApiTokenHash(apiToken); // not-null 1 // first time login
+								userObj.setActive("Y");
+								userService.updateUser(userObj);
+
+								//If jwt token is null then this is the first time the user is logging in
+								firstLogin = true;
+							}
+						} catch (Exception e) {
+
+						}
+						userAssignedRolesList = userService.getUserRole(mlpUser.getUserId());
+					} else {
+						responseObject.setJwtToken(userObj.getJwttoken());
+						if (jwtTokenUtil.isTokenExpired(userObj.getJwttoken())) {
+							mlpUser.setAuthToken(null);
+							userObj.setJwttoken(jwtToken);
+							userObj.setApiTokenHash(apiToken);
+							userService.updateUser(userObj);
+
+							jwtToken = jwtTokenUtil.generateToken(mlpUser, null);
+							responseObject.setJwtToken(jwtToken);
+							mlpUser.setAuthToken(jwtToken);
+							try {
+								if (mlpUser != null) {
+									userObj.setActive("Y");
+									userObj.setJwttoken(jwtToken);
+									userObj.setApiTokenHash(apiToken);
+									userService.updateUser(userObj);
+									userAssignedRolesList = userService.getUserRole(mlpUser.getUserId());
+								}
+							} catch (Exception e) {
+
+							}
+						} else {
+							jwtToken = userObj.getJwttoken();
+							if (jwtTokenUtil.validateToken(jwtToken, mlpUser)) {
+								mlpUser.setAuthToken(null);
+								userObj.setJwttoken(jwtToken);
+								userObj.setApiTokenHash(apiToken);
+								userObj.setApiToken(apiToken);// null 1 //not-null 1 //recurring user
+								userService.updateUser(userObj);
+
+								jwtToken = jwtTokenUtil.generateToken(mlpUser, null);
+								responseObject.setJwtToken(jwtToken);
+								mlpUser.setAuthToken(jwtToken);
+								try {
+									if (mlpUser != null) {
+										userObj.setActive("Y");
+										userObj.setJwttoken(jwtToken);// null 2 //not-null 2 //recurring user
+										userObj.setApiTokenHash(apiToken);
+										userService.updateUser(userObj);
+										userAssignedRolesList = userService.getUserRole(mlpUser.getUserId());
+									}
+								} catch (Exception e) {
+								}
+							} else {
+								responseObject = new ResponseVO(HttpServletResponse.SC_UNAUTHORIZED,
+										"Token Validation Failed");
+								response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+							}
+						}
+					}
+				} else {
+					responseObject = new ResponseVO(HttpServletResponse.SC_UNAUTHORIZED, "Login Failed");
+					response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+				}
+			} catch (Exception e) {
+
+				if (response.getStatus() == HttpServletResponse.SC_BAD_GATEWAY) {
+					responseObject = new ResponseVO(HttpServletResponse.SC_UNAUTHORIZED, e.getMessage());
+					response.setStatus(HttpServletResponse.SC_BAD_GATEWAY);
+					log.error( "Exception Occurred while jwtLogin()", e.getMessage());
+				}
+			}
+		}
+		
+		if(mlpUser != null) {
+			if(userService.isAdminRole(mlpUser.getUserId()))
+				responseObject.setAdmin(true);
+			
+			if(userService.isPublisherRole(mlpUser.getUserId()))
+				responseObject.setPublisher(true);
+
+			responseObject.setFirstLogin(firstLogin);
+			responseObject.setUserAssignedRolesList(userAssignedRolesList);
+		}
+
+		return responseObject;
+	}
+
+	@ApiOperation(value = "Validate the jwt Token for third party access", response = JsonResponse.class)
+	@RequestMapping(value = { APINames.JWTTOKENVALIDATION }, method = RequestMethod.POST, produces = APPLICATION_JSON)
+	@ResponseBody
+	public JsonResponse<Object> validateToken(HttpServletRequest request, HttpServletResponse response,
+			@RequestBody JsonRequest<User> userObj, @RequestHeader(value="provider", required=false) String provider) throws MalformedException {
+
+		log.debug( "Validate the jwt Token for third party access={}");
+
+		JsonResponse<Object> responseVO = new JsonResponse<Object>();
+
+		if (PortalUtils.isEmptyOrNullString(userObj.getBody().getJwtToken())) {
+			responseVO.setErrorCode(JSONTags.TAG_ERROR_CODE);
+			responseVO.setStatusCode(HttpServletResponse.SC_UNAUTHORIZED);
+			responseVO.setResponseDetail("Token Validation Failed");
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			return responseVO;
+		}
+
+		// String provider = httpRequest.getHeader("provider");
+		String jwtToken = userObj.getBody().getJwtToken();
+
+		if (!StringUtils.isEmpty(provider) && provider.equals("google")) {
+			try {
+				CloseableHttpClient httpclient = HttpClients.createDefault();
+				HttpGet getProfile = new HttpGet(GOOGLE_USER_INFO_URL);
+
+				String proxyHost = env.getProperty("proxy.host");
+				String proxyPortString = env.getProperty("proxy.port");
+				String proxyProtocol = env.getProperty("proxy.protocol");
+				if (!StringUtils.isEmpty(proxyHost) && proxyPortString != null && !StringUtils.isEmpty(proxyProtocol)) {
+					Integer proxyPort = Integer.parseInt(proxyPortString);
+					HttpHost proxy = new HttpHost(proxyHost, proxyPort, proxyProtocol);
+
+					RequestConfig config = RequestConfig.custom().setProxy(proxy).build();
+					getProfile.setConfig(config);
+				}
+
+				getProfile.setHeader(HttpHeaders.AUTHORIZATION, jwtToken);
+				CloseableHttpResponse resp = null;
+
+				resp = httpclient.execute(getProfile);
+
+				HttpEntity respEntity = resp.getEntity();
+				String result = PortalUtils.convertStreamToString(respEntity.getContent());
+
+				ObjectMapper mapper = new ObjectMapper();
+				@SuppressWarnings("unchecked")
+				Map<String, Object> profile = mapper.readValue(result, Map.class);
+				String email = (String) profile.get("email");
+				MLPUser mlpUser = userService.findUserByEmail(email);
+				if (mlpUser != null) {
+					responseVO.setStatus(true);
+					responseVO.setResponseDetail("Valid Token");
+					responseVO.setResponseBody(mlpUser.getUserId());
+					responseVO.setStatusCode(HttpServletResponse.SC_OK);
+				}
+			} catch (IOException e) {
+				responseVO.setErrorCode(JSONTags.TAG_ERROR_CODE);
+				responseVO.setStatusCode(HttpServletResponse.SC_UNAUTHORIZED);
+				responseVO.setResponseDetail("Token Validation Failed");
+				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+				e.printStackTrace();
+			}
+		} else {
+			MLPUser user = null;
+			jwtToken = jwtToken.replace("Bearer ", "");
+			String userName = jwtTokenUtil.getUsernameFromToken(jwtToken);
+
+			if (userName == null) {
+				responseVO.setErrorCode(JSONTags.TAG_ERROR_CODE);
+				responseVO.setStatusCode(HttpServletResponse.SC_UNAUTHORIZED);
+				responseVO.setResponseDetail("Token Validation Failed");
+				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+				return responseVO;
+			}
+
+			Map<String, String> queryParams = new HashMap<>();
+			queryParams.put("loginName", userName);
+			user = userService.findUserByUsername(userName);
+
+			if (user == null) {
+				responseVO.setErrorCode(JSONTags.TAG_ERROR_CODE);
+				responseVO.setStatusCode(HttpServletResponse.SC_UNAUTHORIZED);
+				responseVO.setResponseDetail("Token Validation Failed");
+				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+				return responseVO;
+			}
+
+			if (jwtTokenUtil.validateToken(jwtToken, user)) {
+				responseVO.setStatus(true);
+				responseVO.setResponseDetail("Valid Token");
+				responseVO.setResponseBody(user.getUserId());
+				responseVO.setStatusCode(HttpServletResponse.SC_OK);
+			} else {
+				responseVO.setErrorCode(JSONTags.TAG_ERROR_CODE);
+				responseVO.setStatusCode(HttpServletResponse.SC_UNAUTHORIZED);
+				responseVO.setResponseDetail("Validation Failed");
+				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			}
+		}
+		return responseVO;
+	}
+
+	@ApiOperation(value = "Validate the Api Token for third party access", response = JsonResponse.class)
+	@RequestMapping(value = { APINames.APITOKENVALIDATION }, method = RequestMethod.POST, produces = APPLICATION_JSON)
+	@ResponseBody
+	public JsonResponse<Object> validateApiToken(HttpServletRequest request, HttpServletResponse response,
+			@RequestBody JsonRequest<User> userObj, @RequestHeader(value="provider", required=false) String provider) throws MalformedException {
+
+		log.debug( "Validate the Api Token for third party access={}", userObj);
+
+		JsonResponse<Object> responseVO = new JsonResponse<Object>();
+		String apiToken = userObj.getBody().getApiTokenHash();
+		String userName = userObj.getBody().getUsername();
+
+		if (PortalUtils.isEmptyOrNullString(apiToken) || PortalUtils.isEmptyOrNullString(userName)) {
+			responseVO.setErrorCode(JSONTags.TAG_ERROR_CODE);
+			responseVO.setStatusCode(HttpServletResponse.SC_UNAUTHORIZED);
+			responseVO.setResponseDetail("Token Validation Failed");
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			return responseVO;
+		}
+
+		MLPUser user = null;
+		apiToken = apiToken.replace("Bearer ", "");
+
+		try {
+			user = userService.verifyApiToken(userName, apiToken);
+		} catch (AcumosServiceException e) {
+			responseVO.setErrorCode(JSONTags.TAG_ERROR_CODE);
+			responseVO.setStatusCode(HttpServletResponse.SC_UNAUTHORIZED);
+			responseVO.setResponseDetail("Validation Failed");
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+		}
+
+		if (user != null) {
+			responseVO.setStatus(true);
+			responseVO.setResponseDetail("Valid Token");
+			responseVO.setResponseBody(user.getUserId());
+			responseVO.setStatusCode(HttpServletResponse.SC_OK);
+		} else {
+			responseVO.setErrorCode(JSONTags.TAG_ERROR_CODE);
+			responseVO.setStatusCode(HttpServletResponse.SC_UNAUTHORIZED);
+			responseVO.setResponseDetail("Validation Failed");
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+		}
+
+		return responseVO;
+	}
+
+	@ApiOperation(value = "Validate the Cookie based Api Token for third party access", response = JsonResponse.class)
+	@RequestMapping(value = {
+			APINames.APITOKEN_COOKIE_VALIDATION }, method = RequestMethod.POST, produces = APPLICATION_JSON)
+	@ResponseBody
+	public JsonResponse<Object> validateCookieApiToken(HttpServletRequest request, HttpServletResponse response,
+			@RequestBody JsonRequest<String> cookieStr) throws MalformedException {
+
+		String cookieApiToken = cookieStr.getBody();
+
+		JsonResponse<Object> responseVO = new JsonResponse<Object>();
+
+		if (PortalUtils.isEmptyOrNullString(cookieApiToken)) {
+			responseVO.setErrorCode(JSONTags.TAG_ERROR_CODE);
+			responseVO.setStatusCode(HttpServletResponse.SC_UNAUTHORIZED);
+			responseVO.setResponseDetail("Token Validation Failed");
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			return responseVO;
+		}
+
+		MLPUser user = null;
+
+		Map<String, String> map = new HashMap<>();
+		String[] keyvalues = cookieApiToken.split(";");
+
+		for (String pair : keyvalues) {
+			String[] entry = pair.split("=");
+			map.put(entry[0].trim(), entry[1].trim());
+		}
+
+		String apiToken = map.get("authToken");
+		apiToken = apiToken.replace("Bearer ", "");
+		String userName = jwtTokenUtil.getUsernameFromToken(apiToken);
+
+		if (userName == null) {
+			responseVO.setErrorCode(JSONTags.TAG_ERROR_CODE);
+			responseVO.setStatusCode(HttpServletResponse.SC_UNAUTHORIZED);
+			responseVO.setResponseDetail("Token Validation Failed");
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			return responseVO;
+		}
+
+		Map<String, String> queryParams = new HashMap<>();
+		queryParams.put("loginName", userName);
+		user = userService.findUserByUsername(userName);
+
+		if (user == null) {
+			responseVO.setErrorCode(JSONTags.TAG_ERROR_CODE);
+			responseVO.setStatusCode(HttpServletResponse.SC_UNAUTHORIZED);
+			responseVO.setResponseDetail("Token Validation Failed");
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			return responseVO;
+		}
+
+		if (jwtTokenUtil.validateToken(apiToken, user)) {
+			responseVO.setStatus(true);
+			responseVO.setResponseDetail("Valid Token");
+			responseVO.setResponseBody(user.getUserId());
+			responseVO.setStatusCode(HttpServletResponse.SC_OK);
+		} else {
+			responseVO.setErrorCode(JSONTags.TAG_ERROR_CODE);
+			responseVO.setStatusCode(HttpServletResponse.SC_UNAUTHORIZED);
+			responseVO.setResponseDetail("Validation Failed");
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+		}
+		return responseVO;
+	}
+	
+	@ApiOperation(value = "Provide the Validation status for the application", response = JsonResponse.class)
+	@RequestMapping(value = { APINames.VALIDATION_STATUS }, method = RequestMethod.POST, produces = APPLICATION_JSON)
+	@ResponseBody
+	public String validationStatus(){
+
+		log.debug( "provide the Validation status for the application");
+
+		String validationAccess = env.getProperty("portal.feature.enablePublication");
+				
+		return validationAccess;
+		
+	}
+}

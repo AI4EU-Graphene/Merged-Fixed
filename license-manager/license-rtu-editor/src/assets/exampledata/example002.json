@@ -1,0 +1,41 @@
+{
+  "@context": {
+    "@vocab": "https://www.w3.org/ns/odrl.jsonld#",
+    "vcard": "http://www.w3.org/2006/vcard/ns#"
+  },
+  "$schema": "https://raw.githubusercontent.com/acumos/license-manager/master/license-rtu-editor/src/assets/schema/1.0.1/rtu-agreement.json",
+  "@type": "Agreement",
+  "assignee": {
+    "@type": [
+      "Party",
+      "vcard:Organization"
+    ],
+    "vcard:hasUrl": "companyb.com/team",
+    "vcard:fn": "Company B",
+    "vcard:hasEmail": "team@companyb.com"
+  },
+  "assigner": {
+    "@type": [
+      "Party",
+      "vcard:Organization"
+    ],
+    "vcard:hasUrl": "companya.com",
+    "vcard:fn": "Company A",
+    "vcard:hasEmail": "sales@companya.com"
+  },
+  "target": {
+    "refinement": [
+    ],
+    "@type": "Target"
+  },
+  "permission": [
+    {
+      "@type": "Rule",
+      "action": [
+        "use"
+      ],
+      "uid": "acumos://software-licensor/Company%20A/permission/715dc5af-4829-4457-98a3-37bde9ffdd17"
+    }
+  ],
+  "uid": "acumos://software-licensor/Company%20A/agreement/eff30856-0695-4083-a832-59be5267a192"
+}

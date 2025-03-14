@@ -1,0 +1,49 @@
+FROM node:10-alpine
+
+# Installs latest Chromium (73) package.
+RUN apk update && apk upgrade && \
+    echo @edge http://nl.alpinelinux.org/alpine/edge/community >> /etc/apk/repositories && \
+    echo @edge http://nl.alpinelinux.org/alpine/edge/main >> /etc/apk/repositories && \
+    apk add --no-cache \
+      chromium@edge=~73.0.3683.103 \
+      nss@edge \
+      freetype@edge \
+      freetype-dev@edge \
+      harfbuzz@edge \
+      ttf-freefont@edge
+
+# This line is to tell karma-chrome-launcher where
+# chromium was downloaded and installed to.
+ENV CHROME_BIN /usr/bin/chromium-browser
+
+# Tell Puppeteer to skip installing Chrome. We'll be using the installed package.
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
+
+
+# Add user so we don't need --no-sandbox.
+RUN addgroup -S pptruser && adduser -S -g pptruser pptruser \
+    && mkdir -p /home/pptruser/Downloads /app/ \
+    && chown -R pptruser:pptruser /home/pptruser \
+    && chown -R pptruser:pptruser /app
+
+# Run everything after as non-privileged user.
+USER pptruser
+
+# Create app directory
+WORKDIR /app
+# # Puppeteer v1.12.2 works with Chromium 73.
+RUN npm install --global puppeteer@1.12.2
+
+# Install app dependencies
+# A wildcard is used to ensure both package.json AND package-lock.json are copied
+# where available (npm@5+)
+COPY package*.json ./
+
+RUN npm --max-old-space-size=4092 install
+# If you are building your code for production
+# RUN npm ci --only=production
+
+# Bundle app source
+COPY --chown=pptruser:pptruser . .
+
+CMD [ "npm", "run", "ci-test" ]

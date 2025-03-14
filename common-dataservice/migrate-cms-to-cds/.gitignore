@@ -1,0 +1,9 @@
+.classpath
+.project
+.pydevproject
+/.settings/
+/bin/
+/logs/
+/*.log
+/target/
+/migrate.properties

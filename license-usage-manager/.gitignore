@@ -1,0 +1,10 @@
+.jshintrc
+node_modules/
+logs
+target
+.DS_Store
+.project
+.settings
+.vscode
+.classpath
+*.log

@@ -1,0 +1,54 @@
+[
+    {
+        "type": "flex",
+        "flex-flow": "row wrap"
+    },
+    {
+        "key": "modelLicenses",
+        "type": "array",
+        "items": [
+            "modelLicenses[].keyword",
+            "modelLicenses[].intro",
+            {
+                "key": "modelLicenses[].URL",
+                "title": "URL"
+            },
+            "modelLicenses[].modelId",
+            "modelLicenses[].swidTag",
+            "modelLicenses[].warranty",
+            {
+                "key": "modelLicenses[].copyright",
+                "type": "fieldset",
+                "items": [
+                    {
+                        "key": "modelLicenses[].copyright.year",
+                        "type": "number"
+                    },
+                    "modelLicenses[].copyright.company",
+                    "modelLicenses[].copyright.suffix"
+                ]
+            },
+            {
+                "key": "modelLicenses[].modelLimits",
+                "type": "array",
+                "items": [
+                    "modelLicenses[].modelLimits[].id",
+                    "modelLicenses[].modelLimits[].name",
+                    "modelLicenses[].modelLimits[].desc",
+                    "modelLicenses[].modelLimits[].limit.type",
+                    "modelLicenses[].modelLimits[].limit.value"
+                ]
+            }
+        ]
+    },
+    {
+        "key": "contentLicenses",
+        "type": "array",
+        "listItems": 0,
+        "items": [
+            "contentLicenses[].keyword",
+            "contentLicenses[].path",
+            "contentLicenses[].source"
+        ]
+    }
+]

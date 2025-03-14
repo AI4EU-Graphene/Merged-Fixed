@@ -1,0 +1,144 @@
+#!/usr/bin/env python3
+# ===================================================================================
+# Copyright (C) 2021 Fraunhofer Gesellschaft. All rights reserved.
+# ===================================================================================
+# This Acumos software file is distributed by Fraunhofer Gesellschaft
+# under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# This file is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ===============LICENSE_END========================================================
+
+import subprocess
+import os
+
+
+class ProtoMerger:
+    """Merge proto files. There is also a check for duplicate messages"""
+    messages = {}
+    services = {}
+    proto_files = []
+    rpc_service_map = {}
+
+    def __init__(self, files):
+        self.proto_files = files
+
+    def prepare_map_service_rpc(self):
+
+        rpc_method_name = ""
+        service_name = ""
+
+        for file in self.proto_files:
+            file_path = os.path.join("work_dir/" + file)
+            for line in open(file_path, "r"):
+                # print('prepare_map_service_rpc reading', line.strip())
+                if "rpc" in line and "//" not in line:
+                    split1 = line.split()
+                    split2 = split1[1].split("(")
+                    rpc_method_name = split2[0]
+                    # print('prepare_map_service_rpc rpc', rpc_method_name)
+
+                if "service" in line and "//" not in line:
+                    var1 = line.split()
+                    service_name = var1[1]
+                    # print('prepare_map_service_rpc service', service_name)
+
+                if rpc_method_name and service_name:
+                    # print('prepare_map_service_rpc found stub!')
+                    self.rpc_service_map[rpc_method_name] = service_name + "Stub"
+                    rpc_method_name = ""
+
+    def prepare_dict(self):
+        """
+
+        :return:
+            messages: dictionary of messages in list of proto files
+            services: dictionary of services in list of proto files
+        """
+
+        for file in self.proto_files:
+            msg_value = []
+            ser_value = []
+            flag_message = False
+            flag_service = False
+
+            file_path = os.path.join("work_dir/" + file)
+
+            for line in open(file_path, "r"):
+
+                if flag_message:
+                    if "//" not in line:
+                        msg_value.append(line)
+                    if "}" in line:
+                        all_values = ''.join(map(str, msg_value))
+                        self.messages[key] = all_values
+                        flag_message = False
+                        msg_value.clear()
+
+                if flag_service:
+                    if "//" not in line:
+                        ser_value.append(line)
+                    if "}" in line:
+                        all_values = ''.join(map(str, ser_value))
+                        self.services[key] = all_values
+                        flag_service = False
+                        ser_value.clear()
+
+                if "message" in line and "//" not in line and (not flag_message):
+                    flag_service = False
+                    key = line
+                    flag_message = True
+
+                if "service" in line and "//" not in line and (not flag_service):
+                    flag_message = False
+                    key = line
+                    flag_service = True
+
+        return self.messages, self.services
+
+    def write_to_merged_proto(self, messages, services, file):
+        """
+
+        :param messages: dictionary of messages
+        :param services: dictionary of services
+        :param file: name of output file which in our case will always we pipeline.proto as orchestrator expected it
+                    that way.
+        :return: No return
+        """
+        #file_path = os.path.join("work_dir/" + file)
+        outfile = open(file, "a")
+        init_line = 'syntax = ' + '"' + 'proto3' + '"' + ';' + '\n'
+        data_broker_line = 'import' + '\t' + '"' + 'google/protobuf/empty.proto' + '"' + ';' + '\n' + '\n'
+        outfile.write(init_line)
+        outfile.write(data_broker_line)
+
+        for key, value in messages.items():
+            key_value = key + "\n" + value
+            outfile.write(key_value)
+            outfile.write("\n")
+
+        for key, value in services.items():
+            key_value = key + "\n" + value
+            outfile.write(key_value)
+            outfile.write("\n")
+        print("Proto Files successfully merged...!")
+        outfile.close()
+
+
+class ProtoComplier:
+    """This class generates the stubs and skeletons for the combined protofile"""
+
+    def generate_pb2_pb2c(self, protofile):
+        """ genrate pb2 and pb2_grpc files for combined pipeline.proto
+        :arg
+                protofile(str): Path of combined proto file
+        """
+
+        subprocess.call(
+            ['python3', '-m', 'grpc_tools.protoc', '-I.', '--python_out=.', '--grpc_python_out=.', protofile])

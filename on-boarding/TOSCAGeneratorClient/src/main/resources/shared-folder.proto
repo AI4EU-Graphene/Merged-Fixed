@@ -1,0 +1,12 @@
+
+message SharedFolderRequest {
+ string path = 1;
+}
+
+message SharedFolderStatus {
+ bool success = 1;
+}
+
+service SharedFolder {
+ rpc mountVolume(SharedFolderRequest) returns(SharedFolderStatus);
+}

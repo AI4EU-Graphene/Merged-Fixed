@@ -1,0 +1,134 @@
+<!--  
+===============LICENSE_START=======================================================
+Acumos Apache-2.0
+===================================================================================
+Copyright (C) 2017 AT&T Intellectual Property & Tech Mahindra. All rights reserved.
+===================================================================================
+This Acumos software file is distributed by AT&T and Tech Mahindra
+under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+This file is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+===============LICENSE_END=========================================================
+-->
+
+<span class="header-title"><a ui-sref="home" ng-click="$root.parentActive = ''"><span class="acumos-logo-inner"  style = 'background: url(../images/{{$root.headerImage.name}}) no-repeat 0px 10px'></span></a></span>
+	<!-- Sidebar Desktop View -->
+	<nav class="mdl-navigation cg-sidebar Acu-desktop-sidebar">
+		   <a class="mdl-navigation__link" ng-class="{ active: isActive('/home') }" ui-sref="home" title="Home" ng-click="$root.parentActive = ''">
+		   		<span class="icon-header icon-home"></span>
+		   		<span class="headertxtspan">Home</span>
+		   </a>
+			 <!-- || $root.urlPath == 'marketPlace' -->
+			<a class="mdl-navigation__link" ng-class="{ active: (isActive('/marketPlace') ) || $root.parentActive == 'marketplace' }" ng-click="$root.parentActive = 'marketplace'" ui-sref="marketPlace" title="Marketplace">
+				<span class="icon-header icon-marketplace"></span>
+				<span class="headertxtspan" >Marketplace</span>
+			</a>
+			
+			<!-- || $root.urlPath == 'manageModule' -->
+			<a class="mdl-navigation__link" ng-class="{ active: isActive('/manageModule') || $root.parentActive == 'mymodel' }" ng-click="$root.parentActive = 'mymodel'" ui-sref="manageModule" title="My Models">
+				<span class="icon-header icon-manage_model"></span>
+				<span class="headertxtspan">My Models</span>
+			</a>
+			
+			<a ng-if="$root.userRolePublisher" class="mdl-navigation__link" ng-class="{ active: (isActive('/catalog') ) || $root.parentActive == 'catalog' }" ng-click="$root.parentActive = 'catalog'" ui-sref="catalog" title="Catalogs"  ng-click="$root.parentActive = ''">
+		    	<span class="icon-header icon-catalogs"></span>
+		    	<span class="headertxtspan">Catalogs</span>
+		    </a>
+				
+		    <a ng-if="$root.enableOnBoarding" class="mdl-navigation__link" ng-class="{ active: isActive('/modelerResource') }" ui-sref="modularResource" title="On-Boarding Model"  ng-click="$root.parentActive = ''">
+		    	<span class="icon-header icon-onboarding-model"></span>
+		    	<span class="headertxtspan">ON-BOARDING MODEL</span>
+		    </a> 
+		   	
+		   	<a class="mdl-navigation__link" ng-class="{ active: isActive('/acuCompose') }" ui-sref="acuCompose" title="Design Studio"  ng-click="$root.parentActive = ''">
+		   		<span class="icon-header icon-design_studio"></span>
+				<span class="headertxtspan">Design Studio</span>
+		   </a>
+		   
+		   <a ng-if="$root.userRoleAdmin" class="mdl-navigation__link" ng-class="{ active: isActive('/admin') }" ui-sref="admin" title="Site Admin" ng-click="$root.parentActive = ''">
+		   		<span class="icon-header icon-site-admin"></span>
+				<span class="headertxtspan">Site Admin</span>
+		   </a>
+		   <a ng-if="$root.userRoleLicenseAdmin" class="mdl-navigation__link" ng-class="{ active: isActive('/manageLicense') }" ui-sref="manageLicense" title="Manage License" ng-click="$root.parentActive = ''">
+		   		<span class="icon-header icon-license-admin"></span>
+				<span class="headertxtspan">Manage License</span>
+		   </a>
+		   <a ng-if="$root.userRolePublisher" class="mdl-navigation__link" ng-class="{ active: isActive('/publishRequest') }" ui-sref="publishRequest" title="Publish Request" ng-click="$root.parentActive = 'publishRequest'">
+		   		<span class="icon-header icon-publish-request"></span>
+				<span class="headertxtspan">Publish Request</span>
+		   </a>
+		   
+		   <a ng-if="showQandAUrl" class="mdl-navigation__link" ng-class="{ active: isActive('/qanda') }" href='{{qAndAUrl}}' title="Q And A"  ng-click="$root.parentActive = ''" target="_blank">
+		   		<span class="icon-header icon-qa"></span>
+				<span class="headertxtspan">Q And A</span>
+		   </a>
+		   <ul>
+		   		<li ng-repeat="menu in listResponse">
+				   <a class="mdl-navigation__link" ng-class="{ active: isActive('/qanda') }" href='{{menu.url}}'  title={{menu.name}}  ng-click="$root.parentActive = ''" target="_blank">
+				   		<img ng-src="data:image/PNG;base64,{{menu.imagePath}}"  onerror="this.onerror=null;this.src ='/images/sidebar-icons/default_menu_icon.png'; this.title ='Image path is not valid';"  />  
+						<span class="headertxtspan">{{menu.name | uppercase}}</span>
+				   </a>
+		   		</li>
+		   </ul> 
+	</nav>
+	
+	<!-- Sidebar Mobile View -->	
+	<nav class="mdl-navigation cg-sidebar Acu-mobile-sidebar">
+		   <a class="mdl-navigation__link" ng-class="{ active: isActive('/home') }" ui-sref="home" title="Home" ng-click="$root.parentActive = '';hamberClick()">
+		   		<span class="icon-header icon-home"></span>
+		   		<span class="headertxtspan">Home</span>
+		   </a>
+			 <!-- || $root.urlPath == 'marketPlace' -->
+			<a class="mdl-navigation__link" ng-class="{ active: (isActive('/marketPlace') ) || $root.parentActive == 'marketplace' }" ng-click="$root.parentActive = 'marketplace';hamberClick()" ui-sref="marketPlace" title="Marketplace">
+				<span class="icon-header icon-marketplace"></span>
+				<span class="headertxtspan" >Marketplace</span>
+			</a>
+			
+			<!-- || $root.urlPath == 'manageModule' -->
+			<a class="mdl-navigation__link" ng-class="{ active: isActive('/manageModule') || $root.parentActive == 'mymodel' }" ng-click="$root.parentActive = 'mymodel';hamberClick()" ui-sref="manageModule" title="My Models">
+				<span class="icon-header icon-manage_model"></span>
+				<span class="headertxtspan">My Models</span>
+			</a>
+				
+			<a ng-if="$root.userRolePublisher" class="mdl-navigation__link" ng-class="{ active: isActive('/catalog') }" ui-sref="catalog" title="Catalogs"  ng-click="$root.parentActive = ''">
+		    	<span class="icon-header icon-catalogs"></span>
+		    	<span class="headertxtspan">CATALOGS</span>
+		    </a>
+		    
+		    <a ng-if="$root.enableOnBoarding" class="mdl-navigation__link" ng-class="{ active: isActive('/modelerResource') }" ui-sref="modularResource" title="On-Boarding Model"  ng-click="$root.parentActive = '';hamberClick()">
+		    	<span class="icon-header icon-onboarding-model"></span>
+		    	<span class="headertxtspan">ON-BOARDING MODEL</span>
+		    </a> 
+		   <a class="mdl-navigation__link" ng-class="{ active: isActive('/designStudio') }" ui-sref="designStudio" title="Design Studio"  ng-click="$root.parentActive = '';hamberClick()">
+		   		<span class="icon-header icon-design_studio"></span>
+				<span class="headertxtspan">Design Studio</span>
+		   </a>
+		   
+		   <a ng-if='userRoleAdmin' class="mdl-navigation__link" ng-class="{ active: isActive('/admin') }" ui-sref="admin" title="Site Admin" ng-click="$root.parentActive = '';hamberClick()">
+		   		<span class="icon-header icon-site-admin"></span>
+				<span class="headertxtspan">Site Admin</span>
+		   </a>
+		   <a ng-if="$root.userRoleLicenseAdmin" class="mdl-navigation__link" ng-class="{ active: isActive('/manageLicense') }" ui-sref="manageLicense" title="Manage License" ng-click="$root.parentActive = ''">
+		   		<span class="icon-header icon-license-admin"></span>
+				<span class="headertxtspan">Manage License</span>
+		   </a>
+		   <a ng-show="showQandAUrl" class="mdl-navigation__link" ng-class="{ active: isActive('/qanda') }" href='{{qAndAUrl}}' title="Q And A"  ng-click="$root.parentActive = '';hamberClick()" target="_blank">
+		   		<span class="icon-header icon-qa"></span>
+				<span class="headertxtspan">Q And A</span>
+		   </a>
+		   <ul>
+		   		<li ng-repeat="menu in listResponse">
+				   <a class="mdl-navigation__link" ng-class="{ active: isActive('/qanda') }" href='{{menu.url}}' title={{menu.name}}  ng-click="$root.parentActive = ''" target="_blank">
+				   		<span class="icon-header icon-qa"></span>
+						<span class="headertxtspan">{{menu.name | uppercase}}</span>
+				   </a>
+		   		</li>
+		   </ul>
+	</nav>

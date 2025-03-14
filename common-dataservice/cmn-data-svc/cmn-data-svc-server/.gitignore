@@ -1,0 +1,11 @@
+.classpath
+.factorypath
+.project
+/.settings/
+/target/
+/logs/
+/derby.log
+/application.properties
+/application-cognitadb.properties
+/.apt_generated/
+/.apt_generated_tests/

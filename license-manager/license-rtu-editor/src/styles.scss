@@ -1,0 +1,148 @@
+/*-
+ * ===============LICENSE_START================================================
+ * Acumos Apache-2.0
+ * ============================================================================
+ * Copyright (C) 2019 Nordix Foundation.
+ * ============================================================================
+ * This Acumos software file is distributed by Nordix Foundation
+ * under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * This file is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ===============LICENSE_END==================================================
+ */
+
+/* You can add global styles to this file, and also import other style files */
+
+@import "fonts-opensans.css";
+@import "theme.scss";
+
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+}
+
+.acumos-snackbar {
+  color: #ffffff;
+  background-color: #671c9d;
+}
+.btn {
+  background: #fff;
+  color: #2b262d !important;
+  border: 1px solid #d5d5d5 !important;
+  box-shadow: none !important;
+  font-weight: 600 !important;
+  text-transform: none;
+  font-size: 14px !important;
+  margin: 10px 0;
+}
+.list-group-item {
+  margin: 0px 0;
+}
+.mat-raised-button.mat-button-base {
+  padding: 0px 20px 0px 20px;
+  border: 1px solid #d5d5d5;
+  background: #ffffff;
+  box-shadow: none;
+  height: 30px;
+  color: #2b262d;
+  border-radius: 3px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer !important;
+}
+.mat-raised-button.mat-button-base.secondary-btn {
+  padding: 0px 40px 0px 20px !important;
+}
+button.secondary-btn.mat-menu-trigger.mat-raised-button.mat-button-base.mat-accent::after {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-color: transparent transparent transparent #2f2f2f;
+  content: "";
+  display: inline-block;
+  position: absolute;
+  top: 10px;
+  right: 23px;
+  transform: rotate(87deg);
+}
+.mat-raised-button.mat-accent:hover {
+  background-color: rgba(158, 158, 158, 0.4);
+}
+.mat-radio-button.mat-accent .mat-radio-inner-circle {
+  background-color: #671c9d;
+}
+.mat-radio-button.mat-accent.mat-radio-checked .mat-radio-outer-circle {
+  border-color: #671c9d;
+}
+.btn.btn-default {
+  background-color: #671c9d;
+  color: #fff !important;
+}
+.form-flex-item.ng-star-inserted {
+  margin-right: 20px;
+}
+legend {
+  font-size: 16px !important;
+  font-weight: 600;
+  line-height: 30px !important;
+  border-bottom: 1px solid #e5e5e5;
+  margin-bottom: 8px !important;
+  padding: 5px 8px 5px 0 !important;
+  color: #671c9d !important;
+  text-transform: uppercase;
+}
+label {
+  font-size: 14px !important;
+  color: #050009 !important;
+}
+.save-container {
+  display: flex;
+}
+.save-container button:first-child {
+  margin-right: 15px;
+}
+.form-flex-item.ng-star-inserted fieldset legend {
+  display: none;
+}
+legend.hide-legend {
+  display: none;
+}
+label.hide-legend {
+  font-size: 16px !important;
+  font-weight: 600;
+  line-height: 30px !important;
+  border-bottom: 1px solid #e5e5e5;
+  margin-bottom: 8px !important;
+  padding: 5px 8px 5px 0 !important;
+  color: #671c9d !important;
+  text-transform: uppercase;
+}
+
+.mat-radio-button.mat-radio-disabled .mat-radio-inner-circle,
+.mat-radio-button.mat-radio-disabled .mat-radio-ripple .mat-ripple-element {
+  background-color: rgba(0, 0, 0, 0.38);
+}
+.mat-radio-button.mat-radio-disabled .mat-radio-outer-circle,
+.mat-radio-button.mat-radio-disabled.mat-radio-checked .mat-radio-outer-circle {
+  border-color: rgba(0, 0, 0, 0.38);
+}
+button.mat-raised-button.mat-button-base.mat-primary {
+  background-color: #671c9d;
+  color: #fff !important;
+}
+.mat-raised-button.mat-primary[disabled][disabled] {
+  color: #c6c5c5 !important;
+  background-color: #efefef;
+  border: 1px solid #dadada;
+}

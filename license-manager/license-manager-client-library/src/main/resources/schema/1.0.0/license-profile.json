@@ -1,0 +1,79 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "version": "1.0.0",
+  "required": [
+    "$schema",
+    "keyword",
+    "licenseName",
+    "copyright",
+    "rtuRequired"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "default": "https://raw.githubusercontent.com/acumos/license-manager/master/license-manager-client-library/src/main/resources/schema/1.0.0/license-profile.json"
+    },
+    "keyword": {
+      "type": "string"
+    },
+    "licenseName": {
+      "type": "string"
+    },
+    "intro": {
+      "type": "string"
+    },
+    "copyright": {
+      "type": "object",
+      "required": [
+        "year",
+        "company",
+        "suffix"
+      ],
+      "properties": {
+        "year": {
+          "type": "integer",
+          "default": 2019
+        },
+        "company": {
+          "type": "string"
+        },
+        "suffix": {
+          "type": "string"
+        }
+      }
+    },
+    "softwareType": {
+      "type": "string"
+    },
+    "companyName": {
+      "type": "string"
+    },
+    "contact": {
+      "type": "object",
+      "required": [
+        "name",
+        "URL",
+        "email"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "URL": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        }
+      }
+    },
+    "additionalInfo": {
+      "type": "string"
+    },
+    "rtuRequired":{
+      "type": "boolean",
+      "description": "When true a right to use must be provided by the supplier to enable use."
+    }
+  }
+}

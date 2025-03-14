@@ -1,0 +1,19 @@
+{
+  "$schema": "https://raw.githubusercontent.com/acumos/license-manager/master/license-manager-client-library/src/main/resources/schema/1.0.0/license-profile.json",
+  "keyword": "Vendor-A-OSS",
+  "licenseName": "Vendor A Open Source Software License",
+  "copyright": {
+    "year": 2020,
+    "company": "Vendor A",
+    "suffix": "All Rights Reserved"
+  },
+  "softwareType": "Machine Learning Model",
+  "companyName": "Vendor A",
+  "contact": {
+    "name": "Vendor A Team",
+    "URL": "http://Vendor-A.com",
+    "email": "support@Vendor-A.com"
+  },
+  "additionalInfo": "http://Vendor-A.com/licenses/Vendor-A-OSS",
+  "rtuRequired": true
+}

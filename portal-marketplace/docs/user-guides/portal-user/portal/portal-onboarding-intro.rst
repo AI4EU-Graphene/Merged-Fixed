@@ -1,0 +1,176 @@
+.. ===============LICENSE_START=======================================================
+.. Acumos CC-BY-4.0
+.. ===================================================================================
+.. Copyright (C) 2017-2018 AT&T Intellectual Property & Tech Mahindra. All rights reserved.
+.. ===================================================================================
+.. This Acumos documentation file is distributed by AT&T and Tech Mahindra
+.. under the Creative Commons Attribution 4.0 International License (the "License");
+.. you may not use this file except in compliance with the License.
+.. You may obtain a copy of the License at
+..
+.. http://creativecommons.org/licenses/by/4.0
+..
+.. This file is distributed on an "AS IS" BASIS,
+.. WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+.. See the License for the specific language governing permissions and
+.. limitations under the License.
+.. ===============LICENSE_END=========================================================
+
+==========================
+Model On-Boarding Overview
+==========================
+
+Acumos is intended to enable the use of a wide range of tools and technologies in the development
+of machine learning models including support for both open sourced and proprietary toolkits.
+
+The goal of Onboarding is to provide an ingestion interface, by web or CLI(command line interface)
+for various types of models and to create required artifacts and identifiers to enter the  Acumos
+machine learning platform.
+
+In short, our goals are to generate or provide all the necessary materials required to use the models
+with the others components of Acumos like :
+
+- Tosca file for Design studio
+
+- Represent model I/O such for microservice generation
+
+- SolutionID for CDS
+
+- Licence file
+
+For model in a model interchange format like ONNX and PFA, only web interface is useable to upload
+them in the platform
+
+
+For models developped in Java, Python 3.0, R  On-boarding allows user to create containerized
+microservice at the end of the on-boarding process. If user choose to not create the microservice
+during on-boarding he can create it later.
+
+For model Dockerized and stored in repo outside Acumos (like for example Docker hub) you can save the 
+model URI in Acumos. You can also dockerize your models by yourself and on-board them in Acumos.
+
+These kinds of Models can be easily onboarded and wrapped into containerized microservices which are
+interoperable with many other components.The solution for accommodating a myriad of different model
+types is to provide a custom wrapping library for each runtime. The client library encapsulates the
+complexity surrounding the serialization and deserialization of models. Additionally, the client library
+creates a common native interface, a wrapper, for invoking the inner model. In order for Acumos to be
+able to reason about models uniformly, there is a common model interface description that details what
+the available  model methods are and what they look like. Acumos instantiates ML models as microservices
+and safely composes them together.
+
+.. Acumos accommodates the use of a wide range of tools and  technologies in the 
+.. development of machine learning models, including support for both open source 
+.. and proprietary toolkits. Models can be easily onboarded and wrapped into 
+.. containerized microservices which are interoperable with many other components. 
+.. On-boarding provides an ingestion interface for various  types of models to 
+.. enter the Acumos Machine Learning (ML) platform. Examples  of models include 
+.. well-defined objects such as scikit-learn estimators, TensorFlow weights, and 
+.. arbitrary R functions.
+
+.. The solution for accommodating a myriad of different model types is to provide 
+.. a custom wrapping library for each runtime. The client library encapsulates the 
+.. complexity surrounding the serialization and deserialization of models. 
+.. Additionally, the client library creates a common native interface, a wrapper, 
+.. for invoking the inner model. In order for Acumos to be able to reason about 
+.. models uniformly, there is a common model interface description that details 
+.. what the available  model methods are and what they look like. Acumos 
+.. instantiates ML models as microservices and safely composes them together.
+
+Architecture
+============
+
+High-level architecture Design :
+
+.. image:: ../images/onboarding/HighLevelFlow.png
+
+Low-level architecture Design (R, Python, Java, ONNX, PFA models) :
+
+.. image:: ../images/onboarding/Architecture_Diagram_demeter.png
+
+Low-level architecture Design (Dockerized model and dockerized model URI) :
+
+.. image:: ../images/onboarding/Architecture_Diagram_docker_demeter.png
+
+Low-level architecture Design (C++) :
+
+.. image:: ../images/onboarding/Architecture_Diagram_C_demeter.png
+
+
+.. Methods and Semantics (it is rather for developper guide)
+.. =====================
+
+.. Acumos is a machine learning platform, thus we need to provide certain “methods” in our wrapped
+.. models that Acumos can invoke in order to support various workflows. In a machine learning setting,
+.. these methods might look like:
+
+.. - fit(message) -> model state
+
+..    - Does a full “batch” fit, replacing previous internal model parameters
+      - Returns a “model state” object that provides a standard serialization method
+
+.. - partial_fit(message) -> model state
+
+..    - Does a partial fit, updating internal model parameters
+..    - Returns a “model state” object that provides a standard serialization method
+
+.. - transform(message) -> message
+
+..    - Returns an object that provides a standard serialization method
+
+On-Boarding Client Libraries
+============================
+
+The Acumos on-boarding process generates everything needed to create an executable microservice for
+your model and add it to the catalog.  Acumos uses Protobuf as a language-agnostic data format to
+provide a common description of the model data inputs and outputs.
+
+It exists three client libraries that supports the onboarding of Python, Java and R models. They are
+mainly composed of a function to create the model bundle in wich artifacts are embeded and a push
+function to push (onboard) the model bundle in Acumos. Once the model bundle is onboarded successfully
+in Acumos, if you have chosen a message response is displayed with  the Acumos doc
+
+The appropriate client library does the first step of the on-boarding process. This includes:
+
+#. Introspection to assess the toolkit library versions and determine file types
+#. Creation of a JSON description of the system
+#. Creation of the protobuf file
+#. model bundle push to the Acumos on-boarding server
+#. licence push to the Acumos on-boarding server (optional)
+
+The model bundle is an archive compose of the model, the JSON file and the Protobuf file previously
+created by the client library. Each client library have a parameter to create the micro service just
+at the end of the on-boarding. This parameter is a boolean parameter and the default value is "TRUE",
+users can change this value to "FALSE" if needed. The creation of the micro-service is still possible
+later, after the on-boarding, in the details model page (when you click on the model in the my model
+page). User can also on-board a licence (that must be named "licence.txt") with his model by putting
+the path to the licence file in the corresponding parameter of push function of the client libraries.
+
+Once the model bundle is onboarded successfully in Acumos, if you have chosen to create the micro service
+at the end of onboarding process, Acumos Docker image URI is displayed in a message response. Then you can 
+use this URI to load the Docker model image in your own Docker repository.
+
+On-Boarding By Web
+==================
+
+Users can also onboard model coming from R, python or Java by web, but the first step is to use the
+on-boarding client to create the model bundle and then upload this model bundle thanks to the web
+on-boarding page of the Acumos portal. In the same way as for the on-boarding with client libraries,
+user can choose to create the microservice at the end of on-boarding and also to upload a licence file
+(that must be named "licence.txt") thanks to checkboxes.
+
+For ONNX and PFA models it doesn't exist a client library and so no model bundle. You just have to
+onboard the model itself by using the on-boarding Web page of your acumos portal. Onboard a model
+under a model interchange format like ONNX and PFA is just an upload & store processus. There is no
+possibility to create a micro-service but user can upload a licence file (that must be named licence.txt)
+
+On-Boarding Server
+==================
+
+The On-boarding server is in charge to :
+
+#. Request the authentication backend to authenticate the user.
+#. Store all the artifacts and model in Nexus.
+#. Create a Solution-Id for each new model onboarded.
+#. Check if model has already been onboarded if yes, update the revision-Id and associated artifatcs for this model.
+#. Fill artifact type, Model type, Toolkit type associated to a Solution ID in CDS(Common Data Service) database.
+#. Trigger the creation of Microservice based on what user choose during WEB or CLI onboarding.

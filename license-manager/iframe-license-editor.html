@@ -1,0 +1,132 @@
+<!--
+  ===============LICENSE_START================================================
+  Acumos Apache-2.0
+  ============================================================================
+  Copyright (C) 2019 Nordix Foundation.
+  ============================================================================
+  This Acumos software file is distributed by Nordix Foundation
+  under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+  This file is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  ===============LICENSE_END==================================================
+  -->
+
+  <!doctype html>
+  <html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Acumos Portal</title>
+  
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        .grid-container {
+          display: grid;
+          grid-template-columns: 40vw 55vw;
+          grid-template-rows: 47vh 47vh;
+          grid-gap: 10px;
+          padding: 10px;
+        }
+        
+        .grid-container > div {
+          border: 1px solid black;
+          text-align: center;
+        }
+        .grid-container .license {
+          grid-column: 2;
+          grid-row: 1 / 3;
+        }
+        .input, .output {
+            display: block;
+            width: 95%;
+        }
+        .input, .output, .send-btn {
+          margin: 10px 10px 0px 10px;
+        }
+    </style>
+    <script>
+
+      var iframe;
+      // addEventListener and old browser support
+      function bindEvent(element, eventName, eventHandler) {
+        if (element.addEventListener) {
+            element.addEventListener(eventName, eventHandler, false);
+        } else if (element.attachEvent) {
+            element.attachEvent('on' + eventName, eventHandler);
+        }
+      }
+
+      function initOnLoad() {
+        iframe = document.getElementById('iframe-editor');
+        // TODO get messageObj
+        bindEvent(window, 'message', function(event) {
+          // message listener
+          if (event.data.key === 'output') {
+            var outputField = document.getElementById('output');
+            outputField.value = JSON.stringify(event.data.value);
+          } else if (event.data.key === 'action') {
+            if (event.data.value === 'cancel') {
+              alert('Cancel clicked');
+            }
+          }
+        });
+      }
+
+      function sendMessage(msgObj) {
+        iframe.contentWindow.postMessage(msgObj, '*');
+      }
+
+      function submitInput() {
+        try {
+          var inputField = document.getElementById('input');
+          var val = JSON.parse(inputField.value);
+          var msgObj = {
+            "key": "input",
+            "value": val
+          };
+          sendMessage(msgObj);
+        } catch (e) {
+          console.error("failed parsing input", e);
+        }
+      }
+
+      function clearEditor() {
+        var msgObj = {
+          "key": "input",
+          "value": {}
+        };
+        sendMessage(msgObj);
+      }
+
+    </script>
+  
+  </head>
+  <body>
+    <div class="grid-container">
+      <div>
+          <div>Input Json</div>
+          <textarea id="input" class="input" name="input" rows="17"></textarea>
+          <div>
+              <button class="send-btn" type="button" onclick="submitInput()">Send</button>
+              <button class="send-btn" type="button" onclick="clearEditor()" style="display: inline-block;">Clear Editor</button>
+          </div>
+      </div>
+      <div class="license">
+          <iframe id="iframe-editor" src="http://localhost:3000/index.html?mode=iframe"
+            frameborder="0" style="width: 100%; height: 100%;" onload="initOnLoad();"></iframe>
+      </div>
+      <div>
+          <div>Output Json</div>
+          <textarea id="output" class="output" name="output" rows="17"></textarea>
+      </div>
+    </div>
+
+  </body>
+  </html>
+  

@@ -1,0 +1,10 @@
+{
+  "$schema": "/schema/1.0.0/license-profile.json",
+  "keyword": "Apache-2.0",
+  "copyright": {
+    "year": 2019,
+    "company": "Company A",
+    "suffix": "A Intellectual Property. All rights reserved."
+  },
+  "rtuRequired": true
+}

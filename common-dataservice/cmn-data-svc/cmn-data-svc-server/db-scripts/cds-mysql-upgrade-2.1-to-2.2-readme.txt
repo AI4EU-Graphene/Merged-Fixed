@@ -1,0 +1,122 @@
+-- ===============LICENSE_START=======================================================
+-- Acumos Apache-2.0
+-- ===================================================================================
+-- Copyright (C) 2019 AT&T Intellectual Property & Tech Mahindra. All rights reserved.
+-- ===================================================================================
+-- This Acumos software file is distributed by AT&T and Tech Mahindra
+-- under the Apache License, Version 2.0 (the "License");
+-- you may not use this file except in compliance with the License.
+-- You may obtain a copy of the License at
+--
+--      http://www.apache.org/licenses/LICENSE-2.0
+--
+-- This file is distributed on an "AS IS" BASIS,
+-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-- See the License for the specific language governing permissions and
+-- limitations under the License.
+-- ===============LICENSE_END=========================================================
+
+=========================================================
+ACUMOS CDS UPGRADE OF DATABASE VERSION 2.1 TO VERSION 2.2
+=========================================================
+
+This document explains how to upgrade an Acumos Common Data Service
+version 2.1 database to a version 2.2 database.
+
+Overview and Limitations
+------------------------
+
+The accompanying upgrade script defines new catalogs and migrates data
+into those catalogs:
+
+a) Solutions with revisions all at COMPANY visibility are published to
+a new RESTRICTED catalog.
+
+b) Solutions with revisions all at PUBLIC visibility are published to
+a new PUBLIC catalog.
+
+c) However, to avoid inadvertent disclosure of information, solutions
+   with mixed visibility are NOT migrated.  In other words, solutions
+   with some revisions at COMPANY visibility and some revisions at
+   PUBLIC visibilty are left alone. Users will need to follow the new
+   workflow to publish such solutions to an appropriate catalog.
+
+Instructions
+------------
+
+Section A (Applicable for first time migration):
+
+The script cds-mysql-upgrade-2.1-to-2.2.sql cannot be used as
+provided; it must first be edited as follows:
+
+1. Change the configuration for the new PUBLIC catalog.  You must
+   choose a new ID, which is a UUID.  Generate an ID by typing the
+   command "uuidgen" at the Ubuntu command line, or visit
+   https://www.uuidgenerator.net/.
+
+   Find this line:
+    ('pppppppp-pppp-pppp-pppp-pppppppppppp', 'PB', 'MY PUBLIC MODELS', 
+    'MY COMPANY', 'http://catalog.my.org/public', NOW(), NOW()),
+
+   Perform a GLOBAL SEARCH AND REPLACE on all 4 occurrences of
+   pppppppp-pppp-pppp-pppp-pppppppppppp with the new ID that you
+   generated.
+
+2. Change the configuration for the new RESTRICTED catalog.  Generate
+a second UUID with 'uuidgen' etc.
+
+   Find this line:
+    ('rrrrrrrr-rrrr-rrrr-rrrr-rrrrrrrrrrrr', 'RS', 'MY COMPANY MODELS', 
+    'MY COMPANY', 'http://catalog.my.org/company', NOW(), NOW());
+
+   Perform a GLOBAL SEARCH AND REPLACE on all 5 occurrences of
+   rrrrrrrr-rrrr-rrrr-rrrr-rrrrrrrrrrrr with the new ID that you
+   generated, which must be different than the previous one.
+
+3. Replicate the existing data to a new database.  For example using
+the command line:
+
+    % mysql
+    > create database cds22m
+    > exit
+    % mysqldump cds21u | sudo mysql cds22m
+
+4. Apply the newly edited upgrade script to the newly replicated
+   database.  For example using the command line:
+
+    % mysql
+    > use cds22m;
+    > source cds-mysql-upgrade-2.1-to-2.2.sql;
+
+Section B (Applicable if you have already run 
+cds-mysql-upgrade-2.1-to-2.2.sql script, published before 07/01/19, 
+and now troubleshooting):
+
+If you are left with a DB state where solutions which have all revisions
+at PUBLIC or all revisions at COMPANY visibility level are migrated to 
+public or restricted catalog respectively, but solutions with revisions 
+across multiple visibility levels are not yet migrated, then carry out 
+the following steps:
+
+1. On CDS 2.1 DB  run the following query:
+SELECT solution_id
+   FROM c_solution_rev
+   GROUP BY solution_id
+   HAVING COUNT(distinct access_type_cd) > 1;
+
+2. Lets say answer to the query in 1. yields S1, S2, ...Sn. Then on 
+CDS 2.2 DB, run as per the following query template:
+
+INSERT INTO c_cat_sol_map (CATALOG_ID, SOLUTION_ID, CREATED_DATE)
+SELECT distinct '<restricted-catalog-id>', c_solution_rev.solution_id, NOW()
+FROM c_solution_rev, c_solution
+WHERE c_solution_rev.solution_id = c_solution.solution_id
+      AND c_solution.ACTIVE_YN = 'Y'
+      AND c_solution_rev.solution_id IN (S1, S2, ...Sn);
+
+   Replace <restricted-catalog-id> with UUID of the existent catalog whose
+   access type code is 'RS' and replace (S1, S2, ..Sn) with the list of solution
+   ids from step 1.       
+
+The final state of CDS 2.2 DB will give you the fully migrated catalog with 
+solutions having both pure and mixed access type revisions.

@@ -1,0 +1,107 @@
+<!--  
+===============LICENSE_START=======================================================
+Acumos Apache-2.0
+===================================================================================
+Copyright (C) 2019 AT&T Intellectual Property & Tech Mahindra. All rights reserved.
+===================================================================================
+This Acumos software file is distributed by AT&T and Tech Mahindra
+under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+This file is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+===============LICENSE_END=========================================================
+-->
+
+<!-- Catalog Modal box start -->
+<div>
+	<md-dialog aria-label="Catalog Modal" style="width:800px;">
+		<form name='catalogForm' ng-cloak novalidate>
+			<md-toolbar>
+				<div class="md-toolbar-tools">
+					<h2 >{{(parent.isEdit) ? 'Edit' : 'Add New'}} Catalog</h2>
+					<span flex></span>
+					<md-button class="md-icon-button" ng-click='closePoup()'>
+					<i class="material-icons">close</i> </md-button>
+				</div>
+			</md-toolbar>
+			<md-dialog-content>
+				<div class="md-dialog-content">
+					<div class="mdl-grid mdl-grid--no-spacing">
+						<div class="mdl-cell mdl-cell--8-col catalog-grid-cell1">
+							<md-input-container class="md-block"> <label class="md-required">Catalog
+								Name</label> <input type="text" ng-model="parent.catalog.name"
+								name="catalogName" type="text" required ng-blur="catalogNameVisited=true"
+								ng-focus="catalogNameVisited=false"	/>
+								
+						</md-input-container>						
+						<div class="help-inline validation-msgs"
+									ng-class="{validationmsg:!catalogForm.catalogName.$valid}">
+									<span
+										ng-show="!!catalogForm.catalogName.$error.required && catalogForm.catalogName.$touched && catalogNameVisited">Catalog
+										name required.</span>
+						</div>																									 
+						</div>
+				<div class="mdl-cell mdl-cell--4-col mdl-cell--4-col-tablet">				
+					<div class="select-control register-select-control">					
+						<label class="fedlbl4">Access Level<span class="reqfield">*</span></label>						
+						<md-select name="accessLevel" placeholder="Select Access Level"
+							ng-model="parent.catalog.accessTypeCode" class="model-box-dropdown-height">
+							<md-option 
+							value="{{type.value}}" ng-repeat='type in parent.accessType'
+							ng-click=""> {{type.name}} </md-option> </md-select>
+					</div>
+					<div class="help-inline validation-msgs">
+						<span class="model-box-dropdown-error-msg"
+							ng-show="catalogForm.accessLevel.$touched  && !(parent.catalog.accessTypeCode)">Access Level
+							Required.</span>
+
+					</div>
+				</div>
+			</div>
+					<br />
+					<div class="mdl-grid mdl-grid--no-spacing">
+						<div class="mdl-cell mdl-cell--12-col">
+							<md-input-container class="md-block" > <label class="md-required">Add
+								Description</label> <textarea class="catalog-txtarea" rows="3" cols="50"
+								ng-model="parent.catalog.description" 
+								name="catalogDesc" type="text" required ng-blur="catalogDescVisited=true"
+								ng-focus="catalogDescVisited=false" ></textarea> </md-input-container>
+								<div class="help-inline validation-msgs"
+									ng-class="{validationmsg:!catalogForm.catalogDesc.$valid}">
+									<span
+										ng-show="!!catalogForm.catalogDesc.$error.required && catalogForm.catalogDesc.$touched && catalogDescVisited">Catalog
+										description required.</span>
+								</div>
+						</div>
+					</div>
+					<br />
+					<div>
+						<md-checkbox ng-model="parent.catalog.selfPublish" aria-label="Checkbox 1">Self
+						Publish?</md-checkbox>
+					</div>
+				</div>
+			</md-dialog-content>
+			<md-dialog-actions>
+				<div class="dialog-footer-container1">
+					<button class="mdl-button mdl-js-button btn-secondary" alt="Cancel"
+						title="Cancel" ng-click="closePoup()">Cancel</button>
+					<button class="mdl-button mdl-js-button btn-primary btn-gap"
+						ng-if="!parent.isEdit" alt="Add New Catalog" title="Add New Catalog"
+						ng_click="parent.createCatalog()" ng-disabled="!parent.isValidCatalog(parent.catalog)">Add
+						Catalog</button>
+					<button class="mdl-button mdl-js-button btn-primary btn-gap"
+						ng-if="parent.isEdit" alt="Update Catalog" title="Update Catalog"
+						ng_click="parent.updateCatalog()" ng-disabled="!parent.isValidCatalog(parent.catalog)">Update
+						Catalog</button>
+				</div>
+			</md-dialog-actions>
+		</form>
+	</md-dialog>
+</div>
+<!-- Modal box end -->

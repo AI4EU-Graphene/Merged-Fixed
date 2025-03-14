@@ -1,0 +1,118 @@
+{
+  "@context": {
+    "@vocab": "https://www.w3.org/ns/odrl.jsonld#",
+    "vcard": "http://www.w3.org/2006/vcard/ns#"
+  },
+  "$schema": "https://raw.githubusercontent.com/acumos/license-manager/master/license-rtu-editor/src/assets/schema/1.0.1/rtu-agreement.json",
+  "@type": "Agreement",
+  "uid": "acumos://software-licensor/Company%2525252520A/agreement/487b1c01-b017-4516-85bc-9ad9610dfa70",
+  "assignee": {
+    "@type": [
+      "Party",
+      "vcard:Organization"
+    ],
+    "vcard:hasUrl": "companyb.com/team",
+    "vcard:fn": "Company B",
+    "vcard:hasEmail": "team@companyb.com",
+    "refinement": [
+      {
+        "@type": "Constraint",
+        "leftOperand": "lum:countUniqueUsers",
+        "operator": "lteq",
+        "rightOperand": {
+          "@value": "10",
+          "@type": "xsd:integer"
+        }
+      }
+    ]
+  },
+  "assigner": {
+    "@type": [
+      "Party",
+      "vcard:Organization"
+    ],
+    "vcard:hasUrl": "companya.com",
+    "vcard:fn": "Company A",
+    "vcard:hasEmail": "sales@companya.com"
+  },
+  "target": {
+    "refinement": [
+      {
+        "@type": "Constraint",
+        "leftOperand": "lum:swProductName",
+        "operator": "lum:in",
+        "rightOperand": [
+          "face-detect-model"
+        ]
+      },
+      {
+        "@type": "Constraint",
+        "leftOperand": "lum:swTagId",
+        "operator": "lum:in",
+        "rightOperand": [
+          "edc76757-cd54-4256-9c3d-f865d88db1ff"
+        ]
+      }
+    ],
+    "@type": "Target"
+  },
+  "permission": [
+    {
+      "uid": "acumos://software-licensor/Company%2525252520A/permission/1a21e418-ecd5-41b6-936f-78c707105b3c",
+      "@type": "Rule",
+      "action": [
+        "acumos:deploy",
+        "acumos:download"
+      ],
+      "constraint": [
+        {
+          "@type": "Constraint",
+          "leftOperand": "count",
+          "operator": "lt",
+          "rightOperand": {
+            "@value": "10",
+            "@type": "xsd:integer"
+          }
+        },
+        {
+          "@type": "Constraint",
+          "leftOperand": "date",
+          "operator": "lt",
+          "rightOperand": {
+            "@value": "01-01-2020",
+            "@type": "xsd:date"
+          }
+        }
+      ]
+    },
+    {
+      "@type": "Rule",
+      "action": [
+        "modelrunner:predict",
+        "modelrunner:train"
+      ],
+      "constraint": [
+        {
+          "@type": "Constraint",
+          "leftOperand": "date",
+          "operator": "lt",
+          "rightOperand": {
+            "@value": "01-01-2020",
+            "@type": "xsd:date"
+          }
+        }
+      ],
+      "uid": "acumos://software-licensor/Company%20A/permission/c7cb9a72-86d1-4fe3-87e6-0c275fcd2a29"
+    }
+  ],
+  "prohibition": [
+    {
+      "@type": "Rule",
+      "action": [
+        "transfer",
+        "aggregate"
+      ],
+      "uid": "acumos://software-licensor/Company%20A/prohibition/85d7767c-f9db-4b95-a395-1c94bd23c1be"
+    }
+  ]
+}

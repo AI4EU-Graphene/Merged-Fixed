@@ -1,0 +1,4 @@
+distribution_type: maven 
+log_dir: platform-oam-logging-library-maven-stage-master/199
+project: platform-oam
+version: 4.0.5 

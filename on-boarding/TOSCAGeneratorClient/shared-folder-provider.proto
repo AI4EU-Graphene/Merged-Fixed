@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+message SharedFolderRequest {
+ string path = 1;
+}
+message Empty {
+}
+
+service SharedFolderProvider {
+ rpc provideFolder(Empty) returns(SharedFolderRequest);
+}
+

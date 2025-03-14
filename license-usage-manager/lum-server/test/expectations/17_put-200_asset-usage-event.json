@@ -1,0 +1,340 @@
+{
+    "db": [
+        {
+            "sqlCmd": "BEGIN TRANSACTION ISOLATION LEVEL REPEATABLE READ",
+            "result": {
+                "command": "BEGIN",
+                "rowCount": 1,
+                "rows": []
+            }
+        },
+        {
+            "sqlCmd": "SELECT TXID_CURRENT() AS txid, PG_BACKEND_PID() AS pid, NOW() AS tx_now",
+            "result": {
+                "command": "SELECT",
+                "rowCount": 1,
+                "rows": [
+                    {
+                        "txid": 123,
+                        "pid": 456,
+                        "tx_now": "__to_date__|2019-12-19T11:43:20.952Z"
+                    }
+                ]
+            }
+        },
+        {
+            "sqlCmd": "INSERT INTO \"assetUsageReq\" (\"assetUsageReqId\" , \"action\",\"assetUsageType\",\"requestHttp\",\"request\",\"userId\",\"status\", \"requestStarted\") VALUES (($1) , ($2),($3),($4),($5),($6),($7), NOW())",
+            "sqlVals": [
+                "5bc27d60-da38-4afc-a34f-2d39e9c36f41",
+                "add-event",
+                "assetUsageEvent",
+                {
+                    "method": "PUT",
+                    "requestUrl": "__type__ignore__",
+                    "serverFQDN": "__type__ignore__",
+                    "path": "/api/v1/asset-usage-event",
+                    "originalUrl": "/api/v1/asset-usage-event?assetUsageId=unit-test-assetUsageId",
+                    "query": {
+                        "assetUsageId": "unit-test-assetUsageId"
+                    },
+                    "Content-Type": "application/json; charset=utf-8",
+                    "X-ACUMOS-RequestID": "5bc27d60-da38-4afc-a34f-2d39e9c36f41",
+                    "userAgent": "__type__ignore__",
+                    "clientIPAddress": "__type__ignore__",
+                    "ips": []
+                },
+                {
+                    "userId": "unit-test-userId-event",
+                    "swMgtSystemId": "unit-test-swMgtSystemId",
+                    "swMgtSystemInstanceId": "unit-test-swMgtSystemInstanceId",
+                    "swMgtSystemComponent": "unit-test-swMgtSystemComponent",
+                    "assetUsageEvent": {
+                        "swTagId": "unit-test-swTagId",
+                        "assetUsageId": "unit-test-assetUsageId",
+                        "action": "add-event",
+                        "event": {
+                            "event-test": "got it"
+                        }
+                    }
+                },
+                "unit-test-userId-event",
+                "started"
+            ],
+            "result": {
+                "command": "INSERT",
+                "rowCount": 1,
+                "rows": []
+            }
+        },
+        {
+            "sqlCmd": "WITH sw_lp AS ( SELECT swt.\"swTagId\", swt.\"softwareLicensorId\",swt.\"swidTagRevision\", lp.\"licenseProfileId\",lp.\"licenseProfileRevision\",lp.\"isRtuRequired\" FROM \"swidTag\" AS swt LEFT OUTER JOIN \"licenseProfile\" AS lp ON (lp.\"licenseProfileId\" = swt.\"licenseProfileId\") WHERE swt.\"swTagId\" = ($2) ) , asset_usage AS ( INSERT INTO \"assetUsage\" AS au (\"assetUsageId\" , \"modifier\" , \"creator\", \"assetUsageSeqTail\", \"assetUsageSeqTailEvent\", \"created\", \"modified\") VALUES (($1) , ($3) , ($4), 1, 1, NOW(), NOW()) ON CONFLICT (\"assetUsageId\") DO UPDATE SET \"assetUsageSeqTail\" = au.\"assetUsageSeqTail\" + 1, \"assetUsageSeqTailEvent\" = au.\"assetUsageSeqTail\" + 1, \"modified\" = NOW() , \"modifier\" = ($3) RETURNING \"assetUsageSeqTail\") INSERT INTO \"assetUsageHistory\" AS auh (\"assetUsageId\" , \"swTagId\" , \"swMgtSystemId\",\"swMgtSystemInstanceId\",\"swMgtSystemComponent\",\"assetUsageReqId\",\"action\",\"assetUsageType\" , \"creator\", \"softwareLicensorId\",\"swidTagRevision\",\"licenseProfileId\",\"licenseProfileRevision\",\"isRtuRequired\", \"assetUsageSeq\", \"created\") SELECT ($1) , ($2) , ($5),($6),($7),($8),($9),($10) , ($4), \"softwareLicensorId\",\"swidTagRevision\",\"licenseProfileId\",\"licenseProfileRevision\",\"isRtuRequired\", \"assetUsageSeqTail\", NOW() FROM asset_usage LEFT JOIN sw_lp ON TRUE RETURNING auh.\"assetUsageSeq\", auh.\"softwareLicensorId\",auh.\"swidTagRevision\",auh.\"licenseProfileId\",auh.\"licenseProfileRevision\",auh.\"isRtuRequired\"",
+            "sqlVals": [
+                "unit-test-assetUsageId",
+                "unit-test-swTagId",
+                "unit-test-userId-event",
+                "unit-test-userId-event",
+                "unit-test-swMgtSystemId",
+                "unit-test-swMgtSystemInstanceId",
+                "unit-test-swMgtSystemComponent",
+                "5bc27d60-da38-4afc-a34f-2d39e9c36f41",
+                "add-event",
+                "assetUsageEvent"
+            ],
+            "result": {
+                "command": "INSERT",
+                "rowCount": 1,
+                "rows": [
+                    {
+                        "assetUsageSeq": 6,
+                        "softwareLicensorId": "unit-test-softwareLicensorId",
+                        "swidTagRevision": 5,
+                        "licenseProfileId": "cec51e7d-d977-41d2-abc6-ef5f069491b8",
+                        "licenseProfileRevision": 1,
+                        "isRtuRequired": true
+                    }
+                ]
+            }
+        },
+        {
+            "sqlCmd": "INSERT INTO \"usageMetrics\" AS ums (\"usageMetricsId\",\"usageType\" , \"action\" , \"modifier\",\"modifierRequestId\" , \"swTagId\",\"metrics\",\"usageMetricsRevision\",\"creator\",\"creatorRequestId\", \"created\", \"modified\") VALUES (($1),($2) , ($3) , ($6),($7) , ($8),($9),($10),($11),($12), NOW(), NOW()) , (($1),($2), 'use' , ($6),($7) , ($8),($9),($10),($11),($12), NOW(), NOW()) ON CONFLICT (\"usageMetricsId\",\"usageType\" , \"action\") DO UPDATE SET \"usageMetricsRevision\" = ums.\"usageMetricsRevision\" + 1, \"modified\" = NOW(), \"metrics\" = ums.metrics || JSONB_BUILD_OBJECT('count', ((ums.metrics->'count')::INTEGER + ($5))) || CASE WHEN (ums.metrics->'users')::JSONB ? ($4)::TEXT THEN '{}'::JSONB ELSE JSONB_BUILD_OBJECT('users', (ums.metrics->'users')::JSONB || ('[\"' || ($4)::TEXT || '\"]')::JSONB) END , \"modifier\" = ($6),\"modifierRequestId\" = ($7) RETURNING *",
+            "sqlVals": [
+                "unit-test-swTagId",
+                "assetUsageEvent",
+                "add-event",
+                "unit-test-userId-event",
+                1,
+                "unit-test-userId-event",
+                "5bc27d60-da38-4afc-a34f-2d39e9c36f41",
+                "unit-test-swTagId",
+                {
+                    "count": 1,
+                    "users": [
+                        "unit-test-userId-event"
+                    ]
+                },
+                1,
+                "unit-test-userId-event",
+                "5bc27d60-da38-4afc-a34f-2d39e9c36f41"
+            ],
+            "result": {
+                "command": "INSERT",
+                "rowCount": 2,
+                "rows": [
+                    {
+                        "usageMetricsId": "unit-test-swTagId",
+                        "action": "add-event",
+                        "usageType": "assetUsageEvent",
+                        "swTagId": "unit-test-swTagId",
+                        "assetUsageRuleId": null,
+                        "metrics": {
+                            "count": 1,
+                            "users": [
+                                "unit-test-userId-event"
+                            ]
+                        },
+                        "usageMetricsRevision": 1,
+                        "creator": "unit-test-userId-event",
+                        "created": "2020-05-29T21:37:59.240Z",
+                        "creatorRequestId": "5bc27d60-da38-4afc-a34f-2d39e9c36f41",
+                        "modifier": "unit-test-userId-event",
+                        "modified": "2020-05-29T21:37:59.240Z",
+                        "modifierRequestId": "5bc27d60-da38-4afc-a34f-2d39e9c36f41"
+                    },
+                    {
+                        "usageMetricsId": "unit-test-swTagId",
+                        "action": "use",
+                        "usageType": "assetUsageEvent",
+                        "swTagId": "unit-test-swTagId",
+                        "assetUsageRuleId": null,
+                        "metrics": {
+                            "count": 1,
+                            "users": [
+                                "unit-test-userId-event"
+                            ]
+                        },
+                        "usageMetricsRevision": 1,
+                        "creator": "unit-test-userId-event",
+                        "created": "2020-05-29T21:37:59.240Z",
+                        "creatorRequestId": "5bc27d60-da38-4afc-a34f-2d39e9c36f41",
+                        "modifier": "unit-test-userId-event",
+                        "modified": "2020-05-29T21:37:59.240Z",
+                        "modifierRequestId": "5bc27d60-da38-4afc-a34f-2d39e9c36f41"
+                    }
+                ]
+            }
+        },
+        {
+            "sqlCmd": "UPDATE \"assetUsageReq\" AS aur SET \"requestDone\" = TRUE, \"responseSent\" = CLOCK_TIMESTAMP() , \"responseHttpCode\" = ($2),\"response\" = ($3),\"status\" = ($4) WHERE aur.\"assetUsageReqId\" = ($1)",
+            "sqlVals": [
+                "5bc27d60-da38-4afc-a34f-2d39e9c36f41",
+                200,
+                {
+                    "userId": "unit-test-userId-event",
+                    "swMgtSystemId": "unit-test-swMgtSystemId",
+                    "swMgtSystemInstanceId": "unit-test-swMgtSystemInstanceId",
+                    "swMgtSystemComponent": "unit-test-swMgtSystemComponent",
+                    "requestId": "5bc27d60-da38-4afc-a34f-2d39e9c36f41",
+                    "requested": "2020-05-29T21:37:59.239Z",
+                    "assetUsageEvent": {
+                        "swTagId": "unit-test-swTagId",
+                        "assetUsageId": "unit-test-assetUsageId",
+                        "action": "add-event",
+                        "event": {
+                            "event-test": "got it"
+                        },
+                        "softwareLicensorId": "unit-test-softwareLicensorId",
+                        "swidTagRevision": 5,
+                        "licenseProfileId": "cec51e7d-d977-41d2-abc6-ef5f069491b8",
+                        "licenseProfileRevision": 1,
+                        "isRtuRequired": true,
+                        "assetUsageSeq": 6
+                    }
+                },
+                "responseSent"
+            ],
+            "result": {
+                "command": "UPDATE",
+                "rowCount": 1,
+                "rows": []
+            }
+        },
+        {
+            "sqlCmd": "COMMIT",
+            "result": {
+                "command": "COMMIT",
+                "rowCount": 1,
+                "rows": []
+            }
+        }
+    ],
+    "req": {
+        "method": "PUT",
+        "path": "/api/v1/asset-usage-event?assetUsageId=unit-test-assetUsageId",
+        "content-type": "application/json; charset=utf-8",
+        "X-ACUMOS-RequestID": "5bc27d60-da38-4afc-a34f-2d39e9c36f41",
+        "send": {
+            "requestId": "5bc27d60-da38-4afc-a34f-2d39e9c36f41",
+            "requested": "2020-05-29T21:37:59.239Z",
+            "userId": "unit-test-userId-event",
+            "swMgtSystemId": "unit-test-swMgtSystemId",
+            "swMgtSystemInstanceId": "unit-test-swMgtSystemInstanceId",
+            "swMgtSystemComponent": "unit-test-swMgtSystemComponent",
+            "assetUsageEvent": {
+                "swTagId": "unit-test-swTagId",
+                "assetUsageId": "unit-test-assetUsageId",
+                "action": "add-event",
+                "event": {
+                    "event-test": "got it"
+                }
+            }
+        }
+    },
+    "res": {
+        "statusCode": 200,
+        "body": {
+            "userId": "unit-test-userId-event",
+            "swMgtSystemId": "unit-test-swMgtSystemId",
+            "swMgtSystemInstanceId": "unit-test-swMgtSystemInstanceId",
+            "swMgtSystemComponent": "unit-test-swMgtSystemComponent",
+            "requestId": "5bc27d60-da38-4afc-a34f-2d39e9c36f41",
+            "requested": "__type__dateTime__",
+            "assetUsageEvent": {
+                "swTagId": "unit-test-swTagId",
+                "assetUsageId": "unit-test-assetUsageId",
+                "action": "add-event",
+                "event": {
+                    "event-test": "got it"
+                },
+                "softwareLicensorId": "unit-test-softwareLicensorId",
+                "swidTagRevision": 5,
+                "licenseProfileId": "cec51e7d-d977-41d2-abc6-ef5f069491b8",
+                "licenseProfileRevision": 1,
+                "isRtuRequired": true,
+                "assetUsageSeq": 6
+            }
+        }
+    },
+    "acuLogs": [
+        {
+            "LogTimestamp": "__type__dateTime__",
+            "RequestID": "5bc27d60-da38-4afc-a34f-2d39e9c36f41",
+            "InvocationID": "PUT /api/v1/asset-usage-event",
+            "InstanceID": "__type__uuid__",
+            "Thread": "main",
+            "ServiceName": "lum-server/api/v1/asset-usage-event",
+            "Partnername": "__type__ignore__",
+            "StatusCode": "INPROGRESS",
+            "ResponseCode": null,
+            "ResponseDescription": null,
+            "Level": "DEBUG",
+            "Severity": "INFO",
+            "ServerFQDN": "__type__ignore__",
+            "ClientIPAddress": "__type__ignore__",
+            "TargetEntity": null,
+            "TargetServiceName": null,
+            "User": "unit-test-userId-event",
+            "Logger": "__type__ignore__",
+            "Mdc": null,
+            "Message": {
+                "userId": "unit-test-userId-event",
+                "swMgtSystemId": "unit-test-swMgtSystemId",
+                "swMgtSystemInstanceId": "unit-test-swMgtSystemInstanceId",
+                "swMgtSystemComponent": "unit-test-swMgtSystemComponent",
+                "assetUsageEvent": {
+                    "swTagId": "unit-test-swTagId",
+                    "assetUsageId": "unit-test-assetUsageId",
+                    "action": "add-event",
+                    "event": {
+                        "event-test": "got it"
+                    }
+                },
+                "requested": "__type__dateTime__"
+            },
+            "Marker": "ENTRY"
+        },
+        {
+            "LogTimestamp": "__type__dateTime__",
+            "RequestID": "5bc27d60-da38-4afc-a34f-2d39e9c36f41",
+            "InvocationID": "response",
+            "InstanceID": "__type__uuid__",
+            "Thread": "main",
+            "ServiceName": "lum-server/api/v1/asset-usage-event",
+            "Partnername": "__type__ignore__",
+            "StatusCode": "COMPLETE",
+            "ResponseCode": 200,
+            "ResponseDescription": "OK",
+            "Level": "DEBUG",
+            "Severity": "INFO",
+            "ServerFQDN": "__type__ignore__",
+            "ClientIPAddress": "__type__ignore__",
+            "TargetEntity": null,
+            "TargetServiceName": null,
+            "User": "unit-test-userId-event",
+            "Logger": "__type__ignore__",
+            "Mdc": null,
+            "Message": {
+                "requestId": "5bc27d60-da38-4afc-a34f-2d39e9c36f41",
+                "requested": "2020-05-29T21:37:59.239Z",
+                "userId": "unit-test-userId-event",
+                "swMgtSystemId": "unit-test-swMgtSystemId",
+                "swMgtSystemInstanceId": "unit-test-swMgtSystemInstanceId",
+                "swMgtSystemComponent": "unit-test-swMgtSystemComponent",
+                "assetUsageEvent": {
+                    "swTagId": "unit-test-swTagId",
+                    "assetUsageId": "unit-test-assetUsageId",
+                    "action": "add-event",
+                    "event": {
+                        "event-test": "got it"
+                    },
+                    "softwareLicensorId": "unit-test-softwareLicensorId",
+                    "swidTagRevision": 5,
+                    "licenseProfileId": "cec51e7d-d977-41d2-abc6-ef5f069491b8",
+                    "licenseProfileRevision": 1,
+                    "isRtuRequired": true,
+                    "assetUsageSeq": 6
+                }
+            },
+            "Marker": "EXIT"
+        }
+    ]
+}

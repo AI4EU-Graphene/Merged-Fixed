@@ -1,0 +1,85 @@
+-- ===============LICENSE_START=======================================================
+-- Acumos Apache-2.0
+-- ===================================================================================
+-- Copyright (C) 2019 AT&T Intellectual Property & Tech Mahindra. All rights reserved.
+-- ===================================================================================
+-- This Acumos software file is distributed by AT&T and Tech Mahindra
+-- under the Apache License, Version 2.0 (the "License");
+-- you may not use this file except in compliance with the License.
+-- You may obtain a copy of the License at
+--
+--      http://www.apache.org/licenses/LICENSE-2.0
+--
+-- This file is distributed on an "AS IS" BASIS,
+-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-- See the License for the specific language governing permissions and
+-- limitations under the License.
+-- ===============LICENSE_END=========================================================
+
+-- Script to upgrade database used by the Common Data Service
+-- FROM version 2.0 TO version 2.1.
+-- No database name is set to allow flexible deployment.
+-- This DISCARDS all existing step results.
+
+DROP TABLE C_STEP_RESULT;
+
+CREATE TABLE C_TASK (
+  ID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  TASK_CD CHAR(2) NOT NULL,
+  STATUS_CD CHAR(2) NOT NULL,
+  USER_ID CHAR(36) NOT NULL,
+  NAME VARCHAR(100) NOT NULL,
+  TRACKING_ID CHAR(36),
+  SOLUTION_ID CHAR(36),
+  REVISION_ID CHAR(36),
+  CREATED_DATE TIMESTAMP NOT NULL DEFAULT 0,
+  MODIFIED_DATE TIMESTAMP NOT NULL,
+  CONSTRAINT C_TASK_C_USER FOREIGN KEY (USER_ID) REFERENCES C_USER (USER_ID),
+  CONSTRAINT C_TASK_C_SOLUTION FOREIGN KEY (SOLUTION_ID) REFERENCES C_SOLUTION (SOLUTION_ID),
+  CONSTRAINT C_TASK_C_SOLUTION_REV FOREIGN KEY (REVISION_ID) REFERENCES C_SOLUTION_REV (REVISION_ID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE C_STEP_RESULT (
+  ID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  TASK_ID INT NOT NULL,
+  STATUS_CD CHAR(2) NOT NULL,
+  NAME VARCHAR(100) NOT NULL,
+  RESULT VARCHAR(8192),
+  START_DATE TIMESTAMP NOT NULL DEFAULT 0,
+  END_DATE TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE C_SOLUTION_REV ADD COLUMN ONBOARDED_DATE TIMESTAMP NOT NULL DEFAULT 0;
+UPDATE C_SOLUTION_REV SET ONBOARDED_DATE = CREATED_DATE;
+
+CREATE TABLE C_RIGHT_TO_USE (
+  RTU_ID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  SOLUTION_ID CHAR(36) NOT NULL,
+  SITE_YN CHAR(1) NOT NULL DEFAULT 'N',
+  CREATED_DATE TIMESTAMP NOT NULL DEFAULT 0,
+  MODIFIED_DATE TIMESTAMP NOT NULL,
+  CONSTRAINT C_RTU_C_SOLUTION FOREIGN KEY (SOLUTION_ID) REFERENCES C_SOLUTION (SOLUTION_ID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE C_RTU_REF (
+  REF VARCHAR(36) NOT NULL PRIMARY KEY
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE C_RTU_REF_MAP (
+  RTU_ID INT NOT NULL,
+  REF_ID CHAR(36) NOT NULL,
+  PRIMARY KEY (RTU_ID, REF_ID),
+  CONSTRAINT C_RTU_REF_MAP_C_RTU FOREIGN KEY (RTU_ID) REFERENCES C_RIGHT_TO_USE (RTU_ID),
+  CONSTRAINT C_RTU_REF_MAP_C_REF FOREIGN KEY (REF_ID) REFERENCES C_RTU_REF (REF)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE C_RTU_USER_MAP (
+  RTU_ID INT NOT NULL,
+  USER_ID CHAR(36) NOT NULL,
+  PRIMARY KEY (RTU_ID, USER_ID),
+  CONSTRAINT C_RTU_USER_MAP_C_RTU FOREIGN KEY (RTU_ID) REFERENCES C_RIGHT_TO_USE (RTU_ID),
+  CONSTRAINT C_RTU_USER_MAP_C_USER FOREIGN KEY (USER_ID) REFERENCES C_USER (USER_ID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Record this action in the history
+INSERT INTO C_HISTORY (COMMENT, CREATED_DATE) VALUES ('cds-mysql-upgrade-2.0-to-2.1', NOW());

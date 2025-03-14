@@ -1,0 +1,47 @@
+---
+project: 'platform-oam'
+project_creation_date: '2017-11-17'
+project_category: ''
+lifecycle_state: 'Incubation'
+project_lead: &acumos_platform-oam_ptl
+    name: 'Bryan Sullivan'
+    email: 'bryan.sullivan@att.com'
+    id: 'blsaws'
+    company: 'ATT'
+    timezone: 'America/Los_Angeles'
+primary_contact: '*acumos_training_ptl'
+issue_tracking:
+    type: 'jira'
+    url: 'https://jira.acumos.org/projects/ACUMOS'
+    key: 'ACUMOS'
+mailing_list:
+    type: 'groups.io'
+    url: 'lists.acumos.org'
+    tag: '<[sub-project_name]>'
+realtime_discussion:
+    type: 'irc'
+    server: 'freenode.net'
+    channel: '#acumos'
+meetings:
+    - type: 'zoom'
+      agenda: ''
+      url: 'https://zoom.us/j/4906631713'
+      server: 'n/a'
+      channel: '#acumos-meeting'
+      repeats: 'weekly'
+      time: '11:00 ET'
+repositories:
+    - 'platform-oam'
+committers:
+    - <<: *acumos_platform-oam_ptl
+    - name: 'Vineet Tripathi'
+      email: 'VT00325492@techmahindra.com'
+      company: 'TechM'
+      id: 'vt402f'
+      timezone: 'America/Chicago'
+tsc:
+    approval: ''
+    changes:
+        - type: ''
+          name: ''
+          link: ''

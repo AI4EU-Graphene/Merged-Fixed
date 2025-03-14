@@ -1,0 +1,901 @@
+<!--  
+===============LICENSE_START=======================================================
+Acumos Apache-2.0
+===================================================================================
+Copyright (C) 2017 AT&T Intellectual Property & Tech Mahindra. All rights reserved.
+===================================================================================
+This Acumos software file is distributed by AT&T and Tech Mahindra
+under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+This file is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+===============LICENSE_END=========================================================
+-->
+
+
+<alert-message msg="msg" icon="icon" styleclass="styleclass"
+	ng-show="showAlertMessage"></alert-message>
+<div class="page-content" id="userDetailPage">
+	<section class="pageheadsection">
+		<div class="mdl-grid mdl-grid--no-spacing">
+			<div
+				class="mdl-cell mdl-cell--12-col mdl-cell--8-col-tablet mdl-cell--4-col-phone">
+				<span class="headline mob-disblock">Account Settings</span>
+				<ul class="c-breadcrumb">
+					<li><a ui-sref="home" ng-click="$root.parentActive = ''">Home</a></li>
+					<li>Account Settings</li>
+				</ul>
+			</div>
+		</div>
+	</section>
+</div>
+<div class="page-wrapper3">
+	<br />
+	<md-tabs class="userdetails_tab" md-selected="selectedIndex" md-dynamic-height md-border-bottom>
+	<md-tab label="Profile Settings"> <md-content
+		class="md-padding">
+	<h6 class="sectiontitle6">PROFILE</h6>
+	<div class="user-detail-container">
+		<div class="profile-container1">
+			<div class="profile-container1-left">
+				<div class="profile-img-container">
+					<img class="userprofile-img"
+						ng-src="data:image/JPEG;base64,{{userPic}}"
+						src='../images/userprofile/profile_big_img.png' alt="User"
+						title="User">
+				</div>
+				<div class="text-center">
+					<a ng-click="uploadPhoto($event)" class="link-blue text-small"
+						alt="Change Photo" title="Change Photo">Change Photo</a>
+				</div>
+				<div class="text-center" ng-hide="isLfUser">
+					<a ng-click="$root.showPasswordExpire(loginUserID)"
+						class="link-blue text-small" alt="Change Password"
+						title="Change Password">Change Password</a>
+				</div>
+			</div>
+			<div class="profile-container1-right">
+				<form name="signupForm" ng-cloak novalidate>
+					<div class="profile-container-inner">
+
+						<div class="profile-row-1">
+							<div>
+								<md-input-container class="md-block" flex-gt-sm>
+								<label>First Name</label> <!--<input type="text" ng-model="user.firstName" /> -->
+								<input type="text" name="firstName" ng-model="user.firstName"
+									maxlength="50" valid-name required
+									ng-blur="firstNameVisited=true"
+									ng-focus="firstNameVisited=false">
+								<div class="help-inline validation-msgs"
+									ng-class="{validationmsg:!signupForm.firstName.$valid}">
+									<span
+										ng-show="( !!signupForm.firstName.$error.required && signupForm.firstName.$touched && firstNameVisited)">First
+										Name Required.</span> <span
+										ng-show="!!signupForm.firstName.$error.invalidChars && firstNameVisited">First
+										name must contain letters only.</span>
+								</div>
+								</md-input-container>
+							</div>
+
+						</div>
+
+						<div class="profile-row-1">
+							<div>
+								<md-input-container class="md-block" flex-gt-sm>
+								<label>Last Name</label> <!-- <input type="text" ng-model="user.lastName" /> -->
+								<input type="text" name="lastName" ng-model="user.lastName"
+									valid-name maxlength="50" required
+									ng-blur="lastNameVisited=true" ng-focus="lastNameVisited=false">
+								<div class="help-inline validation-msgs"
+									ng-class="{validationmsg:!signupForm.lastName.$valid}">
+									<span
+										ng-show="!!signupForm.lastName.$error.required && signupForm.lastName.$touched && lastNameVisited">Last
+										Name Required.</span> <span
+										ng-show="!!signupForm.lastName.$error.invalidChars && lastNameVisited">Last
+										name must contain letters only.</span>
+								</div>
+								</md-input-container>
+							</div>
+
+
+						</div>
+
+					</div>
+				</form>
+
+			</div>
+		</div>
+		<hr />
+	</div>
+	
+	<div id="tab2-panel" class="user-detail-container" ng-if="$root.enableOnBoarding">
+		<h6 class="sectiontitle6">API Token</h6>
+		<div class="api-token">
+		                  <md-input-container class="md-block" flex-gt-sm>
+		                        <label>Api Token</label> <input type="text" ng-model="user.apiToken" readonly/>
+		                  </md-input-container>
+		                  <a ng-click="refreshApiToken()">Refresh</a>
+		                  <a ng-click="deleteApiToken()" ng-if="deleteApiTokenFlag">Delete Token</a>
+		                  
+		 </div>
+	</div>
+	
+	<div id="tab2-panel" class="user-detail-container">
+
+		<h6 class="sectiontitle6">CONTACT SETTINGS</h6>
+		<form name="signupFormEmail" ng-cloak novalidate>
+			<div class="user-contact-settings-container">
+				<div class="user-email">
+					<md-input-container class="md-block"> <label>
+						Email</label> <input name="uemail" ng-disabled="disableEmail"
+						ng-model="user.emailId" type="text" ng-blur="emailVisited=true"
+						ng-focus="emailVisited=false"
+						ng-pattern="/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/" required />
+					<div class="help-inline validation-msgs"
+						ng-class="{validationmsg:!signupFormEmail.uemail.$valid}">
+						<span
+							ng-show="!!(signupFormEmail.uemail.$touched && signupFormEmail.uemail.$error.required && emailVisited)">Email
+							ID Required.</span> <span
+							ng-show="!!(signupFormEmail.uemail.$dirty && signupFormEmail.uemail.$error.pattern) && emailVisited">Please
+							enter valid email id</span>
+					</div>
+					</md-input-container>
+					<a ng-hide="isLfUser" class="link-blue" href=""
+						ng-click="disableEmail=!disableEmail"><span
+						ng-if="disableEmail" alt="Change Email" title="Change Email">Change
+							Email</span></a> <a class="link-blue" href=""
+						ng-class="{'disabledLink':!signupFormEmail.uemail.$valid || !signupFormEmail.uemail.$dirty }"
+						ng-if="!disableEmail" ng-click="$parent.saveEmail()">Save
+							Email</a>
+
+
+
+				</div>
+			</div>
+		</form>
+		<hr />
+	</div>
+
+	<div id="tab3-panel" class="user-detail-container">
+		<h6 class="sectiontitle6">SOCIAL NETWORK KEYS</h6>
+		<div>
+			<md-input-container class="md-block" flex-gt-sm>
+			<label>Github</label> <input type="text"
+				placeholder="123456789101112" /> </md-input-container>
+		</div>
+		<div>
+			<md-input-container class="md-block" flex-gt-sm>
+			<label>Facebook</label> <input type="text"
+				placeholder="223456789101190" /> </md-input-container>
+		</div>
+		<div>
+			<md-input-container class="md-block" flex-gt-sm>
+			<label>Google</label> <input type="text"
+				placeholder="7894567891011189" /> </md-input-container>
+		</div>
+		<div>
+			<md-input-container class="md-block" flex-gt-sm>
+			<label>Linkedin</label> <input type="text"
+				placeholder="123566789101331" /> </md-input-container>
+		</div>
+		<div>
+			<md-input-container class="md-block" flex-gt-sm>
+			<label>CodePen</label> <input type="text"
+				placeholder="5234567891011754" /> </md-input-container>
+		</div>
+		<hr />
+	</div>
+	<div class="u-note-btn-container">
+		<button class="mdl-button mdl-js-button btn-secondary"
+			ng-click="dialogDeactivateAccount($event)" alt="Deactivate Account"
+			title="Deactivate Account">Deactivate Account</button>
+		<button ng-disabled="signupForm.$invalid"
+			class="mdl-button mdl-js-button btn-primary btn-gap"
+			ng-click="updateDeactivate('update')" alt="Update Account"
+			title="Update Account">Update Account</button>
+	</div>
+
+	</md-content> </md-tab> <md-tab label="Notification Preferences"> <md-content
+		class="md-padding">
+	<div class="u-note-pref-container">
+		<div>
+			<label><span class="req-star">&#42;</span>How do you want to
+				be notified?</label>
+		</div>
+		<div>
+			<br />
+			<div class="u-note-row1">
+				<div>
+					<md-checkbox class="u-note-chkbox1" aria-label="checked checkbox"
+						ng-model="data.cbEmail" ng-init="data.cbEmail=true">
+					Email </md-checkbox>
+				</div>
+				<!-- <div class="u-note-row1-inner">
+					<md-input-container class="md-block" flex-gt-sm>
+					<label>Enter Email ID</label> <input type="text" name="firstName"
+						ng-model="user.email" required disabled /> </md-input-container>
+					<md-checkbox class="u-note-chkbox2" aria-label="checked checkbox"
+						ng-model="data.cb5" ng-init="data.cb5=true"> Use my
+					registered email ID </md-checkbox>
+				</div> -->
+				<div class="u-note-priority-container">
+					<div class="select-control">
+						<label class="fedlbl4">Set Notification Priority</label>
+						<md-select ng-model="userNotificationPref.msgSeverityCode"
+							placeholder="Select"><!-- md-on-open="loadUsers()" ng-model="priority.emailprName"-->
+						<md-option ng-value="priority.prName"
+							ng-repeat="priority in notificationPriority" ng-click="">
+						{{priority.prValue}} </md-option> </md-select>
+					</div>
+				</div>
+			</div>
+			<!-- <div class="u-note-row1">
+				<div>
+					<md-checkbox class="u-note-chkbox1" aria-label="checked checkbox"
+						ng-model="data.cb4" ng-init="data.cb4=true"> Text </md-checkbox>
+				</div>
+				<div class="u-note-row1-inner">
+					<md-input-container class="md-block" flex-gt-sm>
+					<label>Enter Phone Number</label> <input type="text"
+						name="firstName" required /> </md-input-container>
+				</div>
+				<div class="u-note-priority-container">
+					<div class="select-control">
+						<label class="fedlbl4">Set Notification Priority</label>
+						<md-select ng-model="user" md-on-open="loadUsers()"> <md-option
+							ng-value="user" ng-repeat="user in users">{{user.name}}</md-option>
+						</md-select>
+					</div>
+				</div>
+			</div>
+			<div class="u-note-row1 last-row">
+				<div>
+					<md-checkbox class="u-note-chkbox1" aria-label="checked checkbox"
+						ng-model="data.cb4" ng-init="data.cb4=true"> Web
+					Notifications </md-checkbox>
+				</div>
+				<div class="u-note-proority-container">
+					<div class="select-control">
+						<label class="fedlbl4">Set Notification Priority</label>
+						<md-select ng-model="user" md-on-open="loadUsers()"> <md-option
+							ng-value="user" ng-repeat="user in users">{{user.name}}</md-option>
+						</md-select>
+					</div>
+				</div>
+			</div>
+			<div class="u-note-row2">
+				<div class="select-control">
+					<label class="fedlbl4">How frequently do you want to be
+						notified?</label>
+					<md-select ng-model="user" md-on-open="loadUsers()"> <md-option
+						ng-value="user" ng-repeat="user in users">{{user.name}}</md-option>
+					</md-select>
+				</div>
+			</div> -->
+		</div>
+	</div>
+	<div class="u-note-btn-container">
+		<button class="mdl-button mdl-js-button btn-secondary"
+			ng-click="getNotificationPref()" alt="Cancel" title="Cancel">Cancel</button>
+		<button ng-disabled="!data.cbEmail"
+			class="mdl-button mdl-js-button btn-primary btn-gap"
+			ng-click="putNotificationPref()" alt="Save" title="Save">Save</button>
+	</div>
+	</md-content> </md-tab> 
+	
+	
+	<md-tab label="Select Favorite Catalogs">
+	<md-content class="md-padding">
+	<div class="catalog-grid-wrapper">
+		<div class="" id="dataTab">
+			<!-- Catalog table code -->
+			
+			<table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp admin-tbl1 request-tbl tbl-overflowscroll admin-tbl-padding"
+				datatable="ng" dt-options="dtOptions" dt-columns="dtColumns" dt-column-defs="dtColumnDefs">
+				
+				<thead>
+					<tr>
+						<th>Favorite</th>
+						<th>Catalog Name</th>
+						<th>Created Date</th>
+						<th>Total Models</th>
+					</tr>
+				</thead>
+				<tbody>
+
+					<tr ng-repeat="Catalog in allCatalogList">
+						<td><md-checkbox class="md-primary" aria-label="Select Catalog" md-no-ink 
+							ng-model="Catalog.favorite"
+							ng-true-value="true" ng-false-value="false"
+							ng-change="updateFavorite(Catalog.catalogId, Catalog.favorite)"></md-checkbox></td>
+						<td><a href="" ng-click="fetchSolutionsByCatalog($event, Catalog.catalogId, Catalog.solutionCount, Catalog.name)">
+							<label>{{Catalog.name}}</label></a>
+						</td>
+						<td><label>{{Catalog.created | date : "MM/dd/yyyy | h:mm a" }}</label></td>
+						<td><label>{{Catalog.solutionCount}}</label></td>
+						
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<md-button ui-sref="marketPlace({isMyFavCatalogSelected: true})"
+			class="mdl-button mdl-js-button btn-primary" alt="Favorite Catalogs"
+			> View Favorite Catalogs </md-button>
+		<md-button ui-sref="marketPlace({isMyFavCatalogSelected: false})"
+			class="mdl-button mdl-js-button btn-bordered" alt="All Catalogs"
+			> View All Catalogs </md-button>
+	</div>
+	</md-content> 
+	</md-tab>
+	
+	</md-tabs>
+</div>
+
+<!-- material popup for change Photo start-->
+<div class="md-dialog-container" id="myDialogPhoto" style="height: 0;">
+	<md-dialog aria-label="Change Photo Dialog" class="ud-change-photo">
+	<md-toolbar>
+	<div class="md-toolbar-tools">
+		<h2>Change Photo</h2>
+		<span flex></span>
+		<md-button class="md-icon-button" ng-click="closePoup()">
+		<i class="material-icons" alt="Close" title="Close">close</i> </md-button>
+	</div>
+	</md-toolbar> <md-dialog-content>
+	<form name="uploadImage" enctype="multipart/form-data">
+		<div class="md-dialog-content">
+			<label>Upload Photo <span class="reqfield">*</span></label>
+			<div>
+				<md-input-container class="md-icon-float md-block">
+				<!-- Use floating label instead of placeholder -->
+				<div class="ud-row user-profile-image">
+					<div>
+						<!-- <label>Upload Photo</label> -->
+						<!-- <input type="file" upload-image-model="userImage" data-ng-model="userImage"
+							class="mdl-textfield__input userprofiletxtbox uploadtxtbox"
+							id="userImage"> -->
+						
+						<input type="file" ngf-select ng-change="checkValid()"
+							ng-model="userImage" name="fileNew"
+							class="mdl-textfield__input userprofiletxtbox uploadtxtbox"
+							accept="image/*"  required
+							ngf-model-invalid="errorFile" />
+
+					</div>
+				</div>
+				<div class="help-inline validation-msgs">
+					<span ng-show="sizeError">Image
+						size more than {{imageSize}}.</span>
+				</div>
+				<div class="help-inline validation-msgs">
+					<span ng-show="extensionError">File should be JPG, GIF or
+						PNG</span>
+				</div>
+				<span>JPG, GIF or PNG. Max size of {{imageSize}}</span> <!-- <div ng-show="imageError" class="validationmsg validation-msgs"><span>Invalid Image</span></div> -->
+				<!-- <div class="help-inline validation-msgs"><span ng-show = "imageError">Invalid Image.</span></div> -->
+
+
+				</md-input-container>
+			</div>
+		</div>
+	</md-dialog-content> <md-dialog-actions>
+	<div class="dialog-footer-container1">
+		<md-button ng-click="closePoup();"
+			class="mdl-button mdl-js-button btn-secondary" alt="Cancel"
+			title="Cancel"> Cancel </md-button>
+		<!--enableUploadBtn  -->
+		<md-button ng-click="uploadImg()"
+			ng-disabled="extensionError == true || sizeError == true || nullFileError == true || uploadImage.fileNew.$error.maxSize"
+			class="mdl-button mdl-js-button btn-primary" alt="Upload"
+			title="Upload"> Upload </md-button>
+	</div>
+	</md-dialog-actions>
+
+	</form>
+	</md-dialog>
+</div>
+<!-- material popup  for change Photo end -->
+
+
+
+<!-- material popup  for deactication account confirmation ends -->
+<div class="md-dialog-container" id="dialogDeactivateAccount"
+	style="height: 0;">
+	<md-dialog aria-label="Deactivate Account"
+		class="ud-deactivate-account"> <md-toolbar>
+	<div class="md-toolbar-tools">
+		<h2>Deactivate Account</h2>
+		<span flex></span>
+		<md-button class="md-icon-button" ng-click="closePoup()">
+		<i class="material-icons" alt="Close" title="Close">close</i> </md-button>
+	</div>
+	</md-toolbar> <md-dialog-content>
+	<form>
+		<div class="md-dialog-content">
+			<div>
+				<strong>Are you sure you want to deactivate your account?</strong>
+			</div>
+			<br />
+			<div>
+				<small>* Only a user with Administrator rights will be able
+					to reactivate your account.</small>
+			</div>
+		</div>
+	</md-dialog-content> <md-dialog-actions>
+	<div class="dialog-footer-container1">
+		<md-button ng-click="closePoup();"
+			class="mdl-button mdl-js-button btn-secondary" alt="Cancel"
+			title="Cancel"> Cancel </md-button>
+		<md-button ng-click="updateDeactivate('deactivate')"
+			class="mdl-button mdl-js-button btn-primary" alt="Upload"
+			title="Upload"> OK </md-button>
+	</div>
+	</md-dialog-actions>
+
+	</form>
+	</md-dialog>
+</div>
+<!-- material popup  for deactication account confirmation ends -->
+
+
+<!-- material popup  for models under a specific catalog  starts -->
+<div class="md-dialog-container" id="dialogCatalogModels"
+	style="height: 0;">
+	<md-dialog aria-label="Catalog"
+		class="ud-deactivate-account"> <md-toolbar>
+	<div class="md-toolbar-tools">
+		<h2>{{fetchedSolutionCatName}}</h2>
+		<span flex></span>
+		<md-button class="md-icon-button" ng-click="closePoup()">
+		<i class="material-icons" alt="Close" title="Close">close</i> </md-button>
+	</div>
+	</md-toolbar> <md-dialog-content>
+	<form>
+		<div class="md-dialog-content">
+			<div>
+				<strong>Catalog {{fetchedSolutionCatName}} consist of the following models/solutions.</strong>
+			</div>
+			<br />
+			<div class="catalogSolutionAlignment">
+				<div ng-repeat="catalogSolutions in catalogSolution">
+					<span class="ct-info-container catalog-icon-alignment">
+						<label>{{catalogSolutions.name}}</label>
+						<i class="catalog-icon-info" ng-mouseover="getSolutionRevisions(catalogSolutions.solutionId)">
+							<section class="catalog-icon-tooltip">
+								<span ng-bind-html="solutionDescription" ng-show="!tooltiploader"></span>
+								<span class="a-overlay1" ng-show="tooltiploader" style="height:70px"></span>
+							</section>
+						</i>
+					</span>
+				</div>
+			</div>
+			
+		</div>
+	</md-dialog-content> 
+	</form>
+	</md-dialog>
+</div>
+<!-- material popup  for models under a specific catalog ends -->
+
+
+
+
+
+<!-- <!-- main nav end
+description_box start
+<section class="description_box container-fluid">
+	<div class="description-content">
+		<h4>Account Settings</h4>
+		<div>
+			<ul class="c-breadcrumb">
+				<li><a data-target="#">Home</a></li>
+				<li>Profile</li>
+			</ul>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+</section>
+<section class="container-fluid">
+	description_box end
+	<section class="account_container ">
+		<div class="leftfilter col-xs-12 col-sm-12 col-md-3 col-lg-2">
+			<div class="leftsection">
+				<p class="active">
+					<a data-target="#profile">Profile</a>
+				</p>
+				<p>
+					<a data-target="#contact-settings">Contact Settings</a>
+				</p>
+				<p>
+					<a data-target="#networks-keys">Social Network Keys</a>
+				</p>
+				<p>
+					<a data-target="#local-settings">Local Settings</a>
+				</p>
+			</div>
+		</div>
+		<div
+			class="product-right-container col-xs-12 col-sm-12 col-md-9 col-lg-10"
+			ng-model="user">
+			<div id="profile" class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">Profile</h3>
+				</div>
+				<div class="panel-body">
+					<div class="profile-pic">
+						<img ng-show="showAltImage" src="images/profile-icon-01-48X48.png"
+							alt="" title="" id="profileImage" /> <img
+							ng-show="!showAltImage"
+							ng-src="data:image/PNG;base64,{{userImage}}" />
+						<input id="inputImage2" type="file" accept="image/*" image="image2" resize-max-height="300" resize-max-width="250" resize-quality="0.7" />
+	            	<img ng-show="image2" ng-src="{{image2.url}}" type="{{image2.file.type}}"/>
+						<p>data-toggle="modal" data-target="#uploadImage"
+							<a ng-click="uploadPhoto($event)" >Change
+								Photo</a>
+						</p>
+						<p >data-toggle="modal" data-target="#myModal"
+							<a ng-click="showPrerenderedDialog($event)" data-target="#">Change Password</a>
+						</p>
+					</div>
+					<div class="profile-form">
+						<form>
+							<div class="form-group col-xs-12 col-sm-12 col-md-6 col-lg-6">
+								<label for="FirstName">First Name</label> <input type="text"
+									class="form-control" id="" placeholder=""
+									ng-model="user.firstName">
+							</div>
+							<div class="form-group col-xs-12 col-sm-12 col-md-6 col-lg-6">
+								<label for="LastName">Last Name</label> <input type="text"
+									class="form-control" id="" placeholder=""
+									ng-model="user.lastName">
+							</div>
+							<div class="form-group col-xs-12 col-sm-12 col-md-6 col-lg-6">
+								<label for="Occupation">Occupation</label> <input type="text"
+									class="form-control" id="" placeholder=""
+									ng-model="user.occupation" disabled>
+							</div>
+							<div class="form-group col-xs-12 col-sm-12 col-md-6 col-lg-6">
+								<label for="Company">Company</label> <input type="text"
+									class="form-control" id="" placeholder=""
+									ng-model="user.orgName" disabled>
+							</div>
+							<div class="form-group col-xs-12 col-sm-12 col-md-12 col-lg-12">
+								<label for="Bio">Bio</label>
+								<textarea class="form-control" rows="3" ng-model="user.bio" disabled></textarea>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+			<div id="contact-settings" class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">Contact Settings</h3>
+				</div>
+				<div class="panel-body">
+					<form class="row">
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+							<div class="form-group">
+								<label for="email">Email</label>
+								<div class="row">
+									<div class="col-xs-12 col-sm-12 col-md-8 col-lg-8"> <input
+										type="email" class="form-control" id="exampleInputEmail1"
+										placeholder="Email" ng-model="user.email"
+										ng-disabled="!editEmail">
+									</div>
+									<div class="col-md-3" style="padding:0px; cursor:pointer"><i
+										class="glyphicon glyphicon glyphicon-edit"
+										ng-click="editEmail = !editEmail"></i></div>
+
+								</div>
+							</div>
+						</div>
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+							<div class="">
+							<label for="Location">Location</label>
+							<div class="row">
+								<span class="col-xs-12 col-sm-12 col-md-4 col-lg-4 form-group">
+									<select class="form-control" ng-model="user.location">
+									  <option>India</option>
+									  <option>USA</option>
+									</select>
+								</span>
+								<span class="col-xs-12 col-sm-12 col-md-4 col-lg-4 form-group">
+									<input type="Text" class="form-control" id="" placeholder="Pune" ng-model="user.city">
+								</span>
+							</div>		
+						</div>
+						</div>
+					</form>
+				</div>
+			</div>
+			<div id="networks-keys" class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">Social Network Keys</h3>
+				</div>
+				<div class="panel-body">
+					<form>
+						<div class="form-group">
+							<label for="GitHub">GitHub</label> <input type="text"
+								class="form-control" id="" placeholder="" ng-model="user.gitHub" disabled>
+						</div>
+						<div class="form-group">
+							<label for="Facebook">Facebook</label> <input type="text"
+								class="form-control" id="" placeholder="" ng-model="user.fb" disabled>
+						</div>
+						<div class="form-group">
+							<label for="Google">Google</label> <input type="text"
+								class="form-control" id="" placeholder="" ng-model="user.google" disabled>
+						</div>
+						<div class="form-group">
+							<label for="Linkedin">Linkedin</label> <input type="text"
+								class="form-control" id="" placeholder="" disabled
+								ng-model="user.linkedIn">
+						</div>
+							<div class="form-group">
+						<label for="CodePen">CodePen</label>
+						<input type="text" class="form-control" id="" placeholder="" ng-model="user.codePan">
+					</div>
+					</form>
+				</div>
+			</div>
+			<div id="local-settings" class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">Local Settings</h3>
+				</div>
+				<div class="panel-body"></div>
+			</div>
+			<div class="form-group clearfix">
+				<button type="submit" class="btn btn-default btn-left"
+					ng-click="updateDeactivate('deactivate')">Deactivate
+					Account</button>
+				<button type="submit" class="btn btn-default pull-right"
+					ng-click="updateDeactivate('update')">Update Account</button>
+			</div>
+		</div>
+		Popup Change Password
+		<form class="modal-body" name="resetPswd">
+			<div class="modal fade innerpopup changepass" id="myModal"
+				tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal"
+								aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+							<h4 class="modal-title" id="myModalLabel">Change Password</h4>
+						</div>
+						<div class="modal-body">
+							<p>Once you are finished, use your new password to sign in
+								Acumos.</p>
+							<form>
+								<div class="form-group">
+									<label>Old Password</label>
+									<div class="input-group">
+										<input id="msg"
+											ng-attr-type="{{ showOldPassword ? 'text' : 'password' }}"
+											class="form-control" name="oldPswd"
+											placeholder="Old Password" ng-model="oldPswd" required>
+										<span class="input-group-addon" ng-click="showPasswd('old')">{{oldPswdShow}}</span>
+									</div>
+								</div>
+								<div class="form-group">
+									<label>New Password</label>
+									<div class="input-group">
+										<input id="msg"
+											ng-attr-type="{{ showNewPassword ? 'text' : 'password' }}"
+											class="form-control" placeholder="New Password" id="pwd"
+											name="pwd" ng-model="newPswd" valid-password required>
+										<span class="input-group-addon" ng-click="showPasswd('new')">{{newPswdShow}}</span>
+
+									</div>
+									<div class="validinfo"
+										ng-class="{validationmsg:!resetPswd.pwd.$valid}">
+										<span
+											ng-show="!!(resetPswd.pwd.$dirty && resetPswd.pwd.$error.isBlank)">Password
+											Required.</span> <span
+											ng-show="!! (resetPswd.pwd.$dirty && resetPswd.pwd.$error.isWeak)">Must
+											contain one upper &amp; lower case letter and a non-letter
+											(number or symbol.)</span> <span
+											ng-show="!! (resetPswd.pwd.$dirty && resetPswd.pwd.$error.invalidLen)">Must
+											be 8-20 characters.</span>
+									</div>
+									<div class="validinfo">Must be atleast 8 characters</div>
+								</div>
+								<div class="form-group">
+									<label>Confirm Password</label> <input id="msg" type="password"
+										class="form-control small-form-control"
+										placeholder="Confirm Password" id="cpwd" name="cpwd"
+										ng-model="cpwd"
+										ng-change="matchPswd();$event.stopPropagation();" required>
+									<div class="help-inline" ng-show="matchString">
+										<span class="validationmsg">Passwords don't match.</span>
+									</div>
+								</div>
+							</form>
+						</div>
+						<div class="modal-footer">
+                           <button type="button" class="btn btn-default btn-left"
+								data-dismiss="modal">Cancel</button>
+							<a type="button" class="btn btn-default pull-right"
+								ng-click="changePswd();"
+								ng-disabled="resetPswd.oldPswd.$invalid || resetPswd.pwd.$invalid || resetPswd.pwd.cpwd || resetPswd.cpwd.$invalid || matchString">Confirm</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+
+
+		popups Change Iamge
+		<div class="modal fade innerpopup changepass" id="uploadImage"
+			tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+			<form class="modal-body">
+				<div class="modal-dialog .modal-sm" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" ng-click = "closeChangePhoto()"  data-dismiss="modal"
+								aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+							<h4 class="modal-title" id="myModalLabel">Change Photo</h4>
+						</div>
+						<div class="modal-body">
+							<form name="uploadImage" enctype="multipart/form-data">
+								<div class="form-group">
+									<label>Upload Photo</label>
+									<div class="input-group">
+																	<img ng-show="image2" ng-src="{{image2.url}}" type="{{image2.file.type}}"/ style="max-width: 150px;max-height: 150px;">
+										<input id="inputImage2" type="text" class="form-control"  accept="image/*" image="image2" resize-max-height="100" resize-max-width="10" resize-quality="0.7" >
+							<input id="inputImage2" type="file" accept="image/*" image="image2" resize-max-height="100" resize-max-width="10" resize-quality="0.7" />
+										<div class="form-group">
+											<label for="myFileField">Select a file: </label> <input
+												type="file" upload-image-model="userImage"
+												class="form-control" id="userImage" />
+										</div>
+										<span>JPG, GIF or PNG. Max size of 800KB</span>
+										<p ng-show="error" class = "validationmsg">Invalid Image</p>
+									</div>
+								</div>
+							</form>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default btn-left" ng-click = "closeChangePhoto()"
+								data-dismiss="modal">Cancel</button>
+							<button ng-click="uploadImg()" class="btn btn-primary pull-right">Upload
+								File</button>
+							<a type="button" class="btn btn-default pull-right" ng-click="uploadImg();">upload</a>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+	</section>
+	product section
+	product section end
+</section>
+
+
+ material popup for change password start
+							<div class="md-dialog-container" id="myDialog" style="height:0;">
+							  <md-dialog aria-label="Mango (Fruit)" class="cg-dialog-Deploy-to-cloud">
+								  
+									<md-toolbar>
+									  <div class="md-toolbar-tools">
+										<h2>Change Password</h2>
+										<span flex></span>
+										<md-button class="md-icon-button" ng-click="closePoup()">
+										  <i class="material-icons">close</i>
+										</md-button>
+									  </div>
+									</md-toolbar>
+									<md-dialog-content>
+									<form name="resetPswd">
+									  <div class="md-dialog-content">										
+										<label>Once you are finished, use your new password to sign in Acumos.</label>
+										  <div class="">
+										  		 <md-input-container class="md-icon-float md-block">
+												      Use floating label instead of placeholder
+												      <div class="ud-row">
+													      <div>
+													      	<label>Old Password</label>												      
+													      	<input class="userprofiletxtbox" type="text" ng-attr-type="{{ showOldPassword ? 'text' : 'password' }}" name="oldPswd" ng-model="oldPswd" valid-password required>
+													      </div>
+													      <md-button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect btn-primary" ng-click="showPasswd('old')">{{oldPswdShow}}</md-button>
+												      </div>
+												 </md-input-container>
+										  </div>
+										 <div class="">
+											<md-input-container class="md-icon-float md-block">
+												<div class="ud-row">
+													<div>
+														<label>New Password</label>												
+														<input class="userprofiletxtbox" type="text" ng-attr-type="{{ showNewPassword ? 'text' : 'password' }}" name="pwd" ng-model="newPswd" valid-password required>
+													</div>
+													<md-button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect btn-primary" ng-click="showPasswd('new')">{{newPswdShow}}</md-button>
+												</div>												
+												</md-input-container>
+												<p>Must be atleast 8 charactors</p>
+										</div>
+										<div class="">
+											<md-input-container class="md-icon-float md-block">
+												      Use floating label instead of placeholder
+												      <label>Confirm New Password</label>												      
+												      <input class="userprofiletxtbox" type="password" id="cpwd" name="cpwd" ng-model="cpwd"
+															ng-change="matchPswd();$event.stopPropagation();" required>
+												      <div class="help-inline" ng-show="matchString">
+															<span class="validationmsg">Passwords don't match.</span>
+														</div>
+											</md-input-container>
+										</div>
+										<hr class="userprofilehr-rule" />
+										 <div class="userprofile-dialog-footer">
+											<md-button ng-click="closePoup()" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect btn-secondary">
+									        Cancel
+									      </md-button>
+										  <md-button ng-click="changePswd();"
+								ng-disabled="resetPswd.oldPswd.$invalid || resetPswd.pwd.$invalid || resetPswd.pwd.cpwd || resetPswd.cpwd.$invalid || matchString" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect btn-primary">
+									        Confirm
+									      </md-button>
+									    </div>
+									  </div>									  
+									</md-dialog-content>									
+								  </form>
+								</md-dialog>
+							</div>
+material popup  for change password end	
+
+
+
+ material popup for change Photo start
+							<div class="md-dialog-container" id="myDialogPhoto" style="height:0;">
+							  <md-dialog aria-label="Mango (Fruit)" class="cg-dialog-Deploy-to-cloud">
+								  	<md-toolbar>
+									  <div class="md-toolbar-tools">
+										<h2>Change Photo</h2>
+										<span flex></span>
+										<md-button class="md-icon-button" ng-click="closePoup()">
+										  <i class="material-icons">close</i>
+										</md-button>
+									  </div>
+									</md-toolbar>
+									<md-dialog-content>
+									<form name="uploadImage" enctype="multipart/form-data">
+									  <div class="md-dialog-content">										
+										<label>Upload Photo</label>
+										  <div>
+										  		 <md-input-container class="md-icon-float md-block">
+												      Use floating label instead of placeholder
+												      <div class="ud-row">
+													      <div>
+													      	<label>Upload Photo</label>												      
+													      	<input type="file" upload-image-model="userImage" class="mdl-textfield__input userprofiletxtbox" id="userImage">
+													      </div>
+													      <md-button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect btn-primary">Browse</md-button>
+												      </div>
+												      <span>JPG, GIF or PNG. Max size of 800KB</span>
+												      <p ng-show="error" class = "validationmsg">Invalid Image</p>
+												 </md-input-container>
+										  </div>
+										<hr class="userprofilehr-rule" />
+										 <div class="userprofile-dialog-footer">
+											<md-button ng-click="closePoup()" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect btn-secondary">
+									        Cancel
+									      </md-button>
+										  <md-button ng-click="uploadImg()" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect btn-primary">
+									        Upload
+									      </md-button>
+									    </div>
+									  </div>									  
+									</md-dialog-content>									
+								  </form><!--  
+								</md-dialog>
+							</div>
+material popup  for change Photo end	 -->
+

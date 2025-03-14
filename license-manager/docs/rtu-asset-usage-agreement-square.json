@@ -1,0 +1,76 @@
+{
+  "assetUsageAgreement": {
+    "softwareLicensorId": "Company B",
+    "assetUsageAgreementId": "acumos://software-licensor/Company%20B/agreement/6653aab1-aca1-41c7-a246-d91a92693082",
+    "agreement": {
+      "@context": {
+        "@vocab": "https://www.w3.org/ns/odrl.jsonld#",
+        "vcard": "http://www.w3.org/2006/vcard/ns#"
+      },
+      "@type": "Agreement",
+      "$schema": "https://raw.githubusercontent.com/acumos/license-manager/master/license-rtu-editor/src/assets/schema/1.0.1/rtu-agreement.json",
+      "assignee": {
+        "@type": [
+          "Party",
+          "vcard:Organization"
+        ],
+        "vcard:hasUrl": "companyz.com",
+        "vcard:fn": "Company Z",
+        "vcard:hasEmail": "team@companyz.com"
+      },
+      "assigner": {
+        "@type": [
+          "Party",
+          "vcard:Organization"
+        ],
+        "vcard:hasUrl": "companyb.com",
+        "vcard:fn": "Company B",
+        "vcard:hasEmail": "sales@companyb.com"
+      },
+      "target": {
+        "refinement": [
+          {
+            "@type": "Constraint",
+            "leftOperand": "lum:swTagId",
+            "operator": "lum:in",
+            "rightOperand": [
+              "9f603957-b720-45f4-8b8e-512d081e9a5f)"
+            ]
+          }
+        ],
+        "@type": "Target"
+      },
+      "permission": [
+        {
+          "@type": "Rule",
+          "action": [
+            "acumos:deploy",
+            "acumos:download"
+          ],
+          "constraint": [
+            {
+              "rightOperand": {
+                "@value": "2019-12-31",
+                "@type": "xsd:date"
+              },
+              "@type": "Constraint",
+              "leftOperand": "date",
+              "operator": "lt"
+            }
+          ],
+          "uid": "acumos://software-licensor/Company%20B/permission/274f9e90-d1f9-41f8-ae2b-201a62769957"
+        }
+      ],
+      "prohibition": [
+        {
+          "@type": "Rule",
+          "action": [
+            "transfer"
+          ],
+          "uid": "acumos://software-licensor/Company%20B/prohibition/f7785dea-7279-4207-9edc-09221b87d949"
+        }
+      ],
+      "uid": "acumos://software-licensor/Company%20B/agreement/6653aab1-aca1-41c7-a246-d91a92693082"
+    }
+  }
+}

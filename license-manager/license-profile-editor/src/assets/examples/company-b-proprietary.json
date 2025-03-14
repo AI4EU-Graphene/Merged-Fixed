@@ -1,0 +1,19 @@
+{
+  "$schema": "https://raw.githubusercontent.com/acumos/license-manager/master/license-manager-client-library/src/main/resources/schema/1.0.0/license-profile.json",
+  "keyword": "Company-B-Commercial",
+  "licenseName": "Company B Commmercial License",
+  "copyright": {
+    "year": 2020,
+    "company": "Company B",
+    "suffix": "All Rights Reserved"
+  },
+  "softwareType": "Machine Learning Model",
+  "companyName": "Company B",
+  "contact": {
+    "name": "Company B Team Member",
+    "URL": "http://Company-B.com",
+    "email": "support@Company-B.com"
+  },
+  "additionalInfo": "http://Company-B.com/licenses/Company-B-Commercial",
+  "rtuRequired": true
+}

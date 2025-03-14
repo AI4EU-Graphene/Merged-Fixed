@@ -1,0 +1,196 @@
+/*-
+ * ===============LICENSE_START================================================
+ * Acumos Apache-2.0
+ * ============================================================================
+ * Copyright (C) 2019 Nordix Foundation.
+ * ============================================================================
+ * This Acumos software file is distributed by Nordix Foundation
+ * under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * This file is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ===============LICENSE_END==================================================
+ */
+
+/*
+  * importing theme here to apply the theme css rules to shadow dom
+  */
+@import "../../theme.scss";
+@import "~bootstrap/dist/css/bootstrap.css";
+
+body{font-family: 'Open Sans', sans-serif;}
+
+.sticky-toolbar {
+  z-index: 999;
+  position: fixed;
+  top: 0;
+}
+
+.version {
+  font-size: 12px;
+  color: #bbbbbb;
+  padding-left: 5px;
+}
+
+.close {
+  cursor: pointer;
+  fill: #fff !important;
+}
+
+.license-profile-editor {
+  .mat-raised-button {
+    color: #2f2f2f;
+    background-color: #ffffff;
+    border: 1px solid #d5d5d5;
+    padding: 0px 20px 0px 20px;
+  }
+
+  .content-card {
+    margin: 80px 16px 0 16px;
+    width: 94%;
+    max-width: initial;
+  }
+
+  .error {
+    background-color: #efefef;
+    color: #ff0000;
+    font-size: 14px;
+    padding: 5px 5px;
+  }
+
+  .bottom-button-bar {
+    background-color: #e5e5e5;
+    display: flex;
+    margin-top: 20px;
+    padding: 20px;
+  }
+}
+
+.mat-form-field-appearance-outline .mat-form-field-label {
+  margin-top: 0px;
+}
+
+.mat-card {
+  margin: 0;
+  overflow: auto;
+  width: 100%;
+  max-width: 40em;
+
+  mat-form-field {
+    input,
+    .mat-form-field-label {
+      color: #2f2f2f;
+    }
+    input::placeholder {
+      color: #b4b4b4;
+    }
+  }
+}
+
+.mat-raised-button:hover {
+  background-color: #e5e3e8;
+  border: 1px solid #b1b1b1;
+}
+
+.mat-raised-button[disabled][disabled] {
+  color: #c6c5c5;
+  background-color: #e5e3e8;
+  border: 1px solid #dadada;
+}
+
+.mat-raised-button.mat-primary {
+  color: #ffffff;
+  background-color: #671c9d;
+  padding: 0px 20px 0px 20px;
+  border: 1px solid #671c9d;
+}
+
+.mat-raised-button.mat-primary[disabled][disabled] {
+  color: #c6c5c5;
+  background-color: #efefef;
+  border: 1px solid #dadada;
+}
+
+.mat-raised-button.mat-primary:hover {
+  background-color: #4f147a;
+}
+
+.mat-raised-button.btn-primary {
+  color: #ffffff;
+  background-color: #671c9d;
+  padding: 0px 20px 0px 20px;
+  border: 1px solid #671c9d;
+}
+
+.btn-primary[disabled][disabled] {
+  color: #c6c5c5;
+  background-color: #efefef;
+  border: 1px solid #dadada;
+}
+
+.btn-primary:hover {
+  background-color: #4f147a;
+}
+
+.mat-raised-button.btn-secondary {
+  color: #2f2f2f;
+  background-color: #ffffff;
+  border: 1px solid #d5d5d5;
+  padding: 0px 20px 0px 20px;
+}
+
+.btn-secondary:hover {
+  background-color: #e5e3e8;
+  border: 1px solid #b1b1b1;
+}
+
+.btn-secondary[disabled][disabled] {
+  color: #c6c5c5;
+  background-color: #e5e3e8;
+  border: 1px solid #dadada;
+}
+
+.form-control {
+  border-width: 1px;
+  height: 35px;
+  padding-left: 10px;
+  border-radius: 2px;
+  border-color: #d5d5d5;
+  cursor: pointer;
+}
+.form-control:focus {
+  box-shadow: none;
+}
+.mat-toolbar.mat-primary {
+  height: 39px;
+}
+.mat-toolbar.mat-primary h2 {
+  font-size: 16px;
+  font-weight: 600;
+}
+.license-profile-editor .content-card {
+}
+
+legend{
+
+  font-size: 16px !important;
+  font-weight: 600;
+  line-height: 30px !important;
+  border-bottom: 1px solid #E5E5E5;
+  margin-bottom: 8px !important;
+  padding: 5px 8px 5px 0 !important;
+  color: #671C9D !important;
+  text-transform: uppercase;
+  font-family: 'Open Sans', sans-serif;
+}
+label{
+  font-size: 14px !important;
+  color:#050009 !important;
+  font-family: 'Open Sans', sans-serif;
+}

@@ -1,0 +1,49 @@
+{
+  "@context": {
+    "@vocab": "https://www.w3.org/ns/odrl.jsonld#",
+    "vcard": "http://www.w3.org/2006/vcard/ns#"
+  },
+  "$schema": "https://raw.githubusercontent.com/acumos/license-manager/master/license-rtu-editor/src/assets/schema/1.0.1/rtu-agreement.json",
+  "@type": "Agreement",
+  "uid": "acumos://software-licensor/Company%2520A/agreement/487b1c01-b017-4516-85bc-9ad9610dfa70",
+  "assignee": {
+    "@type": [
+      "Party",
+      "vcard:Organization"
+    ],
+    "vcard:hasUrl": "companyb.com/team",
+    "vcard:fn": "Company B",
+    "vcard:hasEmail": "team@companyb.com"
+  },
+  "assigner": {
+    "@type": [
+      "Party",
+      "vcard:Organization"
+    ],
+    "vcard:hasUrl": "companya.com",
+    "vcard:fn": "Company A",
+    "vcard:hasEmail": "sales@companya.com"
+  },
+  "target": {
+    "refinement": [
+      {
+        "@type": "Constraint",
+        "leftOperand": "lum:swCatalogType",
+        "operator": "lum:in",
+        "rightOperand": [
+          "PB"
+        ]
+      }
+    ],
+    "@type": "Target"
+  },
+  "permission": [
+    {
+      "uid": "acumos://software-licensor/Company%2520A/permission/1a21e418-ecd5-41b6-936f-78c707105b3c",
+      "@type": "Rule",
+      "action": [
+        "use"
+      ]
+    }
+  ]
+}

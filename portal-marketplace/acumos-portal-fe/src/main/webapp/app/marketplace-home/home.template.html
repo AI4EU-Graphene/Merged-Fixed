@@ -1,0 +1,335 @@
+<!--  
+===============LICENSE_START=======================================================
+Acumos Apache-2.0
+===================================================================================
+Copyright (C) 2017 AT&T Intellectual Property & Tech Mahindra. All rights reserved.
+===================================================================================
+This Acumos software file is distributed by AT&T and Tech Mahindra
+under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+This file is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+===============LICENSE_END=========================================================
+-->
+
+<!-- 
+	style for demo remove afterwards - images according to the name of the solution 
+-->
+<style>
+	.explore .mdl-card__title img {
+	width: auto;
+    max-width: 100%;
+    max-height: 150px;
+    min-height: 150px;
+    cursor: pointer;
+}
+</style>
+
+<!-- <section class="description_box" id="breadcrumb-box">
+	<h4>Home</h4>
+	<ol class="breadcrumb">
+		<li><a href="#">Home</a></li>
+		<li><a href="#"></a></li>
+	</ol>
+</section>
+ -->
+ <section>
+ <div class="homemain-carousel">
+<ui-carousel 
+  					slides="banner.slides"
+  					autoplay="true"
+  					slides-to-show="1"
+  				    slides-to-scroll="1"
+  				   	dots="true"
+  				   	active="false"
+  				   	autoplay-speed="8000"
+  				   	on-before-change="onCarouselBeforeChange()">
+  				   	<carousel-item>
+ 					<div  ng-bind-html = "item | to_trusted" compile = "item" ></div>
+ 					</carousel-item>
+ 					<carousel-prev>
+    
+   <span>
+    	<i class="material-icons" alt="Previous" title="Previous">chevron_left</i>
+    	
+    </span>
+   
+  </carousel-prev>
+ 
+  <carousel-next>
+   
+    <span>
+    	<i class="material-icons" alt="Next" title="Next">chevron_right</i>
+    </span>
+    
+  </carousel-next>
+ 					</ui-carousel> 
+ </div>
+ 
+	<!-- <div class="home-screen slide-content">
+				<div class="slide-text">
+					<h4>Powering Data-driven Solutions</h4>
+					<h6>the marketplace, the eco-system and the design studio</h6>
+					<p>{{$root.siteInstanceName}} is the marketplace and collaboration space for AI. <a href="#">Learn More >></a></p>
+					<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect active" ng-click = "go('modularResource')"> 
+					  ADD YOUR MODEL NOW
+					</button>
+					<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">
+					  <a ui-sref="marketPlace" style="color:#FFF" ng-click = "go('marketPlace')">EXPLORE MARKETPLACE</a>
+					</button>
+				</div>
+				<div class="image-container">
+					<img src="images/banner_ml_graphics.png" alt="" title=""/>
+				</div>
+			</div> -->
+			
+			
+			<!-- explore -->
+			<div class="explore">
+				<h3>Explore the {{$root.siteInstanceName}} Marketplace</h3>
+				<h6>it's easy to <b>discover, download & deploy</b></h6>
+				<div class="mdl-grid">
+					<ui-carousel 
+  					slides="homeSolutions.slides"
+  					autoplay="false"
+  					slides-to-show="noOfSolutiontile"
+  				    slides-to-scroll="1"
+  				   	dots="true">
+  				   <carousel-item>
+						<div class="demo-card-wide mdl-card mdl-shadow--2dp">
+						  <div class="mdl-card__title">
+							<figure>
+							<img ng-src="/api/solutions/{{item.solutionId}}/picture" ng-click="ctrl.go('/marketSolutions?solutionId='+ item.solutionId + '&revisionId=' + item.latestRevisionId)"
+								class="img-rounded" onerror="this.onerror=null;this.src='images/default-model.png'"/>
+									</figure>
+						  </div>
+						  <div class="mdl-card__supporting-text">
+	                          <div class="disblock detail-content">{{item.name.toString().split("_").join(" ")}}</div>
+	                                <div class="stars-outer">
+	                                        <div class="stars-inner" style="width:{{item.solutionRatingAvg}}">
+	                                </div>
+	                          </div>
+						  </div>
+						</div>
+					</carousel-item>
+					<carousel-prev>
+				   <span>
+				    	<i class="material-icons" alt="Previous" title="Previous">chevron_left</i>
+				    </span>
+				  </carousel-prev>
+				  <carousel-next>
+				    <span>
+				    	<i class="material-icons" alt="Next" title="Next">chevron_right</i>
+				    </span>
+				  </carousel-next>
+				</ui-carousel>
+				</div>
+			</div>
+			
+			<!-- discover -->
+			<div class="discover">
+				<h3>Discover {{$root.siteInstanceName}}</h3>
+				<div class="marketplace">
+				<a ui-sref="marketPlace">
+					<div class="discover-icon">
+						<img src="images/discover_marketplace_icon.png" alt="Marketplace" title="Marketplace"/>
+					</div>
+					<!-- <h5>Marketplace</h5> -->
+					<div class="discover-description"  ng-bind-html="daMarketPlace">
+					<!-- <div class="discover-description"  data-ng-init="getCmsHomeScreenDiscoverContentMarketPlace('marketplace')" ng-bind-html="marketplace">-->
+						<!-- <h5>Marketplace</h5>
+						<p>
+							{{$root.siteInstanceName}} is the go-to site for data-powered decision making. With an intuitive easy-to-search, easy-to-use catalog, Acumos brings Al to the mainstream.
+						</p> -->
+					</div>
+					<a ui-sref="marketPlace">
+				</div>
+				<div class="desingstudio">
+				    <a ui-sref="designStudio">
+					<div class="discover-icon">
+						<img src="images/discover_design_studio_icon.png" alt="Design Studio" title="Design Studio"/>
+					</div>
+					<!-- <h5>Design Studio</h5> -->
+					<div class="discover-description"  data-ng-init="daDesignStudio" ng-bind-html="daDesignStudio">
+						<!-- <h5>Design Studio</h5> 
+						<p>Models-as-microservices allow components to be chained to handle sophisticated problems.</p> -->
+					</div>
+					</a>
+				</div>
+				<div class="sdn">
+					<div class="discover-icon">
+						<img src="images/discover_design_sdn.png" alt="SDN & ONAP" title="SDN & ONAP"/>
+					</div>
+					<!-- <h5>SDN & ONAP</h5> -->
+					<div class="discover-description" data-ng-init="daSdnOnap" ng-bind-html="daSdnOnap">
+						<!-- <h5>SDN & ONAP</h5> 
+						<p>Many Marketplace solutions originated in the ONAP SDN community and are configured to be directly deployed to SDC.</p> -->
+					</div>
+				</div>
+				<div class="community text-right">
+					<div class="discover-icon">
+						<img src="images/discover_community_icon.png" alt="Team Up" title="Team Up"/>
+					</div>
+					<!-- <h5>Team UP</h5> -->
+					<div class="discover-description" data-ng-init="daTeamUp" ng-bind-html="daTeamUp">
+						<!-- <h5>Team Up!</h5>
+						<p>Share, download & collaborate in an open source ecosystem of people, solutions and ideas.</p> -->
+						
+					</div>
+					
+				</div>
+				<div class="onboard text-right" ng-click="navigateTo()">
+					<div class="discover-icon">
+						<img src="images/discover_onboarding_icon.png" alt="On-boarding" title="On-boarding" />
+					</div>
+					<!-- <h5>Onboarding</h5> -->
+					<div class="discover-description"  data-ng-init="daPreferredToolkit" ng-bind-html="daPreferredToolkit"></div>
+				</div>
+				<div class="clearfix"></div>
+			</div>
+			
+			
+			<!-- hackathon -->
+			<div class="hackathon" ng-if="eventConfig.enabled == true">
+				<!-- <div class="hackathon-container">
+					<div class="hackathon-image">
+					 <img src="images/hacathon_graphics.png" alt="Hackathon" title="Hackathon"/>			
+					</div>
+					<div class="hackathon-text" data-ng-init="getCmsHomeScreenHackathon()" ng-bind-html="hackathon">
+						<h3>Hackathon</h3>
+						<p>An {{$root.siteInstanceName}} Hackathon is coming soon!  Meet new colleagues and expand your {{$root.siteInstanceName}} skills.</p>						
+					</div>
+				</div> -->
+				
+				
+<ui-carousel 
+  					slides="event.slides"
+  					autoplay="true"
+  					slides-to-show="1"
+  				    slides-to-scroll="1"
+  				   	dots="true"
+  				   	active="false"
+  				   	autoplay-speed="8000"
+  				   	on-before-change="onCarouselBeforeChange()">
+  				   	<carousel-item>
+ 					<div  ng-bind-html = "item | to_trusted" compile = "item" ></div>
+ 					</carousel-item>
+ 					<carousel-prev>
+    
+   <span>
+    	<i class="material-icons" alt="Previous" title="Previous">chevron_left</i>
+    	
+    </span>
+   
+  </carousel-prev>
+ 
+  <carousel-next>
+   
+    <span>
+    	<i class="material-icons" alt="Next" title="Next">chevron_right</i>
+    </span>
+    
+  </carousel-next>
+ 					</ui-carousel> 
+				
+				
+				
+				
+			</div>
+			<div class="clearfix"></div>
+			<!-- sucess -->
+			<div class="success" ng-show = "storyConfig.enabled">
+				<h3>Success stories</h3>
+				
+				<!-- <div class="mdl-grid"> -->
+					<!-- <div class="mdl-cell mdl-cell--6-col mdl-cell--8-col-tablet mdl-cell--4-col-phone disinherit"> -->
+						<!-- <div class="success-icon">
+							<img src="images/Success_badge.png" alt="Success stories" title="Success stories"/>
+						</div>
+						<div class="success-description" data-ng-init="getCmsHomeScreenSuccessStoriesexec()" ng-bind-html="successStoryattexec">
+							
+						</div> -->
+					<!-- </div>
+					
+					<div class="mdl-cell mdl-cell--6-col mdl-cell--8-col-tablet mdl-cell--4-col-phone disinherit">
+						<div class="success-icon">
+							<img src="images/Success_badge.png" alt="Success stories" title="Success stories"/>
+						</div>
+						<div class="success-description" data-ng-init="getCmsHomeScreenSuccessStoriesSitemanager()" ng-bind-html="successStorysitemgr">
+							
+						</div>
+					</div> -->
+					
+					<ui-carousel 
+  					slides="successStories.slides"
+  					autoplay="true"
+  					slides-to-show="1"
+  				    slides-to-scroll="1"
+  				   	dots="true"
+  				   	active="false"
+  				   	autoplay-speed="8000">
+  				   	<carousel-item>
+ 					<div  ng-bind-html = "item | to_trusted" compile = "item" >
+ 					</div>
+ 					</carousel-item>
+ 					<carousel-prev>
+    
+   <span>
+    	<i class="material-icons" alt="Previous" title="Previous">chevron_left</i>
+    	
+    </span>
+   
+  </carousel-prev>
+ 
+  <carousel-next>
+   
+    <span>
+    	<i class="material-icons" alt="Next" title="Next">chevron_right</i>
+    </span>
+    
+  </carousel-next>
+ 					</ui-carousel> 
+				</div>
+			<!-- </div> -->
+			<div class="clearfix"></div>
+
+			
+			
+<!-- Disabled LF ID -->
+	<div class="md-dialog-container" id="myLfDisabled" style="height:0;" >
+	  <md-dialog aria-label="Account Disabled" class="sign-in-promt-modal-box">
+		  <form ng-cloak>
+			<md-toolbar>
+			  <div class="md-toolbar-tools">
+				<h2>Account Disabled</h2>
+				<span flex></span>
+				<md-button class="md-icon-button" ng-click="closePoup()">
+				  <i class="material-icons">close</i>
+				</md-button>
+			  </div>
+			</md-toolbar>
+			<md-dialog-content>
+				<div class="md-dialog-content">
+					<p>This account is disabled. Please contact the administrator for activating your account.</p>
+				</div>
+			</md-dialog-content>
+			<md-dialog-actions>
+				<div class="dialog-footer-container1">
+					<span></span>
+					<md-button type="submit" ng-click="closePoup()" class="mdl-button mdl-js-button btn-primary" title="Confirm">
+						OK
+					</md-button>
+				</div>
+			</md-dialog-actions>
+		  </form>
+		</md-dialog>
+	</div>
+<!-- Disabled LF ID end -->
+
+		</section>

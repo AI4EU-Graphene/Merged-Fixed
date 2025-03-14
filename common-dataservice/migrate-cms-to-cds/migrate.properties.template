@@ -1,0 +1,41 @@
+###
+# ===============LICENSE_START=======================================================
+# Acumos
+# ===================================================================================
+# Copyright (C) 2019 AT&T Intellectual Property & Tech Mahindra. All rights reserved.
+# ===================================================================================
+# This Acumos software file is distributed by AT&T and Tech Mahindra
+# under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#  
+#      http://www.apache.org/licenses/LICENSE-2.0
+#  
+# This file is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ===============LICENSE_END=========================================================
+###
+
+# properties for the CMS-to-CDS/Nexus migration tool
+
+# user, admin
+migrate.data.type = admin
+
+# must include host, port and base context path
+cds.url = http://cdshost.myproject.org:8001/ccds
+cds.user = 
+cds.pass = 
+
+# must include host, port and base context path
+cms.url = http://cmshost.myproject.org:9080/site
+cms.user = 
+cms.pass = 
+
+# must include host, port and repo path
+nexus.url = http://nexushost.myproject.org:8081/repository/repo_name
+nexus.user = 
+nexus.pass = 
+# this is the group prefix; UUID will be appended
+nexus.prefix = org.acumos

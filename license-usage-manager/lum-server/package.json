@@ -1,0 +1,45 @@
+{
+  "name": "lum-server",
+  "description": "License Usage Manager (LUM) for Acumos and ONAP",
+  "version": "0.0.0",
+  "main": "lum-server.js",
+  "repository": {
+    "type": "git",
+    "url": "https://gerrit.acumos.org/r/license-usage-manager.git"
+  },
+  "scripts": {
+    "start": "node lum-server.js",
+    "lint": "eslint .",
+    "lint-spec": "speccy lint -s openapi-tags-alphabetical -s  server-trailing-slash -s path-keys-no-trailing-slash lum-server-api/lum-server-API.yaml",
+    "test": "mocha --reporter spec --exit",
+    "coverage": "nyc --reporter lcov --reporter text-summary npm test"
+  },
+  "engines": {
+    "node": ">=12.18.1"
+  },
+  "dependencies": {
+    "express": "4.17.1",
+    "express-promise-router": "4.0.1",
+    "moment": "2.27.0",
+    "pg": "8.2.1",
+    "swagger-ui-express": "4.1.4",
+    "uuid": "8.2.0",
+    "winston": "3.3.3",
+    "yamljs": "0.3.0"
+  },
+  "author": "Alex Shatov",
+  "license": "(Apache-2.0)",
+  "keywords": [
+    "license",
+    "asset",
+    "right-to-use",
+    "entitlement"
+  ],
+  "devDependencies": {
+    "chai": "4.2.0",
+    "chai-http": "4.3.0",
+    "mocha": "8.0.1",
+    "mock-require": "3.0.3",
+    "nyc": "15.1.0"
+  }
+}

@@ -1,0 +1,1126 @@
+<!--  
+===============LICENSE_START=======================================================
+Acumos Apache-2.0
+===================================================================================
+Copyright (C) 2017 AT&T Intellectual Property & Tech Mahindra. All rights reserved.
+===================================================================================
+This Acumos software file is distributed by AT&T and Tech Mahindra
+under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+This file is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+===============LICENSE_END=========================================================
+-->
+
+<!-- <div class="alert alert-warning" ng-if="noDataFound">
+  <strong>No data found</strong>
+</div> -->
+
+<alert-message msg="msg" icon="icon" styleclass="styleclass"
+		ng-show="showAlertMessage"></alert-message>
+		
+<div class="page-content" id="md-manage-module-template">
+	<section class="pageheadsection mob-pageheadsection1">
+		<div class="mdl-grid mdl-grid--no-spacing">
+			<div
+				class="mdl-cell mdl-cell--8-col mdl-cell--6-col-tablet mdl-cell--3-col-phone">
+				<span class="headline mob-disblock"> <!-- Manage  -->My
+					Models
+				</span>
+				<ul class="c-breadcrumb">
+					<li><a ui-sref="home" ng-click="$root.parentActive = ''">Home</a></li>
+					<li>
+						<!-- Manage  -->My Models
+					</li>
+				</ul>
+			</div>
+			<div
+				class="mdl-cell mdl-cell--4-col mdl-cell--2-col-tablet mdl-cell--1-col-phone text-right lg-v-self-center">
+				<a ng-show="$root.enableOnboarding"
+					class="mdl-button mdl-js-button btn-primary hide-xs"
+					ui-sref="modularResource" ng-click="$root.parentActive = ''" alt="Add New Model" title="Add New Model">add
+					new model</a>
+				<button
+					class="mdl-button mdl-button--fab btn-primary mob-add-button hide-sm hide-md hide-lg hide-xl">
+					<i class="material-icons">add</i>
+				</button>
+			</div>
+		</div>
+	</section>
+	<div class="mdl-grid mdl-grid--no-spacing cg-grid-layout">
+		<div
+			class="mdl-cell mdl-cell--2-col mdl-cell--3-col-tablet mdl-cell--4-col-phone cg-grid-left-container"
+			ng-class=" 'showfilter' ? 'leftbrowse-section' : '' "
+			ng-show="showfilter">
+			<div class="mdl-grid browse-section-container" layout="row">
+				<span class="title text-bold" flex="60">BROWSE BY</span>
+				<!-- <a href="#" class="text-right" flex="40" >Show All</a> -->
+				<a class="text-right" flex="40" ng-click="autoHeight = !autoHeight"
+					ng-show="autoHeight && category.length > 4">Show All</a> <a class="text-right" flex="40"
+					ng-click="autoHeight = !autoHeight" ng-show="!autoHeight  && category.length > 4">Show
+					Less</a>
+			</div>
+			<div class="">
+				<div class="sidebar-search-container">
+					<input class="searchicon" type="text" id="module-search"
+						ng-change="filterChange('searchBox','searchFilter')" ng-model-options="{ debounce: 2000 }"
+						ng-model="searchBox" placeholder="Search here">
+				</div>
+				<!-- <hr class="sidebar-seperator"> -->
+				<div class="sidebar-checkbox-container" ng-class= "autoHeight ? 'fixheightfilter' : 'autoheightfilter'">
+					<label class="disblock margin-b md-subhead">Filter By
+						Category <span class="title-icons filter-catagory" alt="Filter By Category" title="Filter By Category"></span>
+					</label>
+					<div class="checkbox" ng-repeat="cat in category">
+						<md-checkbox aria-label="Checkbox 1" class="text-medium"
+							ng-true-value="'yup'" ng-false-value="'nope'" value="{{cat}}"
+							ng-click="filterChange(cat.code,'caegory')">{{cat.name}}
+
+
+						
+					</div>
+					<div class="checkbox">
+						<md-checkbox type="checkbox" aria-label="Checkbox 1" class="text-medium" ng-model="checked" ng-click="get()" class="ng-valid ng-dirty ng-valid-parse ng-touched ng-empty" aria-invalid="false" style="">Deleted
+						models 
+					</div>
+				</div>
+				<!-- <a class="link-sidebar-showmore" ng-click="autoHeight = !autoHeight"  flex>Show More</a> -->
+				<!-- <a class="link-sidebar-showmore" ng-click="autoHeight = !autoHeight" ng-show = "autoHeight" flex>Show More</a>
+							<a class="link-sidebar-showmore" ng-click="autoHeight = !autoHeight" ng-show = "!autoHeight" flex>Show Less</a> -->
+				<hr class="sidebar-seperator">
+				<div class="sidebar-tag-container">
+					<label class="disblock margin-b md-subhead">Tags <span
+						class="title-icons icon-tags" alt="Tags" title="Tags"></span></label>
+					<div class="rowcontainer">
+						<div class="">
+							<md-chips>
+							  <md-chip ng-repeat="tag in tags"
+							  	ng-class="{'selected-tag': selectedChip[$index]}"
+							   ng-click="filterChange(tag,'tag');selectChip($index)">{{tag}}</md-chip>
+							</md-chips>
+						</div>
+					</div>
+					<!-- <div class="rowcontainer text-right">
+									<button class="mdl-button mdl-js-button mdl-button--colored" ng-click="showfilter = !showfilter"	>Apply</button>
+									<hr class="hide-lg hide-xl" />
+								</div> -->
+				</div>
+			</div>
+		</div>
+		<div class="mdl-cell mdl-cell--10-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-color--white cg-grid-right-container">
+			<div class="page-wrapper">
+				<div class="mdl-grid mdl-grid--no-spacing grid1 hide-xs">
+					<div
+						class="mdl-cell mdl-cell--4-col mdl-cell--3-col-tablet mdl-cell--1-col-phone mdl-cell--middle">
+						<span class="hide-xs hide-sm showing-text">
+						<span
+							class="text-colorgray1" ng-show="hidePrivate&&hidePublic&&hideCompany&&hideDelete">{{totalPrivateSolCount
+								+ totalCompanySolCount +
+								totalPublicSolCount +
+								totalDeletedSolCount}} Models Available
+						</span>
+						<span class="text-colorgray1" ng-show="hidePrivate&&!hidePublic&&!hideCompany&&!hideDelete">{{totalPrivateSolCount}} Models Available</span>
+						<span class="text-colorgray1" ng-show="!hidePrivate&&!hidePublic&&hideCompany&&!hideDelete">{{totalCompanySolCount}} Models Available</span>
+						<span class="text-colorgray1" ng-show="!hidePrivate&&hidePublic&&!hideCompany&&!hideDelete">{{totalPublicSolCount}} Models Available</span>
+						<span class="text-colorgray1" ng-show="!hidePrivate&&!hidePublic&&!hideCompany&&hideDelete">{{totalDeletedSolCount}} Models Available</span>
+						
+						<div ng-switch="checked">
+						<div ng-switch-when="true">
+						<md-chips  ng-if="delete1" name="checked" ng-model="filterOptions" name="filterOptions"
+							readonly="true" md-removable="true" ng-click='removeFilter()'   >
+						<md-chip-template > <strong>{{$chip}}</strong> </md-chip-template>
+						</md-chips>
+						</div>
+						<div ng-switch-when="false">
+                        <md-chips   name="checked" ng-model="filterOptions" name="filterOptions"
+							readonly="true" md-removable="true" ng-click='removeFilter()'   >
+						<md-chip-template > <strong>{{$chip}}</strong> </md-chip-template>
+						</md-chips>
+						</div>
+						<div ng-switch-default>
+						  <md-chips   name="checked" ng-model="filterOptions" name="filterOptions"
+							readonly="true" md-removable="true" ng-click='removeFilter()'   >
+						<md-chip-template > <strong>{{$chip}}</strong> </md-chip-template>
+						</md-chips>
+						</div>
+						</div>
+
+						<button
+							class="mdl-button mdl-js-button mdl-button--primary hide-lg hide-md hide-xl btn-sort btn-browseby"
+							ng-click="showfilter = !showfilter">Browse By</button>
+					</div>
+					<div
+						class="mdl-cell mdl-cell--8-col mdl-cell--5-col-tablet mdl-cell--3-col-phone text-right">
+						<div class="grid-control-btn-container">
+				    <div class="marketplace-btn-container">
+                            <!--    <button id="demo-menu-lower-right2"
+                                    class="mdl-button mdl-js-button btn-sort bdr">
+                                    <span class="hide-xs"><span class="txtspan1">Sort
+                                            By</span> - All</span> <span class="hide-sm hide-md hide-lg hide-xl"><i
+                                        class="material-icons">sort_by_alpha</i></span> <i
+                                        class="material-icons">keyboard_arrow_down</i>
+                                </button>
+                                <ul
+                                    class="mdl-menu mdl-menu--bottom-left mdl-js-menu btn-sorlist1"
+                                    for="demo-menu-lower-right2">
+                                    <li class="mdl-menu__item" ng-repeat="action in actions"
+                                        ng-click="filterChange(action,'sortBy')">{{action.name}}</li>
+                                </ul> -->
+
+                      </div>
+
+                            <div class="select-control">
+                                <md-select ng-model="action" placeholder="Sort By - All" class="btn-sort bdr mdl-button md-no-underline">  <!-- md-on-open="loadUsers()" -->
+                                <md-option  ng-repeat="action in actions" ng-click="filterChange(action,'sortBy')" ng-value="action.name">{{action.name}}</md-option>
+                                </md-select>
+                            </div>
+
+						<!-- 	<div class="marketplace-btn-container">
+								<button id="demo-menu-lower-right3"
+									class="mdl-button mdl-js-button btn-sort bdr">
+									<span class="hide-xs"><span class="txtspan1">Sort
+											By ID</span> - All</span> <span class="hide-sm hide-md hide-lg hide-xl"><i
+										class="material-icons">sort</i></span> <i class="material-icons">keyboard_arrow_down</i>
+								</button>
+								<ul
+									class="mdl-menu mdl-menu--bottom-left mdl-js-menu mdl-js-ripple-effect btn-sorlist2"
+									for="demo-menu-lower-right3">
+									<li class="mdl-menu__item" ng-repeat="filterid in filterids"
+										ng-click="filterChange(filterid ,'sortById')">{{filterid}}</li>
+								</ul>
+							</div> -->
+							
+							<!-- <div class="select-control">
+								<md-select ng-model="filterid" placeholder="Sort By - ID">  md-on-open="loadUsers()"
+								<md-option  ng-repeat="filterid in filterids" ng-click="filterChange(filterid ,'sortById')">{{filterid}}</md-option>
+								</md-select>
+							</div> -->
+							
+							
+							<div class="grid-view-btn-container">
+								<button ng-disabled="Viewtile"
+									ng-class="{'gridlistview-btnactive':Viewtile}"
+									class="gridlistview-btn mdl-button mdl-js-button mdl-button--icon mdl-button--colored"
+									ng-click="Viewtile = true" alt="Grid View" title="Grid View">
+									<i ng-if="Viewtile"> <img
+										src="images/tile_view_white_icon.png" />
+									</i> <i ng-if="!Viewtile"> <img
+										src="images/tile_view_black_icon.png" />
+									</i>
+								</button>
+								<button ng-disabled="!Viewtile"
+									ng-class="{'gridlistview-btnactive':!Viewtile}"
+									class="gridlistview-btn mdl-button mdl-js-button mdl-button--icon mdl-button--colored"
+									ng-click="Viewtile = false" alt="List View" title="List View">
+									<i ng-if="Viewtile"> <img
+										src="images/list_view_black_icon.png" />
+									</i> <i ng-if="!Viewtile"> <img
+										src="images/list_view_white_icon.png" />
+									</i>
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="mob-actions-container1 hide-sm hide-md hide-lg hide-xl">
+									<button class="mdl-button mdl-js-button mdl-button--primary btn-browse1" ng-click="showfilter = !showfilter">Browse By</button>
+									<div class="select-control ">
+									    <md-select ng-model="action" placeholder="Sort By - All" class="mdl-button md-no-underline mob-btn-sort">
+									        <md-option ng-value="action" ng-repeat="action in actions" ng-click="filterChange(action,'sortBy');">{{action.name}}</md-option>
+									    </md-select>
+									</div>
+									<div class="select-control">
+											<md-select ng-model="selectedSolutionId" placeholder="Sort By - ID" class="mdl-button md-no-underline mob-btn-sort">
+								             <md-select-header class="demo-select-header">
+									            <input ng-model="searchTerm" type="search" >
+									        </md-select-header> 
+								            <md-option ng-repeat="(key, solution) in solutionIds | filter : searchTerm" ng-value="solution.solutionId" ng-click="searchChange(key)">
+								              {{solution.solutionId}}
+								            </md-option>
+								             <md-select-header class="demo-select-header">
+									           <a ng-click="viewAllSolutions()" > View All </a>
+									        </md-select-header>
+								          </md-select>
+									</div>
+									<div class="grid-view-btn-container">                                   
+		                                <button ng-disabled="Viewtile" ng-class="{'gridlistview-btnactive':Viewtile}" class="gridlistview-btn mdl-button mdl-js-button mdl-button--icon mdl-button--colored" ng-click="Viewtile = true">
+		                                      <i ng-if="Viewtile">
+		                                            	<img src="images/tile_view_white_icon.png" />
+		                                            </i>
+		                                             <i ng-if="!Viewtile">
+		                                            	<img src="images/tile_view_black_icon.png" />
+		                                            </i>
+		                                </button>
+		                                <button ng-disabled="!Viewtile" ng-class="{'gridlistview-btnactive':!Viewtile}" class="gridlistview-btn mdl-button mdl-js-button mdl-button--icon mdl-button--colored" ng-click="Viewtile = false">
+		                                           <i ng-if="Viewtile">
+		                                            	<img src="images/list_view_black_icon.png" />
+		                                            </i>
+		                                              <i ng-if="!Viewtile">
+		                                            	<img src="images/list_view_white_icon.png" />
+		                                            </i>  
+		                                </button>
+		                            </div>
+								</div>
+				 
+                     <!-- ({{mlSolutionPrivateCount}}/{{totalPrivateSolCount}}) -->  
+				<div class="grid-outer-wrapper">
+					<!-- Private Models -->
+					<div class="grid-container" ng-if="hidePrivate">
+						<h4 class="gridlistheading">
+							My Unpublished Models
+							 <span class="text-colorgray1"> Showing - {{startPageSizePR }} to {{endPageSizePR}} of {{totalPrivateSolCount}} Models</span>
+							<span
+								class="pull-right"> <span
+								class="mp-grid-head-buttons-container"
+								ng-hide="seeAllSelected || mlSolutionPrivate.length < 1">
+									<a class="btnseeall removetop" ng-click="Navigation(selectedPage,'PR')" 
+									ng-class="{ removetop: !(pageNumPrivate < 1 || mlSolutionPrivate.length < 4)}" ng-hide="pageNumPrivate < 1 && mlSolutionPrivateCount == totalPrivateSolCount">See
+										All</a>  <a href="" ng-click="privateNav('Pre')"
+									class="seeall-icons" ng-hide="pageNumPrivate < 1" ng-class="{disabledClick: privateDataLoaded==true}"> <i
+										class="material-icons" alt="Previous" title="Previous">navigate_before</i>
+								</a> <a href="" ng-click="privateNav('Next')" class="seeall-icons" ng-class="{disabledClick: privateDataLoaded==true}"
+									ng-hide="mlSolutionPrivateCount == totalPrivateSolCount">
+										<i class="material-icons" alt="Next" title="Next">navigate_next</i>
+								</a>
+							</span>
+							</span>
+						</h4>
+						<div class="posrel" ng-if="mlSolutions.length < 1">
+							<!-- <alert-message-private msg="msg" class="c-alert-inline-container"
+								icon="icon" styleclass="styleclass"
+								ng-show="privateAlertMessage"></alert-message-private> -->
+						</div>
+						<!-- <div infinite-scroll='onLoad()' infinite-scroll-distance="2"> -->
+
+						<div class="mp-grid" ng-show="Viewtile">
+
+							<div class="alert c-info" ng-if="mlSolutionPrivate.length < 1">
+								<strong>No Results Found</strong>
+							</div>
+
+							<div class="grid-item"
+								ng-repeat="privateSolution in mlSolutionPrivate">
+								<!--  | filter:(!searchResults || '') && {active:''} as filtered -->
+								<div class="grid-top-section">
+									<div class="product-image">
+										<figure>
+												<img ng-src="/api/solutions/{{privateSolution.solutionId}}/picture" ng-click="onClickModel(privateSolution.solutionId, privateSolution.ownerId, privateSolution.latestRevisionId)"
+													class="img-rounded" onerror="this.onerror=null;this.src='images/default-model.png'"/>
+										</figure>
+										<!-- <span class="img-ctag"><i class="material-icons">copyright</i> </span> -->
+									</div>
+									<div class="mpdetailscontainer">
+										<div class="tilecontainer1">
+											<label class="griditem-title cursor-pointer" ng-click="onClickModel(privateSolution.solutionId, privateSolution.ownerId, privateSolution.latestRevisionId)"><span class="griditem-title-text2">{{privateSolution.name.toString().split("_").join(" ")}}</span></label>
+											<div>
+												<!-- Shared With/ Shared By Icon -->
+												<span class="md-share-with-me" title="Shared With Me" ng-show="privateSolution.ownerId != loginUserID"></span>
+												<span class="md-share-with-others" title="Shared With Others" ng-show="privateSolution.ownerId == loginUserID && privateSolution.ownerListForSol.length > 0"></span> 
+											</div>
+										</div>
+										<label class="grid-item-text-container"><span
+											class="griditem-text2 grid-item-lbl"
+												ng-bind="((privateSolution.authors.length > 0) ? privateSolution.authors[0].name : privateSolution.ownerName)"></span> | <span class="griditem-text2">
+												{{privateSolution.modified || privateSolution.created |
+												date:"MM/dd/yyyy"}}</span> | <span class="text-xsmall link-orange"
+											ng-if="mlsolution.active != ''">New</span></label>
+										</div>
+									<div class="clear_both">
+										<div>
+											<button
+												class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored pull-right"
+												ng-click="privateSolution.selectFav = !privateSolution.selectFav; updateFavorite(privateSolution.solutionId, $index, 'PR')" alt="Favorite" title="Favorite">
+												<i class="material-icons"
+													ng-class="{'unselected-fav':!privateSolution.selectFav ,'selected-fav':privateSolution.selectFav}">favorite_border</i>
+											</button>
+										</div>
+									</div>
+								</div>
+								<div class="grid-item-error-container" ng-show="privateSolution.pendingApproval" ng-click="onClickModel(privateSolution.solutionId, privateSolution.ownerId, privateSolution.latestRevisionId)">
+									<div class="grid-error-msg"> Pending for approval </div>
+								</div>
+								
+								<div ng-show="privateSolution.onboardingStatusFailed">
+									<div class="grid-item-error-container" title="Check Error Details"
+										ng-click="showPopupPeer(privateSolution.name, privateSolution.errorDetails, 
+										privateSolution.onboardingStatusFailed);">
+										<div class="grid-error-msg"> 
+											<span class="grid-error-icon">&#33;</span> 
+											Error found 										
+										</div>
+									</div>
+									<div class="popupdeleteicon" title="Delete Model">
+										<i class="material-icons" ng-click="openDeleteConfirmPopup(privateSolution)">delete</i>		
+									</div>
+								</div>
+								
+								<!-- Delete Confirmation starts -->
+								<div class="md-dialog-container" id="confirmPopupDeleteModel"
+									style="height: 0;">
+									<md-dialog aria-label="Delete Model"
+										> <md-toolbar>
+									<div class="md-toolbar-tools">
+										<h2>Delete Model: {{deletePrModel.name}}</h2>
+										<span flex></span>
+										<md-button class="md-icon-button" ng-click="closePoup()">
+										<i class="material-icons">close</i> </md-button>
+									</div>
+									</md-toolbar> <md-dialog-content>
+									<form ng-cloak>
+										<div class="md-dialog-content">
+											<p>Are you sure that you want to delete this model and all of its revisions, public or private?</p>											
+										</div>
+									</form>
+									</md-dialog-content> <md-dialog-actions>
+									<div class="dialog-footer-container1">
+										<md-button ng-click="closePoup()"
+											class="mdl-button mdl-js-button btn-secondary">
+										Cancel </md-button>
+										<md-button ng-click="deleteErrorModel()"
+											class="mdl-button mdl-js-button btn-primary">
+										Confirm </md-button>
+									</div>
+									</md-dialog-actions> </md-dialog>
+								</div>
+								<!-- Delete Confirmation ends -->
+								
+								<!-- Detailed error popup starts -->
+								<div class="md-dialog-container" id="errorModelPopup" style="height: 0;">
+									<md-dialog aria-label="Error Details" class="admin-add-peer">
+										<md-toolbar>
+										<div class="md-toolbar-tools">
+											<h2>Error Details for {{errorModelName}}</h2>
+											<span flex></span>
+											<md-button class="md-icon-button" ng-click='closePoup()'>
+											<i class="material-icons">close</i> </md-button>
+										</div>
+										</md-toolbar>
+										<md-dialog-content>
+										<div class="md-dialog-content">
+											<div class="popup-error-container">
+												<span class="popup-error-icon-info">
+													<i class="material-icons">error_outline</i>
+												</span> 
+												<div class="popup-error-msg"> 
+													<strong>Onboarding Error Details:</strong>  {{errorModelDetails}}
+												</div>
+											</div>
+											<div class="popup-error-container">
+												<!-- <span class="popup-error-icon">&#33;</span> --> 
+												<span class="popup-error-icon-info">
+													<i class="material-icons">error_outline</i>
+												</span>
+												<div class="popup-error-msg"> 
+													<strong>Onboarding Status:</strong> Failed.
+												</div>
+											</div>
+											
+										</div>
+										</md-dialog-content>
+										<md-dialog-actions>
+										<div class="dialog-footer-container1">
+											<div>
+												<button ng-click='closePoup()'
+													class="mdl-button mdl-js-button btn-primary">Ok</button>
+											</div>
+										</div>
+										</md-dialog-actions>
+									</md-dialog>
+								</div>
+								<!-- Detailed error popup starts -->
+								
+							</div>
+						</div>
+						<div class="mp-grid-list" ng-show="!Viewtile">
+						
+						<div class="alert c-info" ng-if="mlSolutionPrivate.length < 1">
+								<strong>No Results Found</strong>
+							</div>
+							
+							<div class="mp-grid-list-row posrel"
+								ng-repeat="privateSolution in mlSolutionPrivate">
+								
+								<div ng-show="privateSolution.onboardingStatusFailed">
+									<div class="grid-item-error-container" title="Check Error Details" 
+										ng-click="showPopupPeer(privateSolution.name, privateSolution.errorDetails, 
+										privateSolution.onboardingStatusFailed);">
+										<div class="grid-error-msg"> 
+											<span class="grid-error-icon">&#33;</span> Error found 
+										</div>
+									</div>
+									<div class="popupdeleteicon" title="Delete Model">
+										<i class="material-icons" ng-click="openDeleteConfirmPopup(privateSolution)">delete</i>		
+									</div>
+								</div>
+								
+								<div class="grid-item-error-container" ng-show="privateSolution.pendingApproval" ng-click="onClickModel(privateSolution.solutionId, privateSolution.ownerId, privateSolution.latestRevisionId)">
+									<div class="grid-error-msg"> Pending For Approval </div>
+								</div>
+								<div class="mp-grid-list-image-cell">
+									<div class="mpimage1">
+										<figure>
+												<img ng-src="/api/solutions/{{privateSolution.solutionId}}/picture" ng-click="onClickModel(privateSolution.solutionId, privateSolution.ownerId, privateSolution.latestRevisionId)"
+													class="img-rounded" onerror="this.onerror=null;this.src='images/default-model.png'"/>
+
+										</figure>										
+									</div>
+									<div class="mpbtncontainer">
+										<md-button class="text-small" alt="Anomoly detection" title="Anomoly detection">anomoly detection</md-button>
+										<md-button class="text-small" alt="Classification" title="Classification">classification</md-button>
+									</div>
+								</div>
+								<div class="mp-grid-list-details-cell">
+									<div class="listview-title-container">
+										<label class="griditem-title cursor-pointer" ng-click="onClickModel(privateSolution.solutionId, privateSolution.ownerId, privateSolution.latestRevisionId)"><span class="griditem-title-text">{{privateSolution.name.toString().split("_").join(" ")}}</span></label>
+										<div>
+											<!-- Shared With/ Shared By Icon -->
+											<span class="md-share-with-me" title="Shared With Me" ng-show="privateSolution.ownerId != loginUserID"></span>
+											<span class="md-share-with-others" title="Shared With Others" ng-show="privateSolution.ownerId == loginUserID && privateSolution.ownerListForSol.length > 0"></span>									
+										</div>
+									</div>									
+									<div class="disblock detail-content">
+										<span class="griditem-text2"
+												ng-bind="'by ' + ((privateSolution.authors.length > 0) ? privateSolution.authors[0].name : privateSolution.ownerName)"></span> | <span class="griditem-text2">on
+											{{privateSolution.modified || privateSolution.created |
+											date:"MM/dd/yyyy"}}</span> | <span class="text-xsmall link-orange"
+											ng-if="privateSolution.active != ''">New</span></div>
+									<div class="clear_both">
+										<button
+
+											class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored pull-right"
+											ng-click="privateSolution.selectFav = !privateSolution.selectFav; updateFavorite(privateSolution.solutionId, $index, 'PR')" alt="Favorite" title="Favorite">
+
+											<i class="material-icons"
+												ng-class="{'unselected-fav':!privateSolution.selectFav ,'selected-fav':privateSolution.selectFav}">favorite_border</i>
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="text-center" ng-if="seeAllSelected" ng-init="flag == 0">
+							<div class="pagination-wrapper" ng-if="totalPrivateSolCount > 0">
+								<div class="pagination-left-section">
+					    			<span>Showing </span>
+					    			<div class="select-control" >
+								        <md-select ng-model="defaultSize" name="defaultSize" ng-change="paginationSize(defaultSize,'PR')" >
+								           <md-option ng-value="10" class="pagination-list-item">10</md-option>
+								           <md-option ng-value="25" class="pagination-list-item">25</md-option>
+								           <md-option ng-value="50" class="pagination-list-item">50</md-option>
+								           <md-option ng-value="100" class="pagination-list-item">100</md-option>
+								     	</md-select>
+
+									</div> 
+									
+									<span class="page-stats"> Models</span>
+					    		
+					    		</div>
+					    	
+									<div class="pagination-right-section" >
+                                                <div class="count-btn-container" >
+                                                <button class="mdl-button mdl-js-button btn-secondary"  ng-disabled="selectedPage==0 || SetDataLoaded"  ng-click="setStartCount('pre');Navigation(selectedPage,'PR')">Previous</button>
+                                                </div>
+                                                <div class="count-btn-container" ng-hide=" 0 >(setPageStart - 5)">
+                                                <button class="mdl-button mdl-js-button btn-secondary count-btn"   ng-click="setStartCount('preBunch');Navigation(setPageStart,'PR')" ng-class="{disabledClick:SetDataLoaded==true}">...</button>
+                                                </div>
+                                                <div class="count-btn-container" >
+                                                      <button class="mdl-button mdl-js-button btn-secondary count-btn" ng-class="{'selected-btn': setPageStart == selectedPage}" ng-click="Navigation(setPageStart,'PR');">{{setPageStart+1}} </button>
+                                                </div>
+                                                <div class="count-btn-container" ng-hide="totalPages<=(setPageStart+1)">
+                                                      <button class="mdl-button mdl-js-button btn-secondary count-btn" ng-class="{'selected-btn': setPageStart+1 == selectedPage}" ng-click="Navigation(setPageStart+1,'PR');">{{setPageStart+2}} </button>
+                                                </div>
+                                                <div class="count-btn-container" ng-hide="totalPages<=(setPageStart+2)">
+                                                      <button class="mdl-button mdl-js-button btn-secondary count-btn" ng-class="{'selected-btn': setPageStart+2 == selectedPage}" ng-click="Navigation(setPageStart+2,'PR');">{{setPageStart+3}} </button>
+                                                </div>
+                                                <div class="count-btn-container" ng-hide="totalPages<=(setPageStart+3)">
+                                                      <button class="mdl-button mdl-js-button btn-secondary count-btn" ng-class="{'selected-btn': setPageStart+3 == selectedPage}" ng-click="Navigation(setPageStart+3,'PR');">{{setPageStart+4}} </button>
+                                                </div>
+                                                <div class="count-btn-container" ng-hide="(totalPages)<=(setPageStart+4)">
+                                                      <button class="mdl-button mdl-js-button btn-secondary count-btn" ng-class="{'selected-btn': setPageStart+4 == selectedPage}" ng-click="Navigation(setPageStart+4,'PR'); ">{{setPageStart+5}} </button>
+                                                </div>
+                                                <div class="count-btn-container" ng-hide="(totalPages)<=(setPageStart + 5)">
+                                                <button class="mdl-button mdl-js-button btn-secondary count-btn" ng-click="setStartCount('nextBunch'); Navigation(setPageStart+4,'PR');" ng-class="{disabledClick:SetDataLoaded==true}">...</button>
+                                                </div>
+                                                <div class="count-btn-container" >
+                                                <button class="mdl-button mdl-js-button btn-secondary" ng-click="setStartCount('next'); Navigation(selectedPage,'PR')" ng-disabled="totalPages == (selectedPage + 1) || SetDataLoaded">Next</button>
+                                                </div>
+                            </div>
+						</div>
+					</div>
+                </div>
+               </div>
+                          
+                     <div class="grid-outer-wrapper">
+				<div class="grid-container" ng-if="hidePublic">
+					<h4 class="gridlistheading">
+						My Published Models
+						<span class="text-colorgray1">Showing - {{startPageSizePB }} to {{endPageSizePB }} of {{totalPublicSolCount}} Models</span><span
+							class="pull-right"><span
+							class="mp-grid-head-buttons-container"
+							ng-hide="seeAllSelected || mlSolutionPublic.length < 1 || ( pageNumPublic < 1 && mlSolutionPublicCount == totalPublicSolCount )"><a class="btnseeall" ng-click="Navigation(selectedPage,'PB')" ng-class="{ removetop: !(pageNumPublic < 1 || publicSolution.length < 4)}">See
+									All</a> <a ng-click="publicNav('Pre')" class="seeall-icons" href=""
+									 ng-class="{disabledClick: publicDataLoaded==true}"
+								ng-hide="pageNumPublic < 1"><i class="material-icons" alt="Previous" title="Previous">navigate_before</i></a><a
+								ng-click="publicNav('Next');" class="seeall-icons" href=""
+								ng-hide="mlSolutionPublicCount == totalPublicSolCount"  ng-class="{disabledClick: publicDataLoaded==true}"><i
+									class="material-icons" alt="Next" title="Next">navigate_next</i></a> </span></span>
+					</h4>
+					<div class="posrel" ng-if="publicSolution.length < 1">
+
+					</div>
+					<div>
+
+						<div class="mp-grid" ng-show="Viewtile">
+							<div class="alert c-info" ng-if="mlSolutionPublic.length < 1">
+								<strong>No Results Found</strong>
+							</div>
+
+							<div class="grid-item"
+								ng-repeat="publicSolution in mlSolutionPublic">
+								
+								<div class="grid-top-section">
+									<div class="product-image">
+										
+										<figure>
+												<img ng-src="/api/solutions/{{publicSolution.solutionId}}/picture" ng-click="onClickModel(publicSolution.solutionId, publicSolution.ownerId,publicSolution.latestRevisionId)"
+													class="img-rounded" onerror="this.onerror=null;this.src='images/default-model.png'"/>
+										</figure>
+									</div>
+									<div class="mpdetailscontainer">
+									<div class="tilecontainer1">
+										<label class="griditem-catalog-title">{{publicSolution.catalogName}}</label>
+									</div>
+									<div class="tilecontainer1">
+										<label class="griditem-title cursor-pointer" ng-click="onClickModel(publicSolution.solutionId, publicSolution.ownerId,publicSolution.latestRevisionId)"><span class="griditem-title-text2">{{publicSolution.name.toString().split("_").join(" ")}}</span>
+										</label>
+										<div>
+											<!-- Shared With/ Shared By Icon -->
+											<span class="md-share-with-me" title="Shared With Me" ng-show="publicSolution.ownerId != loginUserID"></span>
+											<span class="md-share-with-others" title="Shared With Others" ng-show="publicSolution.ownerId == loginUserID && publicSolution.ownerListForSol.length > 0"></span>
+										</div> 
+									</div>
+										<label class="grid-item-text-container"><span
+											class="griditem-text2 grid-item-lbl"
+												ng-bind="((publicSolution.authors.length > 0) ? publicSolution.authors[0].name : publicSolution.ownerName)"></span> | <span class="griditem-text2">
+												{{publicSolution.modified || publicSolution.created |
+												date:"MM/dd/yyyy"}}</span> | <span class="text-xsmall link-orange"
+											ng-if="mlsolution.active != ''">New</span></label>
+									</div>
+									<div>
+											<div class="a-mp-container1">
+												<div class="stars-outer">
+													<div class="stars-inner"
+														ng-style="getAvgRating(publicSolution.solutionRatingAvg)"></div>
+												</div>
+												<div class="posrel"
+													ng-if="publicSolution.solutionTagList.length > 0">
+													<div class="manage-taglist">
+														<span class="mg-tag-circle"></span><span
+															class="mg-tag-text">{{publicSolution.solutionTagList.length
+															> 0 ? publicSolution.solutionTagList[0].tag : ""}}</span>
+															
+															<!-- <span
+															class="icon-showmore"
+															ng-show="publicSolution.solutionTagList.length > 1"
+															ng-click="showListTag(publicSolution.solutionId)"><i
+															class="material-icons">add</i></span> -->
+															
+															<span class="icon-showmore" ng-show="publicSolution.solutionTagList.length > 1"
+																	ng-click="showListTag(publicSolution.solutionId);" >
+																	<span class="tag-icon1" ng-class="{'tag-icon' : publicSolution.solutionId == slnID && Tag}"> &nbsp; </span>
+																</span>
+													</div>
+													<div class="manage-tag-list-container"
+														ng-show="publicSolution.solutionId === slnID && Tag ">
+														<ul class="manage-tag-list">
+															<li ng-repeat="taglist in publicSolution.solutionTagList"><div
+																	class="manage-taglist2">
+																	<span class="mg-tag-circle2"></span><span
+																		class="mg-tag-text2">{{taglist.tag}}</span>
+																</div></li>
+														</ul>
+													</div>
+												</div>
+											</div>
+											<div class="md-icons md-icons-tiles">
+														<span><span class="statistics-icons icon-chat"
+															alt="Comment" title="Comment"></span> {{publicSolution.commentsCount}}</span> <span><span
+															class="statistics-icons icon-view" alt="View"
+															title="View"></span> {{publicSolution.viewCount == null ?
+															0 : publicSolution.viewCount}}</span> <span><span
+															class="statistics-icons icon-download" alt="Download"
+															title="Download"></span> {{publicSolution.downloadCount
+															== null ? 0 : publicSolution.downloadCount}}</span>
+														<button
+															class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored"
+															ng-click="publicSolution.selectFav = !publicSolution.selectFav; updateFavorite(publicSolution.solutionId, $index, 'PB')"
+															alt="Favorite" title="Favorite">
+															<i class="material-icons"
+																ng-class="{'unselected-fav':!publicSolution.selectFav ,'selected-fav':publicSolution.selectFav}">favorite_border</i>
+														</button>
+													</div>
+												</div>
+											</div>
+								<div class="grid-item-error-container" ng-show="public.onboardingStatusFailed">
+									<div class="grid-error-msg"> <span class="grid-error-icon">&#33;</span> Error found </div>
+								</div>
+								<div class="grid-item-error-container" ng-show="publicSolution.pendingApproval" ng-click="onClickModel(publicSolution.solutionId, publicSolution.ownerId, publicSolution.latestRevisionId)">
+									<div class="grid-error-msg"> Pending for approval </div>
+								</div>
+							</div>
+						</div>
+						<div class="mp-grid-list" ng-show="!Viewtile">
+						
+						<div class="alert c-info" ng-if="mlSolutionPublic.length < 1">
+								<strong>No Results Found</strong>
+							</div>
+							<div class="mp-grid-list-row posrel"
+								ng-repeat="mlsolution in mlSolutionPublic">
+								<div class="grid-item-error-container" ng-show="public.onboardingStatusFailed">
+									<div class="grid-error-msg"> <span class="grid-error-icon">&#33;</span> Error found </div>
+								</div>
+								<div class="mp-grid-list-image-cell">
+									<div class="mpimage1">
+										<figure>
+												<img ng-src="/api/solutions/{{mlsolution.solutionId}}/picture" ng-click="onClickModel(mlsolution.solutionId, mlsolution.ownerId,mlsolution.latestRevisionId)"
+													class="img-rounded" onerror="this.onerror=null;this.src='images/default-model.png'"/>
+										</figure>
+									</div>
+									<div class="mpbtncontainer">
+										<md-button class="text-small" alt="Anomoly Detection" title="Anomoly Detection">anomoly detection</md-button>
+										<md-button class="text-small" alt="Classification" title="Classification">classification</md-button>
+									</div>
+								</div>
+								<div class="mp-grid-list-details-cell">
+									<div class="listview-title-container">
+										<label class="griditem-catalog-title">{{mlsolution.catalogName}}</label>
+									</div>
+									<div class="listview-title-container">
+										<label class="griditem-title cursor-pointer" ng-click="onClickModel(mlsolution.solutionId, mlsolution.ownerId,mlsolution.latestRevisionId)"><span class="griditem-title-text">{{mlsolution.name.toString().split("_").join(" ")}}</span></label>
+										<div>
+											<!-- Shared With/ Shared By Icon -->
+											<span class="md-share-with-me" title="Shared With Me" ng-show="mlsolution.ownerId != loginUserID"></span>
+											<span class="md-share-with-others" title="Shared With Others" ng-show="mlsolution.ownerId == loginUserID && mlsolution.ownerListForSol.length > 0"></span>
+										</div>									
+									</div>
+									<div class="disblock detail-content">
+										<span class="griditem-text2"
+												ng-bind="'by ' + ((mlsolution.authors.length > 0) ? mlsolution.authors[0].name : mlsolution.ownerName)"></span> | <span class="griditem-text2">on
+											{{mlsolution.modified || mlsolution.created |
+											date:"MM/dd/yyyy"}}</span> | <span class="text-xsmall link-orange"
+											ng-if="mlsolution.active != ''">New</span>
+									</div>
+									<div>
+									
+											<div class="a-mp-container1">
+												<div class="stars-outer">
+													<div class="stars-inner"
+														ng-style="getAvgRating(mlsolution.solutionRatingAvg)"></div>
+												</div>
+												<div class="posrel"
+													ng-if="mlsolution.solutionTagList.length > 0">
+													<div class="manage-taglist">
+														<span class="mg-tag-circle"></span><span
+															class="mg-tag-text">{{mlsolution.solutionTagList.length
+															> 0 ? mlsolution.solutionTagList[0].tag : ""}}</span>
+															
+															<!-- <span
+															class="icon-showmore"
+															ng-show="mlsolution.solutionTagList.length > 1"
+															ng-click="showListTag(mlsolution.solutionId)"><i
+															class="material-icons">add</i></span> -->
+															
+															<span class="icon-showmore" ng-show="mlsolution.solutionTagList.length > 1"
+																	ng-click="showListTag(mlsolution.solutionId);" >
+																<span class="tag-icon1" ng-class="{'tag-icon' : mlsolution.solutionId == slnID && Tag}"> &nbsp; </span>
+															</span>
+															
+													</div>
+													<div class="manage-tag-list-container"
+														ng-show="mlsolution.solutionId === slnID && Tag ">
+														<ul class="manage-tag-list">
+															<li ng-repeat="taglist in mlsolution.solutionTagList"><div
+																	class="manage-taglist2">
+																	<span class="mg-tag-circle2"></span><span
+																		class="mg-tag-text2">{{taglist.tag}}</span>
+																</div></li>
+														</ul>
+													</div>
+												</div>
+											</div>
+
+										</div>
+									<div class="md-icons md-icons-tiles">
+										<span><span class="statistics-icons icon-chat" alt="Comment" title="Comment"></span> {{mlsolution.commentsCount}}</span>
+											 <span><span class="statistics-icons icon-view" alt="View" title="View"></span>
+											{{mlsolution.viewCount == null ? 0 : mlsolution.viewCount}}</span> <span><span
+											class="statistics-icons icon-download" alt="Download" title="Download"></span>
+											{{mlsolution.downloadCount == null ? 0 :
+											mlsolution.downloadCount}}</span>
+
+											<button
+												class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored"
+												ng-click="publicSolution.selectFav = !publicSolution.selectFav; updateFavorite(publicSolution.solutionId, $index, 'PB')" alt="Favorite" title="Favorite">
+												<i class="material-icons"
+													ng-class="{'unselected-fav':!publicSolution.selectFav ,'selected-fav':publicSolution.selectFav}">favorite_border</i>
+											</button>
+
+									</div>
+								</div>
+								<div class="grid-item-error-container" ng-show="mlsolution.pendingApproval" ng-click="onClickModel(mlsolution.solutionId, mlsolution.ownerId, mlsolution.latestRevisionId)">
+									<div class="grid-error-msg"> Pending for approval </div>
+								</div>
+							</div>
+							
+						</div>
+					</div>
+					<div class="text-center" ng-if="seeAllSelected">
+						<div class="pagination-wrapper" ng-if="totalPublicSolCount > 0">
+								<div class="pagination-left-section">
+					    			<span>Showing </span>
+					    			<div class="select-control" >
+								        <md-select ng-model="defaultSize" name="defaultSize" ng-change="paginationSize(defaultSize,'PB')" >
+								           <md-option ng-value="10" class="pagination-list-item">10</md-option>
+								           <md-option ng-value="25" class="pagination-list-item">25</md-option>
+								           <md-option ng-value="50" class="pagination-list-item">50</md-option>
+								           <md-option ng-value="100" class="pagination-list-item">100</md-option>
+								     	</md-select>
+
+									</div> 
+									
+									<span class="page-stats"> Models</span>
+					    		
+					    		</div>
+					    	
+									<div class="pagination-right-section" >
+                                                <div class="count-btn-container" >
+                                                <button class="mdl-button mdl-js-button btn-secondary"  ng-disabled="selectedPage==0 || SetDataLoaded"  ng-click="setStartCount('pre');Navigation(selectedPage,'PB')">Previous</button>
+                                                </div>
+                                                <div class="count-btn-container" ng-hide=" 0 >(setPageStart - 5)">
+                                                <button class="mdl-button mdl-js-button btn-secondary count-btn"   ng-click="setStartCount('preBunch');Navigation(setPageStart,'PB')" ng-class="{disabledClick:SetDataLoaded==true}">...</button>
+                                                </div>
+                                                <div class="count-btn-container" >
+                                                      <button class="mdl-button mdl-js-button btn-secondary count-btn" ng-class="{'selected-btn': setPageStart == selectedPage}" ng-click="Navigation(setPageStart,'PB');">{{setPageStart+1}} </button>
+                                                </div>
+                                                <div class="count-btn-container" ng-hide="totalPages<=(setPageStart+1)">
+                                                      <button class="mdl-button mdl-js-button btn-secondary count-btn" ng-class="{'selected-btn': setPageStart+1 == selectedPage}" ng-click="Navigation(setPageStart+1,'PB');">{{setPageStart+2}} </button>
+                                                </div>
+                                                <div class="count-btn-container" ng-hide="totalPages<=(setPageStart+2)">
+                                                      <button class="mdl-button mdl-js-button btn-secondary count-btn" ng-class="{'selected-btn': setPageStart+2 == selectedPage}" ng-click="Navigation(setPageStart+2,'PB');">{{setPageStart+3}} </button>
+                                                </div>
+                                                <div class="count-btn-container" ng-hide="totalPages<=(setPageStart+3)">
+                                                      <button class="mdl-button mdl-js-button btn-secondary count-btn" ng-class="{'selected-btn': setPageStart+3 == selectedPage}" ng-click="Navigation(setPageStart+3,'PB');">{{setPageStart+4}} </button>
+                                                </div>
+                                                <div class="count-btn-container" ng-hide="(totalPages)<=(setPageStart+4)">
+                                                      <button class="mdl-button mdl-js-button btn-secondary count-btn" ng-class="{'selected-btn': setPageStart+4 == selectedPage}" ng-click="Navigation(setPageStart+4,'PB'); ">{{setPageStart+5}} </button>
+                                                </div>
+                                                <div class="count-btn-container" ng-hide="(totalPages)<=(setPageStart + 5)">
+                                                <button class="mdl-button mdl-js-button btn-secondary count-btn" ng-click="setStartCount('nextBunch'); Navigation(setPageStart+4,'PB');" ng-class="{disabledClick:SetDataLoaded==true}">...</button>
+                                                </div>
+                                                <div class="count-btn-container" >
+                                                <button class="mdl-button mdl-js-button btn-secondary" ng-click="setStartCount('next'); Navigation(selectedPage,'PB')" ng-disabled="totalPages == (selectedPage + 1) || SetDataLoaded">Next</button>
+                                                </div>
+                                  </div>
+						</div>
+					</div>
+				</div>
+                             </div>
+                 <div class="grid-outer-wrapper">
+				<div class="grid-container" ng-if="hideDelete">
+					<h4 class="gridlistheading">
+						My Deleted Models
+						<span class="text-colorgray1">Showing - {{startPageSizeN }} to {{endPageSizeN }} of {{totalDeletedSolCount}} Models</span><span
+							class="pull-right"> <span
+							class="mp-grid-head-buttons-container"
+							ng-hide="seeAllSelected || mlSolutionDelete.length < 1 || ( pageNumDelete < 1 && mlSolutionDeletedCount == totalDeletedSolCount)"><a
+								class="btnseeall " ng-click="Navigation(selectedPage,'N')"
+								ng-class="{ removetop: !(pageNumDelete < 1 || mlSolutionDelete.length < 4)}">See
+									All</a> <a ng-click="deleteNav('Pre')" class="seeall-icons" href=""
+									ng-class="{disabledClick: deleteDataLoaded==true}"
+								ng-hide="pageNumDelete < 1"><i class="material-icons" alt="Previous" title="Previous">navigate_before</i></a><a
+								ng-click="deleteNav('Next')" class="seeall-icons" href=""
+								ng-class="{disabledClick: deleteDataLoaded==true}"
+								ng-hide="mlSolutionDeletedCount == totalDeletedSolCount"><i
+									class="material-icons" alt="Next" title="Next">navigate_next</i></a> </span>
+						</span>
+					</h4>
+					<div class="posrel" ng-if="publicSolution.length < 1">
+						
+					</div>
+					<div>
+						<div>
+							<!-- infinite-scroll='onLoad()' infinite-scroll-distance="2"> -->
+							<div class="mp-grid" ng-show="Viewtile">
+								<div class="alert c-info" ng-if="mlSolutionDelete.length < 1">
+									<strong>No Results Found</strong>
+								</div>
+								<div class="grid-item"
+									ng-repeat="deletedSolution in mlSolutionDelete">
+									<!--  | filter:(!searchResults || '') && {active:''} as filtered -->
+									<div class="grid-top-section">
+										<div class="product-image">
+											<figure>
+													<img ng-src="/api/solutions/{{deletedSolution.solutionId}}/picture" ng-click="onClickModel(deletedSolution.solutionId, deletedSolution.ownerId,deletedSolution.latestRevisionId)"
+														class="img-rounded" onerror="this.onerror=null;this.src='images/default-model.png'"/>
+											</figure>
+											
+										</div>
+										<div class="mpdetailscontainer">
+										<div class="tilecontainer1">
+											<label class="griditem-title cursor-pointer" ng-click="onClickModel(deletedSolution.solutionId, deletedSolution.ownerId,deletedSolution.latestRevisionId)"
+><span class="griditem-title-text2">{{deletedSolution.name.toString().split("_").join(" ")}}</span>
+											</label> 
+											<div>
+												<!-- Shared With/ Shared By Icon -->
+												<span class="md-share-with-me" title="Shared With Me" ng-show="deletedSolution.ownerId != loginUserID"></span>
+												<span class="md-share-with-others" title="Shared With Others" ng-show="deletedSolution.ownerId == loginUserID && deletedSolution.ownerListForSol.length > 0"></span>
+											</div> 
+										</div>
+											
+											<label class="grid-item-text-container"><span
+												class="griditem-text2 grid-item-lbl"
+												ng-bind="((deletedSolution.authors.length > 0) ? deletedSolution.authors[0].name : deletedSolution.ownerName)"></span> | <span
+												class="griditem-text2">  {{deletedSolution.modified
+													|| deletedSolution.created | date:"MM/dd/yyyy"}}</span> | <span
+												class="text-xsmall link-orange"
+												ng-if="mlsolution.active != ''">New</span></label>
+											</div>
+										<div class="clear_both">
+												<div class="a-mp-container1">
+													<div class="stars-outer">
+														<div class="stars-inner"
+															ng-style="getAvgRating(deletedSolution.solutionRatingAvg)"></div>
+													</div>
+													<div class="posrel"
+														ng-if="deletedSolution.solutionTagList.length > 0">
+														<div class="manage-taglist">
+															<span class="mg-tag-circle"></span><span
+																class="mg-tag-text">{{deletedSolution.solutionTagList.length
+																> 0 ? deletedSolution.solutionTagList[0].tag : ""}}</span>
+																
+																<!-- <span
+																class="icon-showmore"
+																ng-show="deletedSolution.solutionTagList.length > 1"
+																ng-click="showListTag(deletedSolution.solutionId)"><i
+																class="material-icons">add</i></span> -->
+																
+																<span class="icon-showmore" ng-show="deletedSolution.solutionTagList.length > 1"
+																	ng-click="showListTag(deletedSolution.solutionId);" >
+																<span class="tag-icon1" ng-class="{'tag-icon' : deletedSolution.solutionId == slnID && Tag}"> &nbsp; </span>
+															</span>
+															
+														</div>
+														<div class="manage-tag-list-container"
+															ng-show="deletedSolution.solutionId === slnID && Tag ">
+															<ul class="manage-tag-list">
+																<li
+																	ng-repeat="taglist in deletedSolution.solutionTagList"><div
+																		class="manage-taglist2">
+																		<span class="mg-tag-circle2"></span><span
+																			class="mg-tag-text2">{{taglist.tag}}</span>
+																	</div></li>
+															</ul>
+														</div>
+													</div>
+												</div>
+												<div class="md-icons md-icons-tiles">
+																<span><span class="statistics-icons icon-chat"
+																	alt="Comment" title="Comment"></span> {{deletedSolution.commentsCount}}</span> <span><span
+																	class="statistics-icons icon-view" alt="View"
+																	title="View"></span> {{deletedSolution.viewCount ==
+																	null ? 0 : deletedSolution.viewCount}}</span> <span><span
+																	class="statistics-icons icon-download" alt="Download"
+																	title="Download"></span>
+																	{{deletedSolution.downloadCount == null ? 0 :
+																	deletedSolution.downloadCount}}</span>
+																<button
+																	class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored"
+																	ng-click="deletedSolution.selectFav = !deletedSolution.selectFav; updateFavorite(deletedSolution.solutionId, $index, 'D')"
+																	alt="Favorite" title="Favorite">
+																	<i class="material-icons"
+																		ng-class="{'unselected-fav':!deletedSolution.selectFav ,'selected-fav':deletedSolution.selectFav}">favorite_border</i>
+																</button>
+												</div>
+												</div>
+											</div>
+													
+											<div class="grid-item-error-container" 
+											ng-click="showPopupPeer(deletedSolution.name, deletedSolution.errorDetails, 
+													deletedSolution.onboardingStatusFailed);" 
+											ng-show="deletedSolution.onboardingStatusFailed">
+												<div class="grid-error-msg"> 
+													<span class="grid-error-icon">&#33;</span> 
+													Error found 
+												</div>
+											</div>
+											
+								</div>
+							</div>
+							<div class="mp-grid-list" ng-show="!Viewtile">
+							<div class="alert c-info" ng-if="mlSolutionDelete.length < 1">
+									<strong>No Results Found</strong>
+								</div>
+								
+								<div class="mp-grid-list-row posrel"
+									ng-repeat="deletedSolution in mlSolutionDelete">
+									<div class="grid-item-error-container"
+									ng-click="showPopupPeer(deletedSolution.name, deletedSolution.errorDetails, 
+													deletedSolution.onboardingStatusFailed);" 
+									ng-show="deletedSolution.onboardingStatusFailed">
+										<div class="grid-error-msg"> 
+										<span class="grid-error-icon">&#33;</span> Error found </div>
+									</div>
+									<div class="mp-grid-list-image-cell">
+										<div class="mpimage1">
+											<figure>
+													<img ng-src="/api/solutions/{{deletedSolution.solutionId}}/picture" ng-click="onClickModel(deletedSolution.solutionId, deletedSolution.ownerId,deletedSolution.latestRevisionId)"
+														class="img-rounded" onerror="this.onerror=null;this.src='images/default-model.png'"/>
+											</figure>
+										</div>
+									</div>
+									<div class="mp-grid-list-details-cell">
+										<div class="listview-title-container">
+											<label class="griditem-title cursor-pointer" ng-click="onClickModel(deletedSolution.solutionId, deletedSolution.ownerId,deletedSolution.latestRevisionId)"><span class="griditem-title-text">{{deletedSolution.name.toString().split("_").join(" ")}}</span>
+												<span class="text-xsmall link-orange">In progress</span>
+											</label>
+											<div>
+												<!-- Shared With/ Shared By Icon -->
+												<span class="md-share-with-me" title="Shared With Me" ng-show="deletedSolution.ownerId != loginUserID"></span>
+												<span class="md-share-with-others" title="Shared With Others" ng-show="deletedSolution.ownerId == loginUserID && deletedSolution.ownerListForSol.length > 0"></span> 
+											</div>
+										</div>
+										<div class="disblock detail-content">
+											<span class="griditem-text2"
+												ng-bind="'by ' + ((deletedSolution.authors.length > 0) ? deletedSolution.authors[0].name : deletedSolution.ownerName)"></span> | <span class="griditem-text2">on
+												{{deletedSolution.modified || deletedSolution.created |
+												date:"MM/dd/yyyy"}}</span> | <span class="text-xsmall link-orange"
+												ng-if="mlsolution.active != ''">New</span>
+										</div>
+											<div class="a-mp-container1">
+												<div class="stars-outer">
+													<div class="stars-inner"
+														ng-style="getAvgRating(deletedSolution.solutionRatingAvg)"></div>
+												</div>
+												<div class="posrel"
+													ng-if="deletedSolution.solutionTagList.length > 0">
+													<div class="manage-taglist">
+														<span class="mg-tag-circle"></span><span
+															class="mg-tag-text">{{deletedSolution.solutionTagList.length
+															> 0 ? deletedSolution.solutionTagList[0].tag : ""}}</span>
+															<!-- 
+															<span
+															class="icon-showmore"
+															ng-show="deletedSolution.solutionTagList.length > 1"
+															ng-click="showListTag(deletedSolution.solutionId)"><i
+															class="material-icons">add</i></span> -->
+															
+															<span class="icon-showmore" ng-show="deletedSolution.solutionTagList.length > 1"
+																	ng-click="showListTag(deletedSolution.solutionId);" >
+																<span class="tag-icon1" ng-class="{'tag-icon' : deletedSolution.solutionId == slnID && Tag}"> &nbsp; </span>
+															</span>
+													</div>
+													<div class="manage-tag-list-container"
+														ng-show="deletedSolution.solutionId === slnID && Tag ">
+														<ul class="manage-tag-list">
+															<li
+																ng-repeat="taglist in deletedSolution.solutionTagList"><div
+																	class="manage-taglist2">
+																	<span class="mg-tag-circle2"></span><span
+																		class="mg-tag-text2">{{taglist.tag}}</span>
+																</div></li>
+														</ul>
+													</div>
+												</div>
+											</div>
+											<div class="md-icons md-icons-tiles">
+																<span><span class="statistics-icons icon-chat"
+																	alt="Comment" title="Comment"></span> {{deletedSolution.commentsCount}}</span> <span><span
+																	class="statistics-icons icon-view" alt="View"
+																	title="View"></span> {{deletedSolution.viewCount ==
+																	null ? 0 : deletedSolution.viewCount}}</span> <span><span
+																	class="statistics-icons icon-download" alt="Download"
+																	title="Download"></span>
+																	{{deletedSolution.downloadCount == null ? 0 :
+																	deletedSolution.downloadCount}}</span> <span><span
+																	class="statistics-icons icon-attachment"
+																	alt="Attachment" title="Attachment"></span>
+																	{{deletedSolution.solutionTag == null ? 0 :
+																	deletedSolution.solutionTag}}</span>
+
+																<button
+																	class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored"
+																	ng-click="deletedSolution.selectFav = !deletedSolution.selectFav; updateFavorite(deletedSolution.solutionId, $index, 'D')"
+																	alt="Favorite" title="Favorite">
+																	<i class="material-icons"
+																		ng-class="{'unselected-fav':!deletedSolution.selectFav ,'selected-fav':deletedSolution.selectFav}">favorite_border</i>
+																</button>
+
+															</div>
+														</div>
+													</div>
+							</div>
+							<div class="text-center" ng-if="seeAllSelected">
+						<div class="pagination-wrapper" ng-if="totalDeletedSolCount > 0">
+								<div class="pagination-left-section">
+					    			<span>Showing </span>
+					    			<div class="select-control" >
+								        <md-select ng-model="defaultSize" name="defaultSize" ng-change="paginationSize(defaultSize,'N')" >
+								           <md-option ng-value="10" class="pagination-list-item">10</md-option>
+								           <md-option ng-value="25" class="pagination-list-item">25</md-option>
+								           <md-option ng-value="50" class="pagination-list-item">50</md-option>
+								           <md-option ng-value="100" class="pagination-list-item">100</md-option>
+								     	</md-select>
+
+									</div> 
+									
+									<span class="page-stats"> Models</span>
+					    		
+					    		</div>
+					    	
+									<div class="pagination-right-section" >
+                                                <div class="count-btn-container" >
+                                                <button class="mdl-button mdl-js-button btn-secondary"  ng-disabled="selectedPage==0 || SetDataLoaded"  ng-click="setStartCount('pre');Navigation(selectedPage,'N')">Previous</button>
+                                                </div>
+                                                <div class="count-btn-container" ng-hide=" 0 >(setPageStart - 5)">
+                                                <button class="mdl-button mdl-js-button btn-secondary count-btn"   ng-click="setStartCount('preBunch');Navigation(setPageStart,'N')" ng-class="{disabledClick:SetDataLoaded==true}">...</button>
+                                                </div>
+                                                <div class="count-btn-container" >
+                                                      <button class="mdl-button mdl-js-button btn-secondary count-btn" ng-class="{'selected-btn': setPageStart == selectedPage}" ng-click="Navigation(setPageStart,'N');">{{setPageStart+1}} </button>
+                                                </div>
+                                                <div class="count-btn-container" ng-hide="totalPages<=(setPageStart+1)">
+                                                      <button class="mdl-button mdl-js-button btn-secondary count-btn" ng-class="{'selected-btn': setPageStart+1 == selectedPage}" ng-click="Navigation(setPageStart+1,'N');">{{setPageStart+2}} </button>
+                                                </div>
+                                                <div class="count-btn-container" ng-hide="totalPages<=(setPageStart+2)">
+                                                      <button class="mdl-button mdl-js-button btn-secondary count-btn" ng-class="{'selected-btn': setPageStart+2 == selectedPage}" ng-click="Navigation(setPageStart+2,'N');">{{setPageStart+3}} </button>
+                                                </div>
+                                                <div class="count-btn-container" ng-hide="totalPages<=(setPageStart+3)">
+                                                      <button class="mdl-button mdl-js-button btn-secondary count-btn" ng-class="{'selected-btn': setPageStart+3 == selectedPage}" ng-click="Navigation(setPageStart+3,'N');">{{setPageStart+4}} </button>
+                                                </div>
+                                                <div class="count-btn-container" ng-hide="(totalPages)<=(setPageStart+4)">
+                                                      <button class="mdl-button mdl-js-button btn-secondary count-btn" ng-class="{'selected-btn': setPageStart+4 == selectedPage}" ng-click="Navigation(setPageStart+4,'N'); ">{{setPageStart+5}} </button>
+                                                </div>
+                                                <div class="count-btn-container" ng-hide="(totalPages)<=(setPageStart + 5)">
+                                                <button class="mdl-button mdl-js-button btn-secondary count-btn" ng-click="setStartCount('nextBunch'); Navigation(setPageStart+4,'N');" ng-class="{disabledClick:SetDataLoaded==true}">...</button>
+                                                </div>
+                                                <div class="count-btn-container" >
+                                                <button class="mdl-button mdl-js-button btn-secondary" ng-click="setStartCount('next'); Navigation(selectedPage,'N')" ng-disabled="totalPages == (selectedPage + 1) || SetDataLoaded">Next</button>
+                                                </div>
+                                  </div>
+						</div>
+					</div>
+						</div>
+					</div>
+					<br />
+				</div>
+			</div>
+		</div>
+		</div>
+		</div>
+		
+
+

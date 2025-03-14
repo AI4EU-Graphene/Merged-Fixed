@@ -1,0 +1,10 @@
+.classpath
+.factorypath
+.project
+.idea
+/.settings/
+/bin/
+/logs/
+/target/
+application.properties
+*~

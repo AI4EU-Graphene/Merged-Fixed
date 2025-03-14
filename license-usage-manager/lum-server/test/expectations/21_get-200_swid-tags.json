@@ -1,0 +1,65 @@
+{
+    "db": [
+        {
+            "sqlCmd": "SELECT swt.\"softwareLicensorId\", swt.\"swTagId\", swt.\"swidTagRevision\", swt.\"swPersistentId\", swt.\"swVersion\", swt.\"swProductName\", swt.\"licenseProfileId\", lp.\"licenseProfileRevision\", lp.\"licenseProfileActive\", lp.\"isRtuRequired\" FROM \"swidTag\" AS swt LEFT OUTER JOIN \"licenseProfile\" AS lp ON (lp.\"licenseProfileId\" = swt.\"licenseProfileId\") WHERE swt.\"swidTagActive\" = TRUE ORDER BY swt.\"softwareLicensorId\", swt.\"swTagId\"",
+            "result": {
+                "command": "SELECT",
+                "rowCount": 1,
+                "rows": [
+                    {
+                        "softwareLicensorId": "unit-test-softwareLicensorId",
+                        "swTagId": "unit-test-swTagId",
+                        "swidTagRevision": 5,
+                        "swPersistentId": "a218c795-ae2c-4ff9-894d-462baa768dfc",
+                        "swVersion": "4",
+                        "swProductName": "unit-test-product253",
+                        "licenseProfileId": "cec51e7d-d977-41d2-abc6-ef5f069491b8",
+                        "licenseProfileRevision": 1,
+                        "licenseProfileActive": true,
+                        "isRtuRequired": true
+                    }
+                ]
+            }
+        }
+    ],
+    "req": {
+        "method": "GET",
+        "path": "/api/v1/swid-tags",
+        "content-type": "application/json; charset=utf-8",
+        "X-ACUMOS-RequestID": "ea61843b-7d30-4a28-ba70-720135c202d9",
+        "send": {
+            "requestId": "ea61843b-7d30-4a28-ba70-720135c202d9",
+            "requested": "2020-05-29T21:37:59.556Z"
+        }
+    },
+    "res": {
+        "statusCode": 200,
+        "bodySubsetKeys": [
+            {
+                "field": "activeSwidTags",
+                "key": "swTagId",
+                "value": "unit-test-swTagId"
+            }
+        ],
+        "bodySubset": {
+            "activeSwidTags": [
+                {
+                    "softwareLicensorId": "unit-test-softwareLicensorId",
+                    "swTagId": "unit-test-swTagId",
+                    "swidTagRevision": 5,
+                    "swPersistentId": "a218c795-ae2c-4ff9-894d-462baa768dfc",
+                    "swVersion": "4",
+                    "swProductName": "unit-test-product253",
+                    "licenseProfileId": "cec51e7d-d977-41d2-abc6-ef5f069491b8",
+                    "licenseProfileRevision": 1,
+                    "licenseProfileActive": true,
+                    "isRtuRequired": true
+                }
+            ]
+        },
+        "body": {
+            "requestId": "ea61843b-7d30-4a28-ba70-720135c202d9",
+            "requested": "__type__dateTime__"
+        }
+    }
+}

@@ -1,0 +1,7 @@
+# Closure around requested function
+Acumos ML Client Library -> Acumos ML Client Library: enableRTU (design time)
+Acumos ML Client Library -> License Usage Manager: verifyRTU (sync)
+Acumos ML Client Library -> Acumos ML Client Library: if not allowed throw error
+Acumos ML Client Library -> Acumos ML Client Library: if allowed call requested\nfunction
+Acumos ML Client Library -> Acumos ML Client Library: recordMetric (design time)
+Acumos ML Client Library -> License Usage Manager: trackUsage (async)

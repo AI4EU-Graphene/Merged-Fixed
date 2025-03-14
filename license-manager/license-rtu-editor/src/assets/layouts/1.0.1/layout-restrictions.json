@@ -1,0 +1,159 @@
+[
+    {
+        "key": "target",
+        "type": "fieldset",
+        "items": [
+            {
+                "key": "target.refinement",
+                "type": "array",
+                "listItems": 0,
+                "items": [
+                    {
+                        "key": "target.refinement[].@type",
+                        "condition": "false"
+                    },
+                    {
+                        "type": "div",
+                        "displayFlex": true,
+                        "flex-flow": "row wrap",
+                        "key": "target.refinement[]",
+                        "items": [
+                            {
+                                "key": "target.refinement[].leftOperand"
+                            },
+                            {
+                                "key": "target.refinement[].operator"
+                            },
+                            {
+                                "key": "target.refinement[].rightOperand",
+                                "type": "array",
+                                "items": [
+                                    {
+                                        "key": "target.refinement[].rightOperand[]"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "key": "assignee",
+        "type": "fieldset",
+        "items": [
+            {
+                "key": "assignee.refinement",
+                "type": "array",
+                "listItems": 0,
+                "items": [
+                    {
+                        "key": "assignee.refinement[].@type",
+                        "condition": "false"
+                    },
+                    {
+                        "type": "div",
+                        "displayFlex": true,
+                        "flex-flow": "row wrap",
+                        "key": "assignee.refinement[]",
+                        "items": [
+                            {
+                                "key": "assignee.refinement[].leftOperand"
+                            },
+                            {
+                                "key": "assignee.refinement[].operator"
+                            },
+                            {
+                                "key": "assignee.refinement[].rightOperand",
+                                "type": "array",
+                                "items": [
+                                    {
+                                        "key": "assignee.refinement[].rightOperand[]"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "key": "permission",
+        "type": "array",
+        "listItems": 0,
+        "items": [
+            {
+                "type": "div",
+                "display": "flex",
+                "flex-flow": "row wrap",
+                "items": [
+                    {
+                        "key": "permission[].action",
+                        "flex": "1 1 auto"
+                    },
+                    {
+                        "key": "permission[].constraint",
+                        "type": "array",
+                        "listItems": 0,
+                        "flex": "3 3 auto",
+                        "items": [
+                            {
+                                "key": "permission[].constraint[].@type",
+                                "condition": "false"
+                            },
+                            {
+                                "type": "div",
+                                "display": "flex",
+                                "flex-flow": "row wrap",
+                                "justify-content": "flex-start",
+                                "key": "permission[].constraint[]",
+                                "items": [
+                                    {
+                                        "key": "permission[].constraint[].leftOperand",
+                                        "flex": "1 1 auto"
+                                    },
+                                    {
+                                        "key": "permission[].constraint[].operator",
+                                        "flex": "1 1 auto"
+                                    },
+                                    {
+                                        "key": "permission[].constraint[].rightOperand",
+                                        "type": "div",
+                                        "display": "flex",
+                                        "flex": "2 2 auto",
+                                        "flex-flow": "col wrap",
+                                        "notitle": true,
+                                        "items": [
+                                            {
+                                                "key": "permission[].constraint[].rightOperand.@value"
+                                            },
+                                            {
+                                                "key": "permission[].constraint[].rightOperand.@type"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "key": "prohibition",
+        "type": "array",
+        "listItems": 0,
+        "items": [
+            {
+                "key": "prohibition[].@type",
+                "condition": "false"
+            },
+            {
+                "key": "prohibition[].action"
+            }
+        ]
+    }
+]

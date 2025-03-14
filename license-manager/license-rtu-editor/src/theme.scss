@@ -1,0 +1,221 @@
+/*-
+ * ===============LICENSE_START================================================
+ * Acumos Apache-2.0
+ * ============================================================================
+ * Copyright (C) 2019 Nordix Foundation.
+ * ============================================================================
+ * This Acumos software file is distributed by Nordix Foundation
+ * under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * This file is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ===============LICENSE_END==================================================
+ */
+
+ @import '~@angular/material/theming';
+ // Plus imports for other components in your app.
+ 
+ // Include the common styles for Angular Material. We include this here so that you only
+ // have to load a single css file for Angular Material in your app.
+ // Be sure that you only ever include this mixin once!
+ @include mat-core();
+ 
+ // Define a acumos-specific typography config that overrides the font-family
+ $acumos-typography: mat-typography-config(
+   $font-family: '"Open Sans"'
+ );
+ 
+ @include angular-material-typography($acumos-typography);
+ 
+ // created palette colors using http://mcg.mbitson.com
+ $mat-acumos-primary: (
+     50 : #ede4f3,
+     100 : #d1bbe2,
+     200 : #b38ece,
+     300 : #9560ba,
+     400 : #7e3eac,
+     500 : #671c9d,
+     600 : #5f1995,
+     700 : #54148b,
+     800 : #4a1181,
+     900 : #39096f,
+     A100 : #c7a1ff,
+     A200 : #a96eff,
+     A400 : #8b3bff,
+     A700 : #7c21ff,
+     contrast: (
+         50: $dark-primary-text,
+         100: $dark-primary-text,
+         200: $dark-primary-text,
+         300: $light-primary-text,
+         400: $light-primary-text,
+         500: $light-primary-text,
+         600: $light-primary-text,
+         700: $light-primary-text,
+         800: $light-primary-text,
+         900: $light-primary-text,
+         A100: $dark-primary-text,
+         A200: $light-primary-text,
+         A400: $light-primary-text,
+         A700: $light-primary-text,
+     )
+ );
+ 
+ $mat-acumos-accent: (
+     50 : #fff9e0,
+     100 : #fff0b3,
+     200 : #ffe680,
+     300 : #ffdb4d,
+     400 : #ffd426,
+     500 : #ffcc00,
+     600 : #ffc700,
+     700 : #ffc000,
+     800 : #ffb900,
+     900 : #ffad00,
+     A100 : #ffffff,
+     A200 : #fffaf2,
+     A400 : #ffe8bf,
+     A700 : #ffdfa6,
+     contrast: (
+         50: $dark-primary-text,
+         100: $dark-primary-text,
+         200: $dark-primary-text,
+         300: $dark-primary-text,
+         400: $dark-primary-text,
+         500: $dark-primary-text,
+         600: $dark-primary-text,
+         700: $dark-primary-text,
+         800: $dark-primary-text,
+         900: $dark-primary-text,
+         A100: $dark-primary-text,
+         A200: $dark-primary-text,
+         A400: $dark-primary-text,
+         A700: $dark-primary-text,
+     )
+ );
+ 
+ // Define the palettes for your theme using the Material Design palettes available in palette.scss
+ // (imported above). For each palette, you can optionally specify a default, lighter, and darker
+ // hue. Available color palettes: https://material.io/design/color/
+ $acumos-app-primary: mat-palette($mat-acumos-primary);
+ $acumos-app-accent:  mat-palette($mat-acumos-accent, A700, A400, A200);
+ 
+ // The warn palette is optional (defaults to red).
+ $acumos-app-warn:    mat-palette($mat-red);
+ 
+ // Create the theme object (a Sass map containing all of the palettes).
+ $acumos-app-theme: mat-light-theme($acumos-app-primary, $acumos-app-accent, $acumos-app-warn);
+ 
+ // Include theme styles for core and each component used in your app.
+ // Alternatively, you can import and @include the theme mixins for each component
+ // that you are using.
+ @include angular-material-theme($acumos-app-theme);
+
+
+ .mat-raised-button {
+    color: #2f2f2f;
+    background-color: #ffffff;
+    border: 1px solid #d5d5d5;
+    padding: 0px 20px 0px 20px;
+}
+
+.mat-form-field-appearance-outline .mat-form-field-label {
+  margin-top: 0px;
+}
+
+
+.mat-card {
+  margin: 0;
+  overflow: auto;
+
+  mat-form-field {
+    input, .mat-form-field-label {
+      color: #2f2f2f;
+    }
+    input::placeholder {
+      color: #b4b4b4;
+    }
+  }
+}
+
+.mat-raised-button:hover {
+  background-color: #e5e3e8;
+  border: 1px solid #b1b1b1;
+}
+
+.mat-raised-button[disabled][disabled] {
+  color: #c6c5c5;
+  background-color: #e5e3e8;
+  border: 1px solid #dadada;
+}
+
+.mat-raised-button.mat-primary {
+  color: #ffffff;
+  padding: 0px 20px 0px 20px;
+  border: 1px solid #671c9d;
+}
+
+.mat-raised-button.mat-accent {
+  padding: 0px 20px 0px 20px;
+  border: 1px solid #ffdfa6;
+}
+
+.mat-raised-button.mat-primary[disabled][disabled] {
+  color: #c6c5c5;
+  background-color: #efefef;
+  border: 1px solid #dadada;
+}
+
+.mat-raised-button.mat-primary:hover {
+  background-color: #4f147a;
+}
+
+.mat-raised-button.mat-accent:hover {
+  background-color: #e9ca94;
+}
+
+.mat-raised-button.btn-cancel {
+  margin-left: 10px;
+}
+
+.mat-raised-button.btn-primary {
+  color: #ffffff;
+  background-color: #671c9d;
+  padding: 0px 20px 0px 20px;
+  border: 1px solid #671c9d;
+}
+
+.btn-primary[disabled][disabled] {
+  color: #c6c5c5;
+  background-color: #efefef;
+  border: 1px solid #dadada;
+}
+
+.btn-primary:hover {
+  background-color: #4f147a;
+}
+
+.mat-raised-button.btn-secondary {
+  color: #2f2f2f;
+  background-color: #ffffff;
+  border: 1px solid #d5d5d5;
+  padding: 0px 20px 0px 20px;
+}
+
+.btn-secondary:hover {
+  background-color: #e5e3e8;
+  border: 1px solid #b1b1b1;
+}
+
+.btn-secondary[disabled][disabled] {
+  color: #c6c5c5;
+  background-color: #e5e3e8;
+  border: 1px solid #dadada;
+}
+

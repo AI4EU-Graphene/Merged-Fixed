@@ -1,0 +1,70 @@
+[
+    {
+        "key": "keyword",
+        "title": "License Keyword/Identifier"
+    },
+    {
+        "key": "licenseName",
+        "title": "License Name"
+    },
+    {
+        "key": "intro",
+        "title": "Introduction",
+        "type": "textarea"
+    },
+    {
+        "key": "softwareType",
+        "title": "Software/Artifact Type"
+    },
+    {
+        "key": "companyName",
+        "title": "Company Name"
+    },
+    {
+        "key": "copyright",
+        "type": "fieldset",
+        "items": [
+            {
+                "key": "copyright.year",
+                "type": "number"
+            },
+            "copyright.company",
+            "copyright.suffix"
+        ]
+    },
+    {
+        "key": "contact",
+        "type": "fieldset",
+        "items": [
+            {
+                "key": "contact.name"
+            },
+            {
+                "key": "contact.URL",
+                "title": "URL",
+                "type": "textarea"
+            },
+            "contact.email"
+        ]
+    },
+    {
+        "key": "additionalInfo",
+        "title": "Additional Information",
+        "type": "textarea"
+    },
+    {
+        "key": "rtuRequired",
+        "title": "Right to Use Required *",
+        "type": "radios",
+        "titleMap": [
+            {
+                "value": true,
+                "name": "Yes, a right to use is required"
+            },
+            {
+                "value": false,
+                "name": "No, right to use is not required to use this software"
+            }
+        ]
+    }
+]
